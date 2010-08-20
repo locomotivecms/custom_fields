@@ -27,3 +27,22 @@ end
 task :spec => ['spec:unit', 'spec:integration']
 
 task :default => :spec
+
+begin
+  require "jeweler"
+  Jeweler::Tasks.new do |gem|
+    gem.name = "custom_fields"
+    gem.summary = "Custom fields plugin for Mongoid"
+    gem.authors = ['Didier Lafforgue']
+    gem.email = ['didier@nocoffee.fr']
+    gem.date = Date.today
+    gem.description = "Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive."
+    gem.homepage = %q{http://github.com/locomotivecms/custom_fields}
+    gem.files = Dir[
+      "init.rb",
+      "{lib}/**/*"]
+  end
+  Jeweler::GemcutterTasks.new
+rescue Exception => e
+  puts "Jeweler or one of its dependencies is not installed. #{e.inspect}"
+end

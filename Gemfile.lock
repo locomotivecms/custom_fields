@@ -18,7 +18,14 @@ GEM
     builder (2.1.2)
     carrierwave-rails3 (0.4.5)
     diff-lcs (1.1.2)
+    gemcutter (0.6.1)
+    git (1.2.5)
     i18n (0.4.1)
+    jeweler (1.4.0)
+      gemcutter (>= 0.1.0)
+      git (>= 1.2.5)
+      rubyforge (>= 2.0.0)
+    json_pure (1.4.6)
     mongo (1.0.7)
       bson (>= 1.0.4)
     mongo_ext (0.19.3)
@@ -37,6 +44,8 @@ GEM
     rspec-expectations (2.0.0.beta.19)
       diff-lcs (>= 1.1.2)
     rspec-mocks (2.0.0.beta.19)
+    rubyforge (2.0.4)
+      json_pure (>= 1.1.7)
     tzinfo (0.3.22)
     will_paginate (3.0.pre2)
 
@@ -47,6 +56,7 @@ DEPENDENCIES
   activesupport (~> 3.0.0.rc)
   bson_ext (>= 1.0.1)
   carrierwave-rails3
+  jeweler
   mocha!
   mongo_ext
   mongoid (= 2.0.0.beta.16)
