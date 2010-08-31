@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Didier Lafforgue"]
-  s.date = %q{2010-08-20}
+  s.date = %q{2010-08-22}
   s.description = %q{Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive.}
   s.email = ["didier@nocoffee.fr"]
   s.extra_rdoc_files = [
