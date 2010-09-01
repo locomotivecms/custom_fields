@@ -6,7 +6,7 @@ Manage custom fields to a mongoid document or a collection. This module is one o
 Requirements
 =======
 
-MongoDB 1.6 and mongoid 2.0.0.beta16
+ActiveSupport 3.0, MongoDB 1.6 and mongoid 2.0.0.beta17
 
 
 Example
