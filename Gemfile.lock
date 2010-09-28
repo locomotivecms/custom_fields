@@ -1,50 +1,48 @@
 GIT
   remote: git://github.com/floehopper/mocha.git
-  revision: e0a00a7
+  revision: e0a00a7b2adf8f11d3679879df9a5c47a5c36189
   specs:
     mocha (0.9.8.20100819090654)
       rake
 
+GIT
+  remote: http://github.com/mongoid/mongoid.git
+  revision: bc177989f4c4020ec7b16c8ce7cbdea51eba4034
+  specs:
+    mongoid (2.0.0.beta.18)
+      activemodel (~> 3.0)
+      mongo (= 1.0.9)
+      tzinfo (~> 0.3.22)
+      will_paginate (~> 3.0.pre)
+
 GEM
-  remote: http://gemcutter.org/
+  remote: http://rubygems.org/
   specs:
     activemodel (3.0.0)
       activesupport (= 3.0.0)
       builder (~> 2.1.2)
       i18n (~> 0.4.1)
     activesupport (3.0.0)
-    bson (1.0.4)
-    bson_ext (1.0.4)
+    bson (1.0.9)
+    bson_ext (1.0.9)
     builder (2.1.2)
-    carrierwave-rails3 (0.4.5)
+    carrierwave (0.5.0)
+      activesupport (~> 3.0.0)
     diff-lcs (1.1.2)
-    gemcutter (0.6.1)
-    git (1.2.5)
     i18n (0.4.1)
-    jeweler (1.4.0)
-      gemcutter (>= 0.1.0)
-      git (>= 1.2.5)
-      rubyforge (>= 2.0.0)
-    json_pure (1.4.6)
-    mongo (1.0.7)
-      bson (>= 1.0.4)
-    mongoid (2.0.0.beta.17)
-      activemodel (~> 3.0.0)
-      bson (= 1.0.4)
-      mongo (= 1.0.7)
-      tzinfo (~> 0.3.22)
-      will_paginate (~> 3.0.pre)
+    mongo (1.0.9)
+      bson (>= 1.0.5)
     rake (0.8.7)
-    rspec (2.0.0.beta.20)
-      rspec-core (= 2.0.0.beta.20)
-      rspec-expectations (= 2.0.0.beta.20)
-      rspec-mocks (= 2.0.0.beta.20)
-    rspec-core (2.0.0.beta.20)
-    rspec-expectations (2.0.0.beta.20)
+    rspec (2.0.0.beta.22)
+      rspec-core (= 2.0.0.beta.22)
+      rspec-expectations (= 2.0.0.beta.22)
+      rspec-mocks (= 2.0.0.beta.22)
+    rspec-core (2.0.0.beta.22)
+    rspec-expectations (2.0.0.beta.22)
       diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0.beta.20)
-    rubyforge (2.0.4)
-      json_pure (>= 1.1.7)
+    rspec-mocks (2.0.0.beta.22)
+      rspec-core (= 2.0.0.beta.22)
+      rspec-expectations (= 2.0.0.beta.22)
     tzinfo (0.3.23)
     will_paginate (3.0.pre2)
 
@@ -52,10 +50,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (= 3.0.0)
-  bson_ext (= 1.0.4)
-  carrierwave-rails3
-  jeweler
+  activesupport (>= 3.0.0)
+  bson_ext (>= 1.0.9)
+  carrierwave
   mocha!
-  mongoid (= 2.0.0.beta.17)
+  mongoid!
   rspec (>= 2.0.0.beta.10)
