@@ -3,6 +3,7 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 require 'active_support'
 require 'carrierwave/orm/mongoid'
 
+require 'custom_fields/version'
 require 'custom_fields/extensions/mongoid/hierarchy'
 require 'custom_fields/extensions/mongoid/associations/proxy'
 require 'custom_fields/extensions/mongoid/associations/references_many'
@@ -19,10 +20,10 @@ require 'custom_fields/field'
 require 'custom_fields/custom_fields_for'
 
 module Mongoid
-  module CustomFields  
+  module CustomFields
     extend ActiveSupport::Concern
     included do
       include ::CustomFields::CustomFieldsFor
-    end  
+    end
   end
 end

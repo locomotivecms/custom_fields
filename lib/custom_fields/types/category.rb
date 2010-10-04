@@ -11,7 +11,7 @@ module CustomFields
 
         accepts_nested_attributes_for :category_items, :allow_destroy => true
 
-        register_type :category, BSON::ObjectID
+        register_type :category, BSON::ObjectId
       end
 
       module InstanceMethods
