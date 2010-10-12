@@ -5,16 +5,6 @@ GIT
     mocha (0.9.8.20100819090654)
       rake
 
-GIT
-  remote: http://github.com/mongoid/mongoid.git
-  revision: ae67ac7400dbac20dad4b823993a468960467f38
-  specs:
-    mongoid (2.0.0.beta.19)
-      activemodel (~> 3.0)
-      mongo (= 1.0.9)
-      tzinfo (~> 0.3.22)
-      will_paginate (~> 3.0.pre)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -23,8 +13,8 @@ GEM
       builder (~> 2.1.2)
       i18n (~> 0.4.1)
     activesupport (3.0.0)
-    bson (1.0.9)
-    bson_ext (1.0.9)
+    bson (1.1)
+    bson_ext (1.1)
     builder (2.1.2)
     carrierwave (0.5.0)
       activesupport (~> 3.0.0)
@@ -32,17 +22,22 @@ GEM
     i18n (0.4.1)
     mongo (1.0.9)
       bson (>= 1.0.5)
+    mongoid (2.0.0.beta.19)
+      activemodel (~> 3.0)
+      mongo (= 1.0.9)
+      tzinfo (~> 0.3.22)
+      will_paginate (~> 3.0.pre)
     rake (0.8.7)
-    rspec (2.0.0.beta.22)
-      rspec-core (= 2.0.0.beta.22)
-      rspec-expectations (= 2.0.0.beta.22)
-      rspec-mocks (= 2.0.0.beta.22)
-    rspec-core (2.0.0.beta.22)
-    rspec-expectations (2.0.0.beta.22)
+    rspec (2.0.0)
+      rspec-core (= 2.0.0)
+      rspec-expectations (= 2.0.0)
+      rspec-mocks (= 2.0.0)
+    rspec-core (2.0.0)
+    rspec-expectations (2.0.0)
       diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0.beta.22)
-      rspec-core (= 2.0.0.beta.22)
-      rspec-expectations (= 2.0.0.beta.22)
+    rspec-mocks (2.0.0)
+      rspec-core (= 2.0.0)
+      rspec-expectations (= 2.0.0)
     tzinfo (0.3.23)
     will_paginate (3.0.pre2)
 
@@ -54,5 +49,5 @@ DEPENDENCIES
   bson_ext (>= 1.0.9)
   carrierwave
   mocha!
-  mongoid!
+  mongoid (= 2.0.0.beta.19)
   rspec (>= 2.0.0.beta.10)
