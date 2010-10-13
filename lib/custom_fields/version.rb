@@ -1,5 +1,5 @@
 module Mongoid
   module CustomFields
-    VERSION = "0.0.0.3"
+    VERSION = "1.0.0.beta"
   end
 end
