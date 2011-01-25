@@ -9,9 +9,7 @@ describe CustomFields::Field do
   context '#mongoid' do
 
     before(:each) do
-      @field = CustomFields::Field.new(:label => 'manager', :_name => 'field_1', :kind => 'string', :_alias => 'manager')
-      @field.stubs(:valid?).returns(true)
-      @project = Project.to_klass_with_custom_fields(@field).new
+      @project = build_project
     end
 
     it 'is added to the list of mongoid fields' do
@@ -23,9 +21,7 @@ describe CustomFields::Field do
   context 'on target class' do
 
     before(:each) do
-      @field = CustomFields::Field.new(:label => 'manager', :_name => 'field_1', :kind => 'string', :_alias => 'manager')
-      @field.stubs(:valid?).returns(true)
-      @project = Project.to_klass_with_custom_fields(@field).new
+      @project = build_project
     end
 
     it 'has a new field' do
@@ -37,6 +33,12 @@ describe CustomFields::Field do
       @project.manager.should == 'Mickael Scott'
     end
 
+  end
+
+  def build_project
+    field = CustomFields::Field.new(:label => 'manager', :_name => 'field_1', :kind => 'string', :_alias => 'manager')
+    field.stubs(:valid?).returns(true)
+    Project.to_klass_with_custom_fields(field, nil, 'self_custom_fields').new
   end
 
 end

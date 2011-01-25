@@ -6,7 +6,7 @@ Manage custom fields to a mongoid document or a collection. This module is one o
 Requirements
 =======
 
-ActiveSupport 3.0, MongoDB 1.6 and mongoid 2.0.0.beta17
+ActiveSupport 3.0, MongoDB 1.6 and mongoid 2.0.0.rc.6
 
 
 Example
@@ -15,4 +15,4 @@ Example
 Coming soon but take a look of the tests to see what CustomFields is capable of.
 
 
-Copyright (c) 2010 [Didier Lafforgue], released under the MIT license
+Copyright (c) 2011 [Didier Lafforgue], released under the MIT license
