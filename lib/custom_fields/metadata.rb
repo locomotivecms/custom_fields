@@ -11,7 +11,6 @@ module CustomFields
     protected
 
     def parentize_with_custom_fields(object)
-      puts "[parentizing]"
       object_name = object.class.to_s.underscore
 
       self.association_name = self.metadata ? self.metadata.name : self.relations[object_name].inverse_of

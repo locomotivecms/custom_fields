@@ -59,9 +59,7 @@ describe CustomFields::Types::Category do
     context 'group by category' do
 
       before(:each) do
-        # seed_projects
         seed_tasks
-        # @groups = @project.class.group_by_global_category
         @task_class = @project.instance_variable_get(:@tasks_proxy_class)
         @groups = @task_class.group_by_global_category
       end
@@ -99,40 +97,12 @@ describe CustomFields::Types::Category do
     field.category_items.build :name => 'Maintenance', :_id => fake_bson_id(43), :position => 0
 
     project
-    #
-    # field = build_category
-    # Project.to_klass_with_custom_fields(field, nil, 'self_custom_fields').new
   end
-
-  # def build_category
-  #   field = CustomFields::Field.new(:label => 'global_category', :_name => 'field_1', :kind => 'Category')
-  #   field.stubs(:valid?).returns(true)
-  #   field.category_items.build :name => 'Development', :_id => fake_bson_id(41), :position => 2
-  #   field.category_items.build :name => 'Design', :_id => fake_bson_id(42), :position => 1
-  #   field.category_items.build :name => 'Maintenance', :_id => fake_bson_id(43), :position => 0
-  #   field
-  # end
-  #
-  # def seed_projects
-  #   list = [
-  #     @project.class.new(:name => 'Locomotive CMS', :global_category => fake_bson_id(41)),
-  #     @project.class.new(:name => 'Ruby on Rails', :global_category => fake_bson_id(41)),
-  #     @project.class.new(:name => 'Dribble', :global_category => fake_bson_id(42))
-  #   ]
-  #   @project.class.stubs(:all).returns(list)
-  # end
 
   def seed_tasks
     @project.tasks.build :name => 'Locomotive CMS', :global_category => fake_bson_id(41)
     @project.tasks.build :name => 'Ruby on Rails', :global_category => fake_bson_id(41)
     @project.tasks.build :name => 'Dribble', :global_category => fake_bson_id(42)
-    #
-    # list = [
-    #   @project.tasks..new(:name => 'Locomotive CMS', :global_category => fake_bson_id(41)),
-    #   @project.class.new(:name => 'Ruby on Rails', :global_category => fake_bson_id(41)),
-    #   @project.class.new(:name => 'Dribble', :global_category => fake_bson_id(42))
-    # ]
-    # @project.class.stubs(:all).returns(list)
   end
 
 

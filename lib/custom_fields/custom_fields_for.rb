@@ -21,9 +21,6 @@ module CustomFields
     #    field :name, String
     # end
     #
-    # class Metadata
-
-    #
     # company.employee_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
     #
     # company.employees.build :name => 'Michael Scott', :position => 'Regional manager'

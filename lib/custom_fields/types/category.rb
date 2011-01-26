@@ -29,16 +29,9 @@ module CustomFields
         end
 
         def apply_category_type(klass)
-          # klass.cattr_accessor :"#{self.safe_alias}_items"
-
-          # puts "[field][category] list #{self.safe_alias}_items / #{self.ordered_category_items).inspect}"
-
-          # klass.send("#{self.safe_alias}_items=", self.ordered_category_items)
-
           klass.class_eval <<-EOF
 
             def self.#{self.safe_alias}_items
-              puts "[category] lookup #{self._name}"
               self.lookup_custom_field('#{self._name}').ordered_category_items
             end
 
@@ -64,13 +57,8 @@ module CustomFields
             end
 
             def #{self.safe_alias}=(id)
-              foo = self.class.#{self.safe_alias}_items
-              puts "[types][category] setting some id #\{id\} for #{self._name} / #\{foo.inspect\}"
               category = self.class.#{self.safe_alias}_items.find { |item| item.name == id || item._id.to_s == id.to_s }
-
-
               category_id = category ? category._id : nil
-
               write_attribute(:#{self._name}, category_id)
             end
 

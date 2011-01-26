@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-# tmp_counter = 0
-
 describe CustomFields::CustomFieldsFor do
 
   context '#proxy class'  do
@@ -16,7 +14,6 @@ describe CustomFields::CustomFieldsFor do
     end
 
     it 'has a link to the parent' do
-      # puts "@klass = #{@klass.object_id} / #{@project.tasks.send(:metadata).object_id} /#{@project.tasks.send(:metadata).inspect} / #{@project.tasks.send(:metadata).klass.inspect}"
       @klass._parent.should == @project
     end
 
@@ -43,12 +40,9 @@ describe CustomFields::CustomFieldsFor do
     context '#building' do
 
       before(:each) do
-        # puts "--------------------- #{tmp_counter} ------------------"
         @project = Project.new
         @project.task_custom_fields.build :label => 'Short summary', :_alias => 'summary', :kind => 'string'
         @task = @project.tasks.build
-
-        # tmp_counter += 1
       end
 
       it 'returns a new document whose Class is different from the original one' do
@@ -56,11 +50,7 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'returns a new document with custom field' do
-        # puts "\n\n======== 1"
         @project.tasks.build
-        # puts "\n\n======== 2"
-        @project.tasks.build
-        # puts "\n\n======== END"
         @task.respond_to?(:summary).should be_true
       end
 
@@ -135,7 +125,6 @@ describe CustomFields::CustomFieldsFor do
       before(:each) do
         @project = Project.new
         @project.self_custom_fields.build :label => 'Manager name', :_alias => 'manager', :kind => 'string'
-        puts "#{@project.metadata.inspect}"
       end
 
       it 'returns a new document whose Class is different from the original one' do
@@ -157,7 +146,6 @@ describe CustomFields::CustomFieldsFor do
       end
 
     end
-
 
   end
 
