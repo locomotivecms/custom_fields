@@ -6,6 +6,23 @@ describe CustomFields::Field do
     lambda { CustomFields::Field.new }.should_not raise_error
   end
 
+  context '#validating' do
+
+    before(:each) do
+      @field = CustomFields::Field.new
+    end
+
+    %w(save destroy send class).each do |name|
+      it "does not accept very unsecure name like #{name}" do
+        @field.stubs(:uniqueness_of_label_and_alias).returns(true)
+        @field._alias = name
+        @field.valid?.should == false
+        @field.errors[:_alias].should_not be_empty
+      end
+    end
+
+  end
+
   context '#mongoid' do
 
     before(:each) do

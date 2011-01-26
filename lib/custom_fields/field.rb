@@ -23,7 +23,7 @@ module CustomFields
 
     ## validations ##
     validates_presence_of :label, :kind
-    validates_exclusion_of :_alias, :in => %w(_id id object_id send method_missing save destroy class)
+    validates_exclusion_of :_alias, :in => Mongoid.destructive_fields
     validate :uniqueness_of_label_and_alias
 
     ## other accessors ##
