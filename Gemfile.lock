@@ -47,5 +47,5 @@ DEPENDENCIES
   bson_ext (~> 1.2)
   locomotive_carrierwave
   mocha!
-  mongoid (= 2.0.0.rc.6)
+  mongoid (>= 2.0.0.rc.6)
   rspec (>= 2.0.0.beta.10)
