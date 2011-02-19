@@ -20,7 +20,7 @@ module CustomFields
     field :kind
     field :hint
     field :position, :type => Integer, :default => 0
-    field :required, :tpye => Boolean, :default => false
+    field :required, :type => Boolean, :default => false
 
     ## validations ##
     validates_presence_of :label, :kind
