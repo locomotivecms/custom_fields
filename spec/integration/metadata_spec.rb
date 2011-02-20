@@ -5,7 +5,7 @@ describe CustomFields::Metadata do
   before(:each) do
     @project = Project.new(:name => 'Locomotive')
     @project.self_custom_fields.build(:label => 'Name of the manager', :_alias => 'manager', :kind => 'string')
-    @project.self_custom_fields.build(:label => 'Working hours', :_alias => 'hours', :kind => 'string')
+    @project.self_custom_fields.build(:label => 'Working hours', :_alias => 'hours', :kind => 'string', :required => true)
     @project.self_custom_fields.build(:label => 'Room', :kind => 'string')
   end
 
@@ -34,6 +34,14 @@ describe CustomFields::Metadata do
       @project.metadata.manager_dude.should == 'Mr Harrison'
     end
 
+  end
+
+  context 'validation' do
+    it 'fails validation when hours are empty' do
+      @project.metadata.hours = nil
+      @project.valid?.should == false
+    end
+	
   end
 
 end
