@@ -28,7 +28,7 @@ module CustomFields
       end
 
       def self.klass_name_with_custom_fields(parent, association_name)
-        "#{association_name.to_s.gsub(/^_/, '').singularize.camelize}#{parent.class.name.camelize}#{parent.id}"
+        "#{association_name.to_s.gsub(/^_/, '').singularize.camelize}#{parent.class.name.camelize}#{parent._id}"
       end
 
       def self.build_proxy_class_with_custom_fields(fields, parent, association_name)
