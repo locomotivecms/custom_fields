@@ -60,7 +60,7 @@ describe CustomFields::Types::Category do
 
       before(:each) do
         seed_tasks
-        @task_class = @project.instance_variable_get(:@tasks_proxy_class)
+        @task_class = @project.fetch_task_klass
         @groups = @task_class.group_by_global_category
       end
 

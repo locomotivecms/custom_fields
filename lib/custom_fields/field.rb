@@ -20,6 +20,7 @@ module CustomFields
     field :kind
     field :hint
     field :position, :type => Integer, :default => 0
+    field :required, :type => Boolean, :default => false
 
     ## validations ##
     validates_presence_of :label, :kind
@@ -27,7 +28,12 @@ module CustomFields
     validate :uniqueness_of_label_and_alias
 
     ## other accessors ##
-    attr_accessor :association_name # missing in 2.0.0 rc
+    attr_accessor :association_name # missing in 2.0.0 rc 7
+
+    attr_accessor :parentized_done # for performance purpose
+
+    ## callbacks ##
+    before_validation :set_alias
 
     ## methods ##
 
@@ -36,7 +42,7 @@ module CustomFields
     end
 
     def apply(klass)
-      return false unless self.valid?
+      # return false unless self.valid?
 
       klass.field self._name, :type => self.field_type if self.field_type
 
@@ -47,8 +53,6 @@ module CustomFields
       else
         apply_default_type(klass)
       end
-
-      true
     end
 
     def safe_alias
@@ -63,7 +67,11 @@ module CustomFields
         target_name = self.association_name.to_s.gsub('_custom_fields', '').pluralize
       end
 
-      klass = self._parent.send(target_name).metadata.klass
+      # klass = self._parent.send(target_name).metadata.klass
+
+      klass = self._parent.send(:"fetch_#{target_name.singularize}_klass")
+
+      # puts "klass = #{klass.inspect} / #{target_name.inspect} / #{self.association_name.to_s}"
 
       write_attributes_without_invalidation(attrs)
 
@@ -104,18 +112,24 @@ module CustomFields
     end
 
     def parentize_with_custom_fields(object)
+      return if self.parentized_done
+
       object_name = object.class.to_s.underscore
 
       self.association_name = self.metadata ? self.metadata.name : self.relations[object_name].inverse_of
 
-      if !self.relations.key?(object_name)
-        self.singleton_class.embedded_in object_name.to_sym, :inverse_of => self.association_name
-      end
+      # puts "[parentize_with_custom_fields] #{self.label} / #{self.association_name} / #{object_name} / #{self.object_id} / #{self.id}"
+
+      # if !self.relations.key?(object_name)
+      #   self.singleton_class.embedded_in object_name.to_sym, :inverse_of => self.association_name
+      # end
 
       parentize_without_custom_fields(object)
 
       self.send(:set_unique_name!)
-      self.send(:set_alias)
+      # self.send(:set_alias)
+
+      self.parentized_done = true
     end
 
     alias_method_chain :parentize, :custom_fields

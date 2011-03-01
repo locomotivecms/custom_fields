@@ -111,7 +111,7 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'has custom fields' do
-        @project.respond_to?(:_metadata_custom_fields).should be_true
+        @project.respond_to?(:metadata_custom_fields).should be_true
       end
 
       it 'has also an alias to custom fields' do
@@ -121,7 +121,7 @@ describe CustomFields::CustomFieldsFor do
     end
 
     context '#building' do
-
+    
       before(:each) do
         @project = Project.new
         @project.self_custom_fields.build :label => 'Manager name', :_alias => 'manager', :kind => 'string'
