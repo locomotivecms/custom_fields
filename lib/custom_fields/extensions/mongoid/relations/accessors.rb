@@ -18,26 +18,14 @@ module Mongoid # :nodoc:
       def create_relation_with_custom_fields(object, metadata)
         association_name = metadata.name.to_s.gsub(/^_/, '')
 
-        # puts "checking custom fields ? #{custom_fields?(self, association_name)} for #{metadata.name} / #{self.inspect} / #{custom_fields_association_name(metadata.name)}"
-
         if custom_fields?(self, association_name)
-          # MyBenchmark.measure('create_relation_with_custom_fields') do
-            metadata = metadata.clone # 2 parent instances should not share the exact same option instance
+          metadata = metadata.clone # 2 parent instances should not share the exact same option instance
 
-            custom_fields = self.send(:"ordered_#{custom_fields_association_name(association_name)}")
+          custom_fields = self.send(:"ordered_#{custom_fields_association_name(association_name)}")
 
-            klass = metadata.klass.to_klass_with_custom_fields(custom_fields, self, association_name)
+          klass = metadata.klass.to_klass_with_custom_fields(custom_fields, self, association_name)
 
-            # MyBenchmark.measure('create_relation_with_custom_fields / custom_fields') do
-            #   self.send(:"ordered_#{custom_fields_association_name(metadata.name)}")
-            # end
-
-            # klass = MyBenchmark.measure('create_relation_with_custom_fields / klass created') do
-            #   metadata.klass.to_klass_with_custom_fields(custom_fields, self, metadata.name)
-            # end
-
-            metadata.instance_variable_set(:@klass, klass)
-          # end
+          metadata.instance_variable_set(:@klass, klass)
         end
 
         create_relation_without_custom_fields(object, metadata)

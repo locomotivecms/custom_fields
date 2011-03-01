@@ -41,15 +41,9 @@ module CustomFields
         dynamic_custom_field_class_name = "#{self.name}#{singular_name.camelize}Field"
 
         unless Object.const_defined?(dynamic_custom_field_class_name)
-          puts "dynamic_custom_field_class_name = #{dynamic_custom_field_class_name} / #{self.name.underscore}"
-
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
             embedded_in :#{self.name.underscore}, :inverse_of => :#{singular_name}_custom_fields
           EOF
-
-          # def association_name
-          #   :#{singular_name}_custom_fields
-          # end
 
           Object.const_set(dynamic_custom_field_class_name, klass)
         end
@@ -95,8 +89,6 @@ module CustomFields
             metadata.klass.invalidate_proxy_class_with_custom_fields(self, metadata.name)
           end
         EOV
-
-        # embeds_many :#{singular_name}_custom_fields, :class_name => '::CustomFields::Field'
 
         if itself
           class_eval <<-EOV

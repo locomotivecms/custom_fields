@@ -42,8 +42,6 @@ module CustomFields
     end
 
     def apply(klass)
-      # return false unless self.valid?
-
       klass.field self._name, :type => self.field_type if self.field_type
 
       apply_method_name = :"apply_#{self.kind.downcase}_type"
@@ -67,11 +65,7 @@ module CustomFields
         target_name = self.association_name.to_s.gsub('_custom_fields', '').pluralize
       end
 
-      # klass = self._parent.send(target_name).metadata.klass
-
       klass = self._parent.send(:"fetch_#{target_name.singularize}_klass")
-
-      # puts "klass = #{klass.inspect} / #{target_name.inspect} / #{self.association_name.to_s}"
 
       write_attributes_without_invalidation(attrs)
 
@@ -118,16 +112,9 @@ module CustomFields
 
       self.association_name = self.metadata ? self.metadata.name : self.relations[object_name].inverse_of
 
-      # puts "[parentize_with_custom_fields] #{self.label} / #{self.association_name} / #{object_name} / #{self.object_id} / #{self.id}"
-
-      # if !self.relations.key?(object_name)
-      #   self.singleton_class.embedded_in object_name.to_sym, :inverse_of => self.association_name
-      # end
-
       parentize_without_custom_fields(object)
 
       self.send(:set_unique_name!)
-      # self.send(:set_alias)
 
       self.parentized_done = true
     end
