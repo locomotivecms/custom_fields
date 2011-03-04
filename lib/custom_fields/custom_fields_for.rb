@@ -70,7 +70,11 @@ module CustomFields
 
           validates_associated :#{singular_name}_custom_fields
 
-          after_validation  :invalidate_#{singular_name}_klass
+          after_validation do |record|
+            if record.errors.empty?
+              record.invalidate_#{singular_name}_klass
+            end
+          end
           after_destroy     :invalidate_#{singular_name}_klass
 
           accepts_nested_attributes_for :#{singular_name}_custom_fields, :allow_destroy => true

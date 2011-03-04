@@ -1,0 +1,9 @@
+de:
+  custom_fields:
+    kind:
+      string: Einfache Texteingabe
+      text: Text
+      category: Auswahlbox
+      boolean: Checkbox
+      date: Datum
+      file: Datei

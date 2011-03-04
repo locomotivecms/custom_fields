@@ -1,0 +1,12 @@
+fr:
+  custom_fields:
+    kind:
+      string: Texte
+      text: Zone de texte
+      category: Liste déroulante
+      boolean: Case à cocher
+      date: Date
+      file: Fichier
+    text_formatting:
+      none: Aucun
+      html: HTML

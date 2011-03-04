@@ -31,6 +31,9 @@ ActiveSupport::Inflector.inflections do |inflect|
   inflect.irregular 'metadata', 'metadata'
 end
 
+# Load all the translation files
+I18n.load_path += Dir[File.join(File.dirname(__FILE__), '..', 'config', 'locales', '*.yml')]
+
 module MyBenchmark
 
   def self.measure(caption, &block)

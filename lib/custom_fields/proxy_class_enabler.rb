@@ -41,7 +41,6 @@ module CustomFields
           end
 
           def self.apply_custom_field(field)
-            # puts "field " + field.label.to_s + " persisted ? " + field.persisted?.to_s
             unless field.persisted?
               return unless field.valid?
             end

@@ -38,13 +38,13 @@ module CustomFields
     ## methods ##
 
     def field_type
-      self.class.field_types[self.kind.downcase.to_sym]
+      self.class.field_types[self.safe_kind.to_sym]
     end
 
     def apply(klass)
       klass.field self._name, :type => self.field_type if self.field_type
 
-      apply_method_name = :"apply_#{self.kind.downcase}_type"
+      apply_method_name = :"apply_#{self.safe_kind}_type"
 
       if self.respond_to?(apply_method_name)
         self.send(apply_method_name, klass)
@@ -56,6 +56,10 @@ module CustomFields
     def safe_alias
       self.set_alias
       self._alias
+    end
+
+    def safe_kind
+      self.kind.downcase # for compatibility purpose: prior version of CustomFields used to have the value of kind in uppercase.
     end
 
     def write_attributes_with_invalidation(attrs = nil)
@@ -73,6 +77,21 @@ module CustomFields
     end
 
     alias_method_chain :write_attributes, :invalidation
+
+    def to_hash(more = {})
+      self.fields.keys.inject({}) do |memo, meth|
+        memo[meth] = self.send(meth.to_sym); memo
+      end.merge({
+        'id'          => self._id,
+        'new_record'  => self.new_record?,
+        'errors'      => self.errors,
+        'kind_name'   => I18n.t("custom_fields.kind.#{self.safe_kind}")
+      }).merge(more)
+    end
+
+    def to_json
+      self.to_hash.to_json
+    end
 
     protected
 

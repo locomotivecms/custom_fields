@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
   s.files        = Dir[ "init.rb",
                         "MIT-LICENSE",
                         "README",
-                        "{lib}/**/*"]
+                        "{lib}/**/*",
+                        "{config}/**/*"]
 
   s.require_path = 'lib'
 

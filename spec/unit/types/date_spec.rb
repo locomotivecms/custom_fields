@@ -42,6 +42,13 @@ describe CustomFields::Types::Date do
       @project.metadata.field_1.should == @date
     end
 
+    it 'sets value (in French format) from a string' do
+      I18n.stubs(:t).returns('%d/%m/%Y')
+      @project.metadata.started_at = '29/06/2010'
+      @project.metadata.started_at.should == '29/06/2010'
+      @project.metadata.field_1.should == @date
+    end
+
     it 'sets nil value' do
       @project.metadata.started_at = nil
       @project.metadata.started_at.should be_nil
