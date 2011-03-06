@@ -1,0 +1,9 @@
+pt-BR:
+  custom_fields:
+    kind:
+      string: Texto Simples
+      text: Texto
+      category: Caixa de Seleção
+      boolean: Checkbox
+      date: Data
+      file: Arquivo

@@ -28,33 +28,38 @@ module CustomFields
     validate :uniqueness_of_label_and_alias
 
     ## other accessors ##
-    attr_accessor :association_name # missing in 2.0.0 rc
+    attr_accessor :association_name # missing in 2.0.0 rc 7
+
+    attr_accessor :parentized_done # for performance purpose
+
+    ## callbacks ##
+    before_validation :set_alias
 
     ## methods ##
 
     def field_type
-      self.class.field_types[self.kind.downcase.to_sym]
+      self.class.field_types[self.safe_kind.to_sym]
     end
 
     def apply(klass)
-      return false unless self.valid?
-
       klass.field self._name, :type => self.field_type if self.field_type
 
-      apply_method_name = :"apply_#{self.kind.downcase}_type"
+      apply_method_name = :"apply_#{self.safe_kind}_type"
 
       if self.respond_to?(apply_method_name)
         self.send(apply_method_name, klass)
       else
         apply_default_type(klass)
       end
-
-      true
     end
 
     def safe_alias
       self.set_alias
       self._alias
+    end
+
+    def safe_kind
+      self.kind.downcase # for compatibility purpose: prior version of CustomFields used to have the value of kind in uppercase.
     end
 
     def write_attributes_with_invalidation(attrs = nil)
@@ -64,7 +69,7 @@ module CustomFields
         target_name = self.association_name.to_s.gsub('_custom_fields', '').pluralize
       end
 
-      klass = self._parent.send(target_name).metadata.klass
+      klass = self._parent.send(:"fetch_#{target_name.singularize}_klass")
 
       write_attributes_without_invalidation(attrs)
 
@@ -72,6 +77,21 @@ module CustomFields
     end
 
     alias_method_chain :write_attributes, :invalidation
+
+    def to_hash(more = {})
+      self.fields.keys.inject({}) do |memo, meth|
+        memo[meth] = self.send(meth.to_sym); memo
+      end.merge({
+        'id'          => self._id,
+        'new_record'  => self.new_record?,
+        'errors'      => self.errors,
+        'kind_name'   => I18n.t("custom_fields.kind.#{self.safe_kind}")
+      }).merge(more)
+    end
+
+    def to_json
+      self.to_hash.to_json
+    end
 
     protected
 
@@ -105,18 +125,17 @@ module CustomFields
     end
 
     def parentize_with_custom_fields(object)
+      return if self.parentized_done
+
       object_name = object.class.to_s.underscore
 
       self.association_name = self.metadata ? self.metadata.name : self.relations[object_name].inverse_of
 
-      if !self.relations.key?(object_name)
-        self.singleton_class.embedded_in object_name.to_sym, :inverse_of => self.association_name
-      end
-
       parentize_without_custom_fields(object)
 
       self.send(:set_unique_name!)
-      self.send(:set_alias)
+
+      self.parentized_done = true
     end
 
     alias_method_chain :parentize, :custom_fields

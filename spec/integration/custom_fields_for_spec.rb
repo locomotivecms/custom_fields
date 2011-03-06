@@ -11,10 +11,19 @@ describe CustomFields::CustomFieldsFor do
 
       @project.self_custom_fields.build(:label => 'Name of the manager', :_alias => 'manager', :kind => 'string')
       @project.self_custom_fields.build(:label => 'Working hours', :_alias => 'hours', :kind => 'string')
-      @project.self_custom_fields.build(:label => 'Room', :kind => 'string')
+      @field = @project.self_custom_fields.build(:label => 'Room', :kind => 'string')
     end
 
-    context '@create' do
+    context '#validate' do
+
+      it 'makes sure the field aliases are correctly set' do
+        @field.expects(:set_alias).at_least(1)
+        @project.valid?
+      end
+
+    end
+
+    context '#create' do
 
       it 'persists parent object' do
         lambda { @project.save }.should change(Project, :count).by(1)

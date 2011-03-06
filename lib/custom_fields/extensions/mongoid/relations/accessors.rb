@@ -16,12 +16,14 @@ module Mongoid # :nodoc:
       #
       # @since 2.0.0.rc.1
       def create_relation_with_custom_fields(object, metadata)
-        if custom_fields?(self, metadata.name)
+        association_name = metadata.name.to_s.gsub(/^_/, '')
+
+        if custom_fields?(self, association_name)
           metadata = metadata.clone # 2 parent instances should not share the exact same option instance
 
-          custom_fields = self.send(:"ordered_#{custom_fields_association_name(metadata.name)}")
+          custom_fields = self.send(:"ordered_#{custom_fields_association_name(association_name)}")
 
-          klass = metadata.klass.to_klass_with_custom_fields(custom_fields, self, metadata.name)
+          klass = metadata.klass.to_klass_with_custom_fields(custom_fields, self, association_name)
 
           metadata.instance_variable_set(:@klass, klass)
         end

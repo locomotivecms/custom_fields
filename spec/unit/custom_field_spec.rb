@@ -55,7 +55,8 @@ describe CustomFields::Field do
   def build_project
     field = CustomFields::Field.new(:label => 'manager', :_name => 'field_1', :kind => 'string', :_alias => 'manager')
     field.stubs(:valid?).returns(true)
-    Project.to_klass_with_custom_fields(field, nil, 'self_custom_fields').new
+    (parent = Object.new).stubs(:_id).returns(42)
+    Project.to_klass_with_custom_fields(field, parent, 'self_custom_fields').new
   end
 
 end

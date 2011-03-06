@@ -28,5 +28,19 @@ module Mongoid
 end
 
 ActiveSupport::Inflector.inflections do |inflect|
-  inflect.uncountable 'metadata'
+  inflect.irregular 'metadata', 'metadata'
+end
+
+# Load all the translation files
+I18n.load_path += Dir[File.join(File.dirname(__FILE__), '..', 'config', 'locales', '*.yml')]
+
+module MyBenchmark
+
+  def self.measure(caption, &block)
+    t1 = Time.now
+    returned_value = block.call
+    puts "[MyBenchmark] #{caption} took #{((Time.now - t1) * 1000).to_i} ms"
+    returned_value
+  end
+
 end

@@ -16,14 +16,15 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "nowarning"
 
-  s.add_dependency 'mongoid', '~> 2.0.0.rc.6'
-  s.add_dependency 'activesupport', '>= 3.0.0'
+  s.add_dependency 'mongoid', '~> 2.0.0.rc.7'
+  s.add_dependency 'activesupport', '>= 3.0.4'
   s.add_dependency 'locomotive_carrierwave'
 
   s.files        = Dir[ "init.rb",
                         "MIT-LICENSE",
                         "README",
-                        "{lib}/**/*"]
+                        "{lib}/**/*",
+                        "{config}/**/*"]
 
   s.require_path = 'lib'
 

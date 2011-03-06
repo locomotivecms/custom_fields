@@ -1,2 +1,2 @@
-# Include hook code here
+# Init
 require File.dirname(__FILE__) + '/lib/custom_fields'
