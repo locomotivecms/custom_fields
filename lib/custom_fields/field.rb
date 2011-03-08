@@ -51,6 +51,11 @@ module CustomFields
       else
         apply_default_type(klass)
       end
+
+      # add validation if required field
+      if self.required?
+        klass.validates_presence_of self.safe_alias.to_sym
+      end
     end
 
     def safe_alias

@@ -18,7 +18,7 @@ module CustomFields
             end
 
             def #{self.safe_alias}=(value)
-              if value.is_a?(::String)
+              if value.is_a?(::String) && !value.blank?
                 date = ::Date._strptime(value, I18n.t('date.formats.default'))
                 value = ::Date.new(date[:year], date[:mon], date[:mday])
               end

@@ -14,11 +14,6 @@ module CustomFields
             alias :#{self.safe_alias} :#{self._name}
             alias :#{self.safe_alias}= :#{self._name}=
           EOF
-
-          # add validation if required field
-          if self.required?
-            klass.validates_presence_of self.safe_alias.to_sym
-          end
         end
 
       end

@@ -55,6 +55,12 @@ describe CustomFields::Types::Date do
       @project.metadata.field_1.should be_nil
     end
 
+    it 'sets empty value' do
+      @project.metadata.started_at = ''
+      @project.metadata.started_at.should be_nil
+      @project.metadata.field_1.should be_nil
+    end
+
   end
 
   def build_project_with_date
