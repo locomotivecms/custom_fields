@@ -11,7 +11,6 @@ module CustomFields
         klass = Object.const_defined?(klass_name) ? Object.const_get(klass_name): nil
 
         if klass && klass.built_at != parent.updated_at.try(:utc) # new version ?
-          puts "...invalidating [updated_at] #{association_name} / klass #{klass.built_at.inspect} / parent #{parent.updated_at.utc}"
           self.invalidate_proxy_class_with_custom_fields(parent, association_name)
           klass = nil
         end
@@ -28,8 +27,6 @@ module CustomFields
       def self.invalidate_proxy_class_with_custom_fields(parent, association_name)
         klass_name = self.klass_name_with_custom_fields(parent, association_name)
 
-        puts "...\tinvalidate_proxy_class_with_custom_fields"
-
         if Object.const_defined?(klass_name)
           Object.send(:remove_const, klass_name)
         end
@@ -40,7 +37,6 @@ module CustomFields
       end
 
       def self.build_proxy_class_with_custom_fields(fields, parent, association_name)
-        puts "... -> build_proxy_class_with_custom_fields"
         (klass = Class.new(self)).class_eval <<-EOF
 
           cattr_accessor :custom_fields, :_parent, :association_name, :built_at
@@ -95,7 +91,6 @@ module CustomFields
         [*fields].each { |field| klass.apply_custom_field(field) }
 
         klass.built_at = parent.updated_at.try(:utc)
-        puts "#{klass.inspect} initially = updated_at #{klass.built_at.inspect}"
 
         klass
       end

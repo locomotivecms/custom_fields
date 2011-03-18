@@ -153,13 +153,7 @@ module CustomFields
     alias_method_chain :parentize, :custom_fields
 
     def invalidate_klass
-      foo = self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-
-      puts "@_writing_attributes_with_custom_fields = #{foo.inspect}"
-
-      return if foo
-
-      puts "...\t\t[invalidate_klass] on field (standalone)"
+      return if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
 
       target_name = self.association_name.to_s.gsub('_custom_fields', '')
       self._parent.send(:"invalidate_#{target_name}_klass")
