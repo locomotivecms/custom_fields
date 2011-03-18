@@ -1,6 +1,7 @@
 class Person
 
   include Mongoid::Document
+  include Mongoid::Timestamps
   include CustomFields::ProxyClassEnabler
 
   field :full_name

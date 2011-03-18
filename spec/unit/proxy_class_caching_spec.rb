@@ -9,7 +9,8 @@ describe 'Caching ProxyClass defined by CustomFields' do
   context '#fetching' do
 
     it 'builds once a dynamic class' do
-      Task.expects(:build_proxy_class_with_custom_fields).returns(Class.new).once
+      (klass = Class.new).cattr_accessor :built_at
+      Task.expects(:build_proxy_class_with_custom_fields).returns(klass).once
       2.times.each do
         @project.fetch_task_klass
       end

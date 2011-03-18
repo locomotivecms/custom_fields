@@ -1,4 +1,6 @@
-- custom_fields_for :self
+x custom_fields_for :self
   x get rid of <instance>.build_metadata
   (- what happens if we call build_metadata and add a new custom field ?)
     -> resetting / invalidate the proxy klass.... ? => features (workaround: reload the class)
+
+- apply patches from locomotive

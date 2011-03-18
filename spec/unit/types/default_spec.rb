@@ -23,6 +23,10 @@ describe CustomFields::Types::Default do
 
     end
 
+    it 'responds to to_hash even if modules do not have a custom to_hash method' do
+      @project.task_custom_fields.first.to_hash['label'].should == 'Person in charge'
+    end
+
   end
 
   def build_project_task_with_custom_field

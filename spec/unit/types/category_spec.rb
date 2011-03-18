@@ -5,7 +5,7 @@ describe CustomFields::Types::Category do
   context 'on field class' do
 
     before(:each) do
-      @field = CustomFields::Field.new
+      @field = CustomFields::Field.new(:label => 'test', :kind => 'string')
     end
 
     it 'has the category items field' do
@@ -26,6 +26,12 @@ describe CustomFields::Types::Category do
       @field.category?.should be_false
     end
 
+    it 'returns a hash including the categories' do
+      @field.category_items.build :name => 'IT', :_id => fake_bson_id(44), :position => 0
+      @field.respond_to?(:category_to_hash).should be_true
+      @field.category_to_hash['category_items'].should_not be_empty
+    end
+
   end
 
   context 'on target class' do
@@ -42,6 +48,7 @@ describe CustomFields::Types::Category do
 
     it 'has the values of this category' do
       @task.class.global_category_names.should == %w{Maintenance Design Development}
+      @task.class.domain_category_names.should == %w{IT Industry}
     end
 
     it 'sets the category from a name' do
@@ -50,7 +57,7 @@ describe CustomFields::Types::Category do
       @task.field_1.should == fake_bson_id(42)
     end
 
-    it 'does not set the category if it does not exit' do
+    it 'does not set the category if it does not exist' do
       @task.global_category = 'Accounting'
       @task.global_category.should be_nil
       @task.field_1.should be_nil
@@ -95,6 +102,10 @@ describe CustomFields::Types::Category do
     field.category_items.build :name => 'Development', :_id => fake_bson_id(41), :position => 2
     field.category_items.build :name => 'Design', :_id => fake_bson_id(42), :position => 1
     field.category_items.build :name => 'Maintenance', :_id => fake_bson_id(43), :position => 0
+
+    field = project.task_custom_fields.build :label => 'Domain Category', :kind => 'Category', :_name => 'field_2'
+    field.category_items.build :name => 'IT', :_id => fake_bson_id(44), :position => 0
+    field.category_items.build :name => 'Industry', :_id => fake_bson_id(45), :position => 0
 
     project
   end

@@ -28,6 +28,10 @@ module CustomFields
           self.category_items.collect(&:_id)
         end
 
+        def category_to_hash
+          { 'category_items' => self.category_items.collect(&:to_hash) }
+        end
+
         def apply_category_type(klass)
           klass.class_eval <<-EOF
 
@@ -82,6 +86,21 @@ module CustomFields
         embedded_in :custom_field, :inverse_of => :category_items
 
         validates_presence_of :name
+
+        def to_hash(more = {})
+          self.fields.keys.inject({}) do |memo, meth|
+            memo[meth] = self.send(meth.to_sym); memo
+          end.merge({
+            'id'          => self._id,
+            'new_record'  => self.new_record?,
+            'errors'      => self.errors
+          }).merge(more)
+        end
+
+        def to_json
+          self.to_hash.to_json
+        end
+
       end
     end
   end
