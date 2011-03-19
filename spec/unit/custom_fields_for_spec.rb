@@ -121,28 +121,28 @@ describe CustomFields::CustomFieldsFor do
     end
 
     context '#building' do
-    
+
       before(:each) do
         @project = Project.new
         @project.self_custom_fields.build :label => 'Manager name', :_alias => 'manager', :kind => 'string'
       end
 
       it 'returns a new document whose Class is different from the original one' do
-        @project.metadata.class.should_not == CustomFields::Metadata
+        @project.safe_metadata.class.should_not == CustomFields::Metadata
       end
 
       it 'returns a new document with custom field' do
-        @project.metadata.respond_to?(:manager).should be_true
+        @project.safe_metadata.respond_to?(:manager).should be_true
       end
 
       it 'sets/gets custom attributes' do
-        @project.metadata.manager = 'Mr Harrison'
-        @project.metadata.manager.should == 'Mr Harrison'
+        @project.safe_metadata.manager = 'Mr Harrison'
+        @project.safe_metadata.manager.should == 'Mr Harrison'
       end
 
       it 'does not modify other class instances' do
         @other_project = Project.new
-        @other_project.metadata.respond_to?(:manager).should be_false
+        @other_project.safe_metadata.respond_to?(:manager).should be_false
       end
 
     end

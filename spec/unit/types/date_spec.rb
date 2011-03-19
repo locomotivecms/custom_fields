@@ -28,37 +28,37 @@ describe CustomFields::Types::Date do
     end
 
     it 'sets value from a date' do
-      @project.metadata.started_at = @date
-      @project.metadata.started_at.should == '2010-06-29'
-      @project.metadata.field_1.class.should == Date
-      @project.metadata.field_1.should == @date
+      @project.safe_metadata.started_at = @date
+      @project.safe_metadata.started_at.should == '2010-06-29'
+      @project.safe_metadata.field_1.class.should == Date
+      @project.safe_metadata.field_1.should == @date
     end
 
     it 'sets value from a string' do
-      @project.metadata.started_at = '2010-06-29'
-      @project.metadata.started_at.class.should == String
-      @project.metadata.started_at.should == '2010-06-29'
-      @project.metadata.field_1.class.should == Date
-      @project.metadata.field_1.should == @date
+      @project.safe_metadata.started_at = '2010-06-29'
+      @project.safe_metadata.started_at.class.should == String
+      @project.safe_metadata.started_at.should == '2010-06-29'
+      @project.safe_metadata.field_1.class.should == Date
+      @project.safe_metadata.field_1.should == @date
     end
 
     it 'sets value (in French format) from a string' do
       I18n.stubs(:t).returns('%d/%m/%Y')
-      @project.metadata.started_at = '29/06/2010'
-      @project.metadata.started_at.should == '29/06/2010'
-      @project.metadata.field_1.should == @date
+      @project.safe_metadata.started_at = '29/06/2010'
+      @project.safe_metadata.started_at.should == '29/06/2010'
+      @project.safe_metadata.field_1.should == @date
     end
 
     it 'sets nil value' do
-      @project.metadata.started_at = nil
-      @project.metadata.started_at.should be_nil
-      @project.metadata.field_1.should be_nil
+      @project.safe_metadata.started_at = nil
+      @project.safe_metadata.started_at.should be_nil
+      @project.safe_metadata.field_1.should be_nil
     end
 
     it 'sets empty value' do
-      @project.metadata.started_at = ''
-      @project.metadata.started_at.should be_nil
-      @project.metadata.field_1.should be_nil
+      @project.safe_metadata.started_at = ''
+      @project.safe_metadata.started_at.should be_nil
+      @project.safe_metadata.field_1.should be_nil
     end
 
   end

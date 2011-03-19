@@ -31,19 +31,19 @@ describe CustomFields::Types::Boolean do
       context '#true' do
 
         it 'sets value from an integer' do
-          @project.metadata.active = 1
-          @project.metadata.active.should == true
-          @project.metadata.field_1.should == '1'
+          @project.safe_metadata.active = 1
+          @project.safe_metadata.active.should == true
+          @project.safe_metadata.field_1.should == '1'
         end
 
         it 'sets value from a string' do
-          @project.metadata.active = '1'
-          @project.metadata.active.should == true
-          @project.metadata.field_1.should == '1'
+          @project.safe_metadata.active = '1'
+          @project.safe_metadata.active.should == true
+          @project.safe_metadata.field_1.should == '1'
 
-          @project.metadata.active = 'true'
-          @project.metadata.active.should == true
-          @project.metadata.field_1.should == 'true'
+          @project.safe_metadata.active = 'true'
+          @project.safe_metadata.active.should == true
+          @project.safe_metadata.field_1.should == 'true'
         end
 
       end
@@ -51,19 +51,19 @@ describe CustomFields::Types::Boolean do
       context '#false' do
 
         it 'sets value from an integer' do
-          @project.metadata.active = 0
-          @project.metadata.active.should == false
-          @project.metadata.field_1.should == '0'
+          @project.safe_metadata.active = 0
+          @project.safe_metadata.active.should == false
+          @project.safe_metadata.field_1.should == '0'
         end
 
         it 'sets value from a string' do
-          @project.metadata.active = '0'
-          @project.metadata.active.should == false
-          @project.metadata.field_1.should == '0'
+          @project.safe_metadata.active = '0'
+          @project.safe_metadata.active.should == false
+          @project.safe_metadata.field_1.should == '0'
 
-          @project.metadata.active = 'false'
-          @project.metadata.active.should == false
-          @project.metadata.field_1.should == 'false'
+          @project.safe_metadata.active = 'false'
+          @project.safe_metadata.active.should == false
+          @project.safe_metadata.field_1.should == 'false'
         end
 
       end

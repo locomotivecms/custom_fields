@@ -10,6 +10,8 @@ module CustomFields
 
         klass = Object.const_defined?(klass_name) ? Object.const_get(klass_name): nil
 
+        # puts "[#{association_name} / #{parent.name rescue 'unknown'}] klass nil ? #{klass.nil?} / built at ? #{klass.built_at.inspect rescue ''} / parent ? #{parent.updated_at.try(:utc)}" # for debug purpose
+
         if klass && klass.built_at != parent.updated_at.try(:utc) # new version ?
           self.invalidate_proxy_class_with_custom_fields(parent, association_name)
           klass = nil
@@ -37,6 +39,8 @@ module CustomFields
       end
 
       def self.build_proxy_class_with_custom_fields(fields, parent, association_name)
+        # puts "BUILDING PROXY CLASS" # for debug purpose
+
         (klass = Class.new(self)).class_eval <<-EOF
 
           cattr_accessor :custom_fields, :_parent, :association_name, :built_at

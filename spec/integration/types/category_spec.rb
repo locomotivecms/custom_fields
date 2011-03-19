@@ -4,16 +4,22 @@ describe CustomFields::Types::Category do
 
   before(:each) do
     @project = Project.new(:name => 'Locomotive')
+    # puts "_writing_attributes_with_custom_fields (before) => #{@project.instance_variable_get(:@_writing_attributes_with_custom_fields).inspect}"
     @field = @project.task_custom_fields.build(:label => 'Main category', :_alias => 'main_category', :kind => 'Category')
     @another_field = @project.task_custom_fields.build(:label => 'Domain category', :_alias => 'domain_category', :kind => 'Category')
+    # @project.save
+    # @project.reload
+    # puts "metadata = #{@project.metadata.inspect}"
+    # puts "_writing_attributes_with_custom_fields => #{@project.instance_variable_get(:@_writing_attributes_with_custom_fields).inspect}"
   end
 
   context 'saving category items' do
 
     before(:each) do
+      # @field = @project.task_custom_fields.first
       @field.category_items.build :name => 'Development'
       @field.category_items.build :name => 'Design'
-      @field.updated_at = Time.now
+      # @field.updated_at = Time.now
     end
 
     it 'persists items' do
@@ -28,15 +34,15 @@ describe CustomFields::Types::Category do
       @another_field.category_items.build :name => 'Industry'
       @another_field.save.should be_true
       @project.reload
-
+    
       klass = @project.tasks.build.class
-
+    
       klass.main_category_names.should == %w{Development Design}
       klass.domain_category_names.should == %w{IT Industry}
     end
 
     context 'assigning a category and persists' do
-
+    
       it 'sets the category from a category name' do
         task = @project.tasks.build(:main_category => 'Design')
 

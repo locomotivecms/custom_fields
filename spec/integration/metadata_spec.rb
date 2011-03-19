@@ -10,28 +10,28 @@ describe CustomFields::Metadata do
   end
 
   it 'persists metadata' do
-    @project.metadata.manager = 'Mr Harrison'
-    @project.metadata.hours = 1234
-    @project.metadata.room = 'Room #32'
+    @project.safe_metadata.manager = 'Mr Harrison'
+    @project.safe_metadata.hours = 1234
+    @project.safe_metadata.room = 'Room #32'
     @project.save
 
     # @project = Project.find(@project.id) # ie @project.reload
     @project.reload
 
-    @project.metadata.manager.should == 'Mr Harrison'
-    @project.metadata.hours.should == '1234'
-    @project.metadata.room.should == 'Room #32'
+    @project.safe_metadata.manager.should == 'Mr Harrison'
+    @project.safe_metadata.hours.should == '1234'
+    @project.safe_metadata.room.should == 'Room #32'
   end
 
   context 'modifying fields' do
 
     it 'renames accessors' do
-      @project.metadata.manager = 'Mr Harrison'
+      @project.safe_metadata.manager = 'Mr Harrison'
       @project.self_custom_fields.first._alias = 'manager_dude'
 
       @project.save && @project.reload
 
-      @project.metadata.manager_dude.should == 'Mr Harrison'
+      @project.safe_metadata.manager_dude.should == 'Mr Harrison'
     end
 
   end

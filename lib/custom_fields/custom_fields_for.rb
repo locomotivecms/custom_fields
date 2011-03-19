@@ -55,7 +55,7 @@ module CustomFields
           class_eval <<-EOV
             embeds_one :#{collection_name}, :class_name => '::CustomFields::Metadata'
 
-            def #{singular_name}
+            def safe_#{singular_name}
               self.#{collection_name} || self.build_#{collection_name}
             end
 
