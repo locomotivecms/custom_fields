@@ -34,7 +34,76 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    after_save        :invalidate_klass
+    # after_save        :invalidate_klass
+    # after_destroy do |r|
+    #   puts "[field/after_destroy]"
+    #   r.send(:invalidate_klass)
+    # end
+
+    after_create do |r|
+      puts "[field/after_create] nothing to do"
+
+      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+      else
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+        self._parent.save
+      end
+    end
+
+    # after_destroy do |r|
+    #   puts "[field/after_destroy]"
+    #
+    #   if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+    #     self._parent.invalidate_proxy_klasses_with_custom_fields = true
+    #   else
+    #     puts "[field/after_destroy] updating parent to invalidate klass" # called not so often (probably never)
+    #     self._parent.invalidate_proxy_klasses_with_custom_fields = true
+    #     # self._parent.set_updated_at
+    #     self._parent.save
+    #   end
+    # end
+
+    after_destroy do |r|
+      puts "[field/after_destroy]"
+
+      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+      else
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+        self._parent.save
+      end
+    end
+
+    before_update do |r|
+      puts "[field/before_update] #{r.changed?}"
+
+      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+        return unless r.changed?
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+        # self._parent.invalidate_proxy_klasses_with_custom_fields = true
+        # self._parent.set_updated_at
+      else
+        puts "[field/before_update] updating parent to invalidate klass"
+        # self._parent.set_updated_at
+        # self._parent.invalidate_proxy_klasses_with_custom_fields = true
+        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
+        self._parent.save
+      end
+
+      # return unless r.changed?
+      #
+      # self._parent.set_updated_at # force the _parent.changed? to true
+      #
+      # unless self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+      #   puts "[field/before_update] updating parent to invalidate klass"
+      #   self._parent.save
+      # end
+    end
+
+    after_update do |r|
+      puts "[field/after_update]"
+    end
 
     ## methods ##
 
@@ -69,13 +138,7 @@ module CustomFields
     end
 
     def write_attributes_with_invalidation(attrs = nil)
-      if self.association_name.to_s == '_metadata_custom_fields'
-        target_name = 'metadata'
-      else
-        target_name = self.association_name.to_s.gsub('_custom_fields', '').pluralize
-      end
-
-      klass = self._parent.send(:"fetch_#{target_name.singularize}_klass")
+      klass = self._parent.send(:"fetch_#{singular_target_name}_klass")
 
       write_attributes_without_invalidation(attrs)
 
@@ -83,6 +146,14 @@ module CustomFields
     end
 
     alias_method_chain :write_attributes, :invalidation
+
+    def singular_target_name
+      if self.association_name.to_s == '_metadata_custom_fields'
+        'metadata'
+      else
+        self.association_name.to_s.gsub('_custom_fields', '').singularize
+      end
+    end
 
     def to_hash(more = {})
       self.fields.keys.inject({}) do |memo, meth|
@@ -152,13 +223,15 @@ module CustomFields
 
     alias_method_chain :parentize, :custom_fields
 
-    def invalidate_klass
-      self._root.set_updated_at
-
-      unless self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        self._root.save
-      end
-    end
+    # def invalidate_klass
+    #   puts "[field/general] invalidating_klass"
+    #   # self._root.set_updated_at # ==> not safe, set an instance variable in the parent (or root, _parent is better)
+    #
+    #   unless self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+    #     puts "....invalidate_klass done [from field]"
+    #     self._root.save
+    #   end
+    # end
 
   end
 
