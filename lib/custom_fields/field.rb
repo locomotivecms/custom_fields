@@ -34,76 +34,10 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    # after_save        :invalidate_klass
-    # after_destroy do |r|
-    #   puts "[field/after_destroy]"
-    #   r.send(:invalidate_klass)
-    # end
 
-    after_create do |r|
-      puts "[field/after_create] nothing to do"
-
-      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-      else
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-        self._parent.save
-      end
-    end
-
-    # after_destroy do |r|
-    #   puts "[field/after_destroy]"
-    #
-    #   if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-    #     self._parent.invalidate_proxy_klasses_with_custom_fields = true
-    #   else
-    #     puts "[field/after_destroy] updating parent to invalidate klass" # called not so often (probably never)
-    #     self._parent.invalidate_proxy_klasses_with_custom_fields = true
-    #     # self._parent.set_updated_at
-    #     self._parent.save
-    #   end
-    # end
-
-    after_destroy do |r|
-      puts "[field/after_destroy]"
-
-      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-      else
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-        self._parent.save
-      end
-    end
-
-    before_update do |r|
-      puts "[field/before_update] #{r.changed?}"
-
-      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        return unless r.changed?
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-        # self._parent.invalidate_proxy_klasses_with_custom_fields = true
-        # self._parent.set_updated_at
-      else
-        puts "[field/before_update] updating parent to invalidate klass"
-        # self._parent.set_updated_at
-        # self._parent.invalidate_proxy_klasses_with_custom_fields = true
-        self._parent.send(:"invalidate_#{r.singular_target_name}_klass_flag=", true)
-        self._parent.save
-      end
-
-      # return unless r.changed?
-      #
-      # self._parent.set_updated_at # force the _parent.changed? to true
-      #
-      # unless self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-      #   puts "[field/before_update] updating parent to invalidate klass"
-      #   self._parent.save
-      # end
-    end
-
-    after_update do |r|
-      puts "[field/after_update]"
-    end
+    before_create   :invalidate_target_klass
+    before_update   :invalidate_target_klass
+    after_destroy   :invalidate_target_klass
 
     ## methods ##
 
@@ -223,15 +157,20 @@ module CustomFields
 
     alias_method_chain :parentize, :custom_fields
 
-    # def invalidate_klass
-    #   puts "[field/general] invalidating_klass"
-    #   # self._root.set_updated_at # ==> not safe, set an instance variable in the parent (or root, _parent is better)
-    #
-    #   unless self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-    #     puts "....invalidate_klass done [from field]"
-    #     self._root.save
-    #   end
-    # end
+    def invalidate_target_klass
+      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+        # puts "persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
+        if self.persisted? && !self.destroyed? && !self.changed?
+          # no need to force the invalidation if the current field does not get modified
+          return
+        end
+        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+      else
+        # this portion below is called whenn the field is updated without its parent
+        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+        self._parent.save
+      end
+    end
 
   end
 

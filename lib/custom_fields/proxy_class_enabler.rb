@@ -6,12 +6,9 @@ module CustomFields
     included do
 
       def self.to_klass_with_custom_fields(fields, parent, association_name)
-        # klass_name = self.klass_name_with_custom_fields(parent, association_name)
-        #
-        # klass = Object.const_defined?(klass_name) ? Object.const_get(klass_name): nil
-
         klass = self.current_klass_with_custom_fields(parent, association_name)
 
+        # for debug purpose
         if klass.nil?
           puts "[#{association_name} / #{parent.name rescue 'unknown'}] no klass found"
         else

@@ -73,37 +73,12 @@ module CustomFields
 
           attr_accessor :invalidate_#{singular_name}_klass_flag
 
-          # after_validation do |record|
-          #
-          #   if record.errors.empty? && record.invalidate_proxy_klasses_with_custom_fields?
-          #     puts "[parent/after_validation] modify updated_at for #{singular_name}_custom_fields_updated_at"
-          #     self.#{singular_name}_custom_fields_updated_at = Time.now.utc
-          #
-          #
-          #     # record.set_updated_at # make sure the parent will be updated
-          #     # record.invalidate_#{singular_name}_klass
-          #
-          #     # record.changed? # && !self.#{singular_name}_klass_out_of_date?
-          #     # puts "[parent/after_validation] disable invalidate_proxy_klasses_with_custom_fields"
-          #     # record.invalidate_proxy_klasses_with_custom_fields = false
-          #     # record.invalidate_#{singular_name}_klass
-          #   end
-          # end
-
           before_save do |record|
             if record.invalidate_#{singular_name}_klass?
               puts "[parent/before_save] set #{singular_name}_custom_fields_updated_at"
               record.#{singular_name}_custom_fields_updated_at = Time.now.utc
             end
           end
-
-          # after_save do |record|
-          #   # if record.invalidate_#{singular_name}_klass?
-          #   if record.#{singular_name}_klass_out_of_date?
-          #     puts "[parent/after_save] invalidating #{singular_name}_klass"
-          #     record.invalidate_#{singular_name}_klass
-          #   end
-          # end
 
           after_destroy     :invalidate_#{singular_name}_klass
 
@@ -137,7 +112,7 @@ module CustomFields
           end
         EOV
 
-        # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass every time we save a field)
+        # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass with custom fields every time we save a field)
         unless instance_methods.include?('write_attributes_with_custom_fields')
           class_eval do
             def write_attributes_with_custom_fields(attrs = nil)
@@ -148,16 +123,6 @@ module CustomFields
             alias_method_chain :write_attributes, :custom_fields
           end
         end
-
-        # unless instance_methods.include?('invalidate_proxy_klasses_with_custom_fields')
-        #   attr_accessor :invalidate_proxy_klasses_with_custom_fields
-        #
-        #   class_eval do
-        #     def invalidate_proxy_klasses_with_custom_fields?
-        #       self.invalidate_proxy_klasses_with_custom_fields == true
-        #     end
-        #   end
-        # end
 
         if itself
           class_eval <<-EOV
