@@ -14,6 +14,7 @@ describe CustomFields::Field do
 
     %w(save destroy send class).each do |name|
       it "does not accept very unsecure name like #{name}" do
+        @field.stubs(:set_target_klass_flag).returns(true)
         @field.stubs(:uniqueness_of_label_and_alias).returns(true)
         @field._alias = name
         @field.valid?.should == false
@@ -56,7 +57,7 @@ describe CustomFields::Field do
     field = CustomFields::Field.new(:label => 'manager', :_name => 'field_1', :kind => 'string', :_alias => 'manager')
     field.stubs(:valid?).returns(true)
     (parent = Object.new).stubs(:_id).returns(42)
-    parent.stubs(:updated_at).returns(Time.now)
+    parent.stubs(:self_custom_field_custom_fields_version).returns(0)
     Project.to_klass_with_custom_fields(field, parent, 'self_custom_fields').new
   end
 

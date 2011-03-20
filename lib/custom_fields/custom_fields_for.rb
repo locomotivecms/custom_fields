@@ -65,18 +65,20 @@ module CustomFields
         # common part
         class_eval <<-EOV
           field :#{singular_name}_custom_fields_counter, :type => Integer, :default => 0
-          field :#{singular_name}_custom_fields_updated_at, :type => Time
+          # field :#{singular_name}_custom_fields_updated_at, :type => Time
+          field :#{singular_name}_custom_fields_version, :type => Integer, :default => 0
 
           embeds_many :#{singular_name}_custom_fields, :class_name => '#{dynamic_custom_field_class_name}'
 
-          validates_associated :#{singular_name}_custom_fields
+          # validates_associated :#{singular_name}_custom_fields
 
           attr_accessor :invalidate_#{singular_name}_klass_flag
 
           before_save do |record|
             if record.invalidate_#{singular_name}_klass?
-              puts "[parent/before_save] set #{singular_name}_custom_fields_updated_at"
-              record.#{singular_name}_custom_fields_updated_at = Time.now.utc
+              record.#{singular_name}_custom_fields_version ||= 0
+              record.#{singular_name}_custom_fields_version += 1
+              puts "[parent/before_save] set #{singular_name}_custom_fields_version " + record.#{singular_name}_custom_fields_version.to_s
             end
           end
 
@@ -98,8 +100,12 @@ module CustomFields
             metadata.klass.current_klass_with_custom_fields(self, metadata.name)
           end
 
+          # def #{singular_name}_klass_out_of_date?
+          #   self.#{singular_name}_klass.nil? || self.#{singular_name}_klass.built_at != self.#{singular_name}_custom_fields_updated_at.try(:utc)
+          # end
+
           def #{singular_name}_klass_out_of_date?
-            self.#{singular_name}_klass.nil? || self.#{singular_name}_klass.built_at != self.#{singular_name}_custom_fields_updated_at.try(:utc)
+            self.#{singular_name}_klass.nil? || self.#{singular_name}_klass.version != (self.#{singular_name}_custom_fields_version || 0)
           end
 
           def invalidate_#{singular_name}_klass

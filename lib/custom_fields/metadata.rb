@@ -24,8 +24,6 @@ module CustomFields
 
     alias_method_chain :parentize, :custom_fields
 
-
-
   end
 
 end

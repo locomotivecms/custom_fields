@@ -34,6 +34,7 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
+    after_validation  :set_target_klass_flag, :if => Proc.new { |f| f.changed? }
 
     before_create   :invalidate_target_klass
     before_update   :invalidate_target_klass
@@ -157,19 +158,49 @@ module CustomFields
 
     alias_method_chain :parentize, :custom_fields
 
+    # def invalidate_target_klass
+    #   puts "[field/#{self.label}] persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
+    #   if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+    #     # puts "[field/#{field.label}] persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
+    #     if self.persisted? && !self.destroyed? && !self.changed?
+    #       # no need to force the invalidation if the current field does not get modified
+    #       return
+    #     end
+    #     self.set_target_klass_flag
+    #   else
+    #     # this portion below is called whenever the field is updated without its parent
+    #     self.set_target_klass_flag
+    #     self._parent.save
+    #   end
+    # end
+
     def invalidate_target_klass
+      # puts "[field/#{self.label}] persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
+      puts "[field/#{self.label}] invalidate_target_klass"
+
       if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        # puts "persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
-        if self.persisted? && !self.destroyed? && !self.changed?
-          # no need to force the invalidation if the current field does not get modified
-          return
+        if self.destroyed? # force the parent to invalidate the related target class
+          self.set_target_klass_flag
         end
-        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+        # # puts "[field/#{field.label}] persisted? #{self.persisted?} / destroyed? #{self.destroyed?} / changed? #{self.changed?}" # debug purpose
+        # if self.persisted? && !self.destroyed? && !self.changed?
+        #   # no need to force the invalidation if the current field does not get modified
+        #   return
+        # end
+        # self.set_target_klass_flag
       else
-        # this portion below is called whenn the field is updated without its parent
-        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+        # this portion below is called whenever the field is updated without its parent
+        # self.set_target_klass_flag # FIXME: not sure it's needed here since
         self._parent.save
       end
+    end
+
+    def set_target_klass_flag
+      # no need to force the invalidation if the current field does not get modified
+      # if self.changed?
+        puts "[field/set_target_klass_flag/#{self.label}] called"
+        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+      # end
     end
 
   end
