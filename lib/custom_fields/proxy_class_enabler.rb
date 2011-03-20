@@ -9,14 +9,12 @@ module CustomFields
         klass = self.current_klass_with_custom_fields(parent, association_name)
 
         # for debug purpose
-        if klass.nil?
-          puts "[#{association_name.to_s.gsub(/^_/, '').singularize} / #{parent.name rescue 'unknown'}] no klass found"
-        else
-          # puts "[#{association_name.to_s.gsub(/^_/, '').singularize} / #{parent.name rescue 'unknown'}] klass nil ? #{klass.nil?} / built at ? #{klass.built_at.to_i rescue ''} / parent ? #{self.custom_fields_updated_at(parent, association_name).to_i}" # for debug purpose
-          puts "[#{association_name.to_s.gsub(/^_/, '').singularize} / #{parent.name rescue 'unknown'}] klass nil ? #{klass.nil?} / current version ? #{klass.version.inspect} / parent ? #{self.custom_fields_version(parent, association_name).to_i}" # for debug purpose
-        end
+        # if klass.nil?
+        #   puts "[#{association_name.to_s.gsub(/^_/, '').singularize} / #{parent.name rescue 'unknown'}] no klass found"
+        # else
+        #   puts "[#{association_name.to_s.gsub(/^_/, '').singularize} / #{parent.name rescue 'unknown'}] klass nil ? #{klass.nil?} / current version ? #{klass.version.inspect} / parent ? #{self.custom_fields_version(parent, association_name)}" # for debug purpose
+        # end
 
-        # if klass && klass.built_at != self.custom_fields_updated_at(parent, association_name) # new version ?
         if klass && klass.version != self.custom_fields_version(parent, association_name) # new version ?
           self.invalidate_proxy_class_with_custom_fields(parent, association_name)
           klass = nil
@@ -33,17 +31,13 @@ module CustomFields
         klass
       end
 
-      # def self.custom_fields_updated_at(parent, association_name)
-      #   singular_name = association_name.to_s.gsub(/^_/, '').singularize
-      #   parent.send(:"#{singular_name}_custom_fields_updated_at").try(:utc)
-      # end
-
       def self.custom_fields_version(parent, association_name)
         singular_name = association_name.to_s.gsub(/^_/, '').singularize
-        parent.send(:"#{singular_name}_custom_fields_version") || 0
+        parent.send(:"#{singular_name}_custom_fields_version")
       end
 
       def self.invalidate_proxy_class_with_custom_fields(parent, association_name)
+        # puts "-> invalidate_proxy_class_with_custom_fields !!!!!" # for debug purpose
         klass_name = self.klass_name_with_custom_fields(parent, association_name)
 
         if Object.const_defined?(klass_name)
@@ -62,7 +56,7 @@ module CustomFields
       end
 
       def self.build_proxy_class_with_custom_fields(fields, parent, association_name)
-        puts "BUILDING PROXY CLASS #{association_name} / parent version #{self.custom_fields_version(parent, association_name)}" # for debug purpose
+        # puts "BUILDING PROXY CLASS #{association_name} / parent version #{self.custom_fields_version(parent, association_name)}" # for debug purpose
 
         (klass = Class.new(self)).class_eval <<-EOF
 
@@ -117,7 +111,6 @@ module CustomFields
 
         [*fields].each { |field| klass.apply_custom_field(field) }
 
-        # klass.built_at = self.custom_fields_updated_at(parent, association_name)
         klass.version = self.custom_fields_version(parent, association_name)
 
         klass
