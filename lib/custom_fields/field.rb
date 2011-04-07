@@ -34,10 +34,9 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    after_validation  :set_target_klass_flag, :if => Proc.new { |f| f.changed? }
+    after_validation  :set_target_klass_flag
 
-    before_create   :invalidate_target_klass
-    before_update   :invalidate_target_klass
+    before_save     :invalidate_target_klass
     after_destroy   :invalidate_target_klass
 
     ## methods ##
@@ -163,8 +162,11 @@ module CustomFields
       if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
         if self.destroyed? # force the parent to invalidate the related target class
           self.set_target_klass_flag
+        elsif self.changed?
+          self.set_target_klass_flag
         end
       else
+        self.set_target_klass_flag
         self._parent.save
       end
     end

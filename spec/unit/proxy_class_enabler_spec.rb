@@ -8,6 +8,7 @@ describe CustomFields::ProxyClassEnabler do
       (@parent = Object.new).stubs(:task_custom_fields).returns([])
       @parent.stubs(:_id).returns(42)
       @parent.stubs(:task_custom_field_custom_fields_version).returns(0)
+      @parent.stubs(:invalidate_task_klass_flag=).returns(true)
       @klass = Task.to_klass_with_custom_fields([], @parent, 'task_custom_fields')
     end
 
