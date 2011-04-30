@@ -98,7 +98,7 @@ module CustomFields
         end
 
         def to_json
-          self.to_hash.to_json
+          ActiveSupport::JSON.encode(self.to_hash)
         end
 
       end
