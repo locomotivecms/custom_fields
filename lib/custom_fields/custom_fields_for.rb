@@ -67,7 +67,17 @@ module CustomFields
           field :#{singular_name}_custom_fields_counter, :type => Integer, :default => 0
           field :#{singular_name}_custom_fields_version, :type => Integer, :default => 0
 
-          embeds_many :#{singular_name}_custom_fields, :class_name => '#{dynamic_custom_field_class_name}'
+          embeds_many :#{singular_name}_custom_fields, :class_name => '#{dynamic_custom_field_class_name}' do
+            def build(attributes = {}, type = nil, &block)
+              instantiated(type).tap do |doc|
+                append(doc, default_options(:binding => true))
+                doc.write_attributes(attributes)
+                doc.identify
+                block.call(doc) if block
+              end
+            end
+            alias :new :build
+          end
 
           attr_accessor :invalidate_#{singular_name}_klass_flag
 
