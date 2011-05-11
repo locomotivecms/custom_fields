@@ -30,7 +30,7 @@ describe CustomFields::Types::Date do
     it 'sets value from a date' do
       @project.safe_metadata.started_at = @date
       @project.safe_metadata.started_at.should == '2010-06-29'
-      @project.safe_metadata.field_1.class.should == Date
+      @project.safe_metadata.field_1.class.should == Time
       @project.safe_metadata.field_1.should == @date
     end
 
@@ -38,7 +38,7 @@ describe CustomFields::Types::Date do
       @project.safe_metadata.started_at = '2010-06-29'
       @project.safe_metadata.started_at.class.should == String
       @project.safe_metadata.started_at.should == '2010-06-29'
-      @project.safe_metadata.field_1.class.should == Date
+      @project.safe_metadata.field_1.class.should == Time
       @project.safe_metadata.field_1.should == @date
     end
 
