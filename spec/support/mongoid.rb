@@ -1,3 +1,5 @@
+require 'mongoid'
+
 Mongoid.configure do |config|
   name = "custom_fields_test"
   host = "localhost"
