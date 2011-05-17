@@ -41,8 +41,9 @@ Rspec::Core::RakeTask.new('spec:integration') do |spec|
   # spec.pattern = "spec/integration/**/*_spec.rb"
   # spec.pattern = "spec/integration/custom_fields_for_spec.rb"
   # spec.pattern = "spec/integration/types/category_spec.rb"
-  spec.pattern = "spec/integration/types/has_one_spec.rb"
+  # spec.pattern = "spec/integration/types/has_one_spec.rb"
   # spec.pattern = "spec/integration/types/has_many_spec.rb"
+  spec.pattern = "spec/integration/types/has_*_spec.rb"
 end
 
 task :spec => ['spec:unit', 'spec:integration']

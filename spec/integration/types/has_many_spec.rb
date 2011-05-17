@@ -7,28 +7,33 @@ describe CustomFields::Types::HasMany do
     create_project
 
     @task = @project.tasks.build :title => 'Managing team'
-    @another_task = @project.tasks.build :title => 'Cleaning'
   end
 
   it 'attaches many different locations to a task' do
-    @task.locations << @location_1
-    @task.locations << @location_2
-
-    # puts @task.locations.inspect
-    # puts @task.location_ids.inspect
-    # puts "===="
-    # puts @task.custom_field_1.inspect
-    # puts "----"
-
-    # puts @task.inspect
-
-    @task.save && @task = Mongoid.reload_document(@task)
+    attach_locations_to_task_and_save
 
     @task.locations.should_not be_empty
     @task.locations.collect(&:_id).should == [@location_1._id, @location_2._id]
   end
 
+  it 'changes the order of the locations' do
+    attach_locations_to_task_and_save
+
+    @task.locations = [@location_2._id, @location_1._id]
+
+    @task.save && @task = Mongoid.reload_document(@task)
+
+    @task.locations.first.name.should == 'dev lab'
+  end
+
   # ___ helpers ___
+
+  def attach_locations_to_task_and_save
+    @task.locations << @location_1
+    @task.locations << @location_2
+
+    @task.save && @task = Mongoid.reload_document(@task)
+  end
 
   def create_client
     @client = Client.new(:name => 'NoCoffee')
@@ -47,14 +52,5 @@ describe CustomFields::Types::HasMany do
     @project.task_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.location_klass.to_s
     @project.save!
   end
-
-  # def reload_document(doc)
-  #   if doc.embedded?
-  #     parent = doc.class._parent.reload
-  #     parent.send(doc.metadata.name).find(doc._id)
-  #   else
-  #     doc.class.find(doc._id)
-  #   end
-  # end
 
 end
