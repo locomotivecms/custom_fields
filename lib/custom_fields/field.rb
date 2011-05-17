@@ -12,6 +12,8 @@ module CustomFields
     include Types::Boolean
     include Types::Date
     include Types::File
+    include Types::HasOne
+    include Types::HasMany
 
     ## fields ##
     field :label

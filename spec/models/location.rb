@@ -1,11 +1,11 @@
-class Client
+class Location
 
   include Mongoid::Document
   include Mongoid::Timestamps
   include CustomFields::ProxyClassEnabler
 
-  field :full_name
+  field :name
 
-  referenced_in :project, :inverse_of => :people
+  embedded_in :project, :inverse_of => :locations
 
 end
