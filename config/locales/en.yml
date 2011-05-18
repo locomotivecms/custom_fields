@@ -7,3 +7,5 @@ en:
       boolean: Checkbox
       date: Date
       file: File
+      has_one: Has one
+      has_many: Has many

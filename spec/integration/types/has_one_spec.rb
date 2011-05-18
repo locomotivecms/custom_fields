@@ -10,6 +10,10 @@ describe CustomFields::Types::HasOne do
     @another_task = @project.tasks.build :title => 'Cleaning'
   end
 
+  it 'returns nil if no attached object' do
+    @task.location.should be_nil
+  end
+
   it 'attaches a location to a task' do
     @task.location = @location_1
     @task.save && @task = Mongoid.reload_document(@task)

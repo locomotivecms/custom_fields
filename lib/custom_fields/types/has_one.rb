@@ -6,44 +6,13 @@ module CustomFields
 
       included do
         field :target
-        # field :inverse_of
 
         validates_presence_of :target, :if => :has_one?
-        # validate :inverse_of_must_be_unique
-
-        # after_save :create_inverse_of_has_one
-        # validates :validate_has_one
 
         register_type :has_one, BSON::ObjectId
       end
 
       module InstanceMethods
-
-        # def validate_has_one
-        #   if self.has_one?
-        #     puts "[has_one] inverse_of #{self.inverse_of} / target = #{self.target}"
-        #     self.errors.on(:target) if self.target.blank?
-        #   end
-        # end
-
-        # def inverse_of_must_be_unique
-        #   if self.has_one?
-        #     puts "[has_one / #{self.object_id}] inverse_of #{self.inverse_of} / target = '#{self.target}'"
-        #     target_klass = self.target.to_s.constantize
-        #
-        #     if target_klass.embedded?
-        #       # self.errors.on(:target) if self.target.blank?
-        #     else
-        #
-        #     end
-        #   else
-        #     true
-        #   end
-        # end
-
-        # def create_inverse_of_has_one
-        #   puts "[has_one / #{self.object_id}] inverse_of #{self.inverse_of} / target = '#{self.target}'"
-        # end
 
         def apply_has_one_type(klass)
           klass.class_eval <<-EOF
@@ -64,6 +33,9 @@ module CustomFields
               return @_#{self._name} unless @_#{self._name}.blank? # memoization
 
               target_id = read_attribute(:#{self._name})
+
+              return nil if target_id.blank?
+
               target_klass = '#{self.target.to_s}'.constantize
 
               if target_klass.embedded?
