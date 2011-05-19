@@ -58,6 +58,8 @@ module CustomFields
         end
 
         def update(values)
+          values = [] if values.blank?
+
           self.ids = values.collect { |obj| self.id_for_sure(obj) }
           self.values = values.collect { |obj| self.object_for_sure(obj) }
         end

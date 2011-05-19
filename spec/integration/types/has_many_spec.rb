@@ -26,6 +26,16 @@ describe CustomFields::Types::HasMany do
     @task.locations.first.name.should == 'dev lab'
   end
 
+  it 'resets the locations by passing a blank value' do
+    attach_locations_to_task_and_save
+
+    @task.locations = ''
+
+    @task.save && @task = Mongoid.reload_document(@task)
+
+    @task.locations.should be_empty
+  end
+
   # ___ helpers ___
 
   def attach_locations_to_task_and_save
