@@ -17,7 +17,7 @@ module CustomFields
         def apply_has_many_type(klass)
           klass.class_eval <<-EOF
 
-            before_save :store_#{self.safe_alias.singularize}_ids
+            before_validation :store_#{self.safe_alias.singularize}_ids
 
             def #{self.safe_alias}=(ids_or_objects)
               if @_#{self._name}.nil?
@@ -39,6 +39,12 @@ module CustomFields
               write_attribute(:#{self._name}, #{self.safe_alias.singularize}_ids)
             end
           EOF
+        end
+
+        def add_has_many_validation(klass)
+          if self.required?
+            klass.validates_length_of self.safe_alias.to_sym, :minimum => 1, :too_short => :blank
+          end
         end
 
       end
@@ -72,6 +78,12 @@ module CustomFields
         end
 
         alias :push :<<
+
+        def size
+          self.ids.size
+        end
+
+        alias :length :size
 
         def method_missing(name, *args, &block)
           self.values.send(name, *args, &block)

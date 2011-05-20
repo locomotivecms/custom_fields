@@ -58,9 +58,12 @@ module CustomFields
         apply_default_type(klass)
       end
 
-      # add validation if required field
-      if self.required?
-        klass.validates_presence_of self.safe_alias.to_sym
+      validation_method_name = :"add_#{self.safe_kind}_validation"
+
+      if self.respond_to?(validation_method_name)
+        self.send(validation_method_name, klass)
+      else
+        add_default_validation(klass)
       end
     end
 
