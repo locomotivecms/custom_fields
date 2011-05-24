@@ -1,27 +1,39 @@
+require 'rubygems'
+require 'bundler'
+Bundler.setup
+Bundler.require
+
+require 'rspec'
+
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 MODELS = File.join(File.dirname(__FILE__), 'models')
 $LOAD_PATH.unshift(MODELS)
 
-require 'rubygems'
-require 'bundler'
-Bundler.setup
-Bundler.require
-
-require 'mongoid'
-require 'mocha'
-require 'rspec'
 require 'custom_fields'
 
-Dir[ File.join(MODELS, "*.rb") ].sort.each { |file| require File.basename(file) }
-
-require 'support/mongoid'
-require 'support/carrierwave'
+Dir[File.join(MODELS, "*.rb")].sort.each { |file| require File.basename(file) }
 
 Rspec.configure do |config|
-  config.mock_with :mocha  
-  config.after :suite do
-    Mongoid.master.collections.select { |c| c.name != 'system.indexes' }.each(&:drop)
+  config.mock_with :mocha
+
+  require 'database_cleaner'
+  require 'database_cleaner/mongoid/truncation'
+
+  config.before(:suite) do
+    DatabaseCleaner['mongoid'].strategy = :truncation
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
   end
 end

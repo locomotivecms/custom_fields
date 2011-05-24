@@ -16,6 +16,13 @@ module CustomFields
           EOF
         end
 
+        def add_default_validation(klass)
+          # add validation if required field
+          if self.required?
+            klass.validates_presence_of self.safe_alias.to_sym
+          end
+        end
+
       end
 
       module ClassMethods
