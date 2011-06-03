@@ -3,7 +3,7 @@ source :rubygems
 gem 'rake'
 
 gem 'bson_ext', '~> 1.3.0'
-gem 'mongoid', '~> 2.0.1'
+gem 'mongoid', '2.0.1'
 gem 'activesupport', '>= 3.0.7'
 gem 'locomotive_carrierwave', :require => 'carrierwave'
 gem 'SystemTimer', :platforms => :ruby_18

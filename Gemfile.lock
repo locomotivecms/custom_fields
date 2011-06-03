@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/floehopper/mocha.git
-  revision: f1d182ea33fe08cbc187df90f12013814ae59da8
+  revision: 6da1242f26b12a24c4fcf67bf5921a25bc1bc88d
   specs:
     mocha (0.9.12.20110213002255)
 
@@ -33,7 +33,7 @@ GEM
       mongo (~> 1.3)
       tzinfo (~> 0.3.22)
       will_paginate (~> 3.0.pre)
-    rake (0.8.7)
+    rake (0.9.1)
     rspec (2.0.1)
       rspec-core (~> 2.0.1)
       rspec-expectations (~> 2.0.1)
@@ -72,7 +72,7 @@ DEPENDENCIES
   database_cleaner
   locomotive_carrierwave
   mocha!
-  mongoid (~> 2.0.1)
+  mongoid (= 2.0.1)
   rake
   rspec (~> 2.0.0)
   ruby-debug
