@@ -26,7 +26,10 @@ module CustomFields
 
     ## validations ##
     validates_presence_of :label, :kind
-    validates_exclusion_of :_alias, :in => Mongoid.destructive_fields
+    validates_exclusion_of :_alias, :in => Module.new { 
+      def self.include?(el); CustomFields.options[:reserved_aliases].include?(el); end
+    }
+    validates_format_of :_alias, :with => /^[a-z]([A-Za-z0-9_]+)?$/
     validate :uniqueness_of_label_and_alias
 
     ## other accessors ##
@@ -133,7 +136,10 @@ module CustomFields
 
     def set_alias
       return if self.label.blank? && self._alias.blank?
-      self._alias = (self._alias.blank? ? self.label : self._alias).parameterize('_').downcase
+      
+      if self._alias.blank?
+        self._alias = self.label.parameterize('_').gsub('-', '_').downcase
+      end
     end
 
     def increment_counter!

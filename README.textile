@@ -1,18 +1,19 @@
-CustomFields
-===========
+h1. CustomFields
 
 Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive.
 
-Requirements
-=======
+h2. Requirements
 
 ActiveSupport 3.0.7, MongoDB 1.6 and Mongoid 2.0.1
 
 
-Example
-=======
+h2. Example
 
 Coming soon but take a look of the tests to see what CustomFields is capable of.
 
 
-Copyright (c) 2011 [Didier Lafforgue], released under the MIT license
+h2. Contact
+
+Feel free to contact me at didier at nocoffee dot fr.
+
+Copyright (c) 2011 NoCoffee, released under the MIT license

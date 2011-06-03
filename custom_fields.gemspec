@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 
   s.files        = Dir[ "init.rb",
                         "MIT-LICENSE",
-                        "README",
+                        "README.textile",
                         "{lib}/**/*",
                         "{config}/**/*"]
 
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   s.extra_rdoc_files = [
     "MIT-LICENSE",
-    "README"
+    "README.textile"
   ]
 
 end
