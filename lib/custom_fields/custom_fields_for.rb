@@ -2,24 +2,17 @@ module CustomFields
 
   module CustomFieldsFor
 
-    # def self.included(base)
-    #   base.extend(ClassMethods)
-    # end
-
     extend ActiveSupport::Concern
 
     included do
-
       cattr_accessor :custom_fields
 
       self.custom_fields = []
-
     end
 
     module InstanceMethods
 
       def custom_fields?(collection_name)
-        # puts "\t[custom_fields?] #{collection_name.to_s.inspect} / #{self.class.custom_fields.inspect} / #{self.class.custom_fields?(collection_name.to_s).inspect}"
         self.class.custom_fields?(collection_name)
       end
 
@@ -28,15 +21,10 @@ module CustomFields
 
         klass = self.send(:"fetch_#{singular_name}_klass")
 
-        # puts "\t[clone_metadata_for_custom_fields] #{singular_name} / klass = #{klass.inspect}"
-
         # safer to do that because we are going to modify the metadata klass for next operations
         metadata.clone.tap do |metadata|
           metadata.instance_variable_set(:@klass, klass)
         end
-        # puts "\t[create_relation / #{metadata.name}] klass = #{klass.inspect} / #{metadata.object_id}"
-
-        # metadata.instance_variable_set(:@klass, klass)
       end
 
     end
@@ -79,37 +67,16 @@ module CustomFields
 
         self.declare_embedded_in_definition_in_custom_field(collection_name)
 
-        # unless Object.const_defined?(dynamic_custom_field_class_name)
-        #   (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
-        #     embedded_in :#{self.name.underscore}, :inverse_of => :#{singular_name}_custom_fields
-        #   EOF
-        #
-        #   Object.const_set(dynamic_custom_field_class_name, klass)
-        # end
-
         # enhance the class itself
         if (itself = %w(itself self).include?(collection_name.to_s))
           collection_name, singular_name = '_metadata', 'metadata'
-
-          # self.define_custom_field_metadata_relationship
 
           class_eval <<-EOV
             embeds_one :#{collection_name}, :class_name => '::CustomFields::Metadata'
 
             def safe_#{singular_name}
-              # puts "[safe_#{singular_name}] begin"
-              # if self.#{collection_name}.nil?
-              #   puts "safe_#{singular_name} is nil"
-              # else
-              #   puts "safe_#{singular_name} is NOT nil"
-              # end
-              #
-              # puts "build_#{collection_name}...."
-              foo = self.#{collection_name} || self.build_#{collection_name}
-              # puts "...done"
-              foo
+              self.#{collection_name} || self.build_#{collection_name}
             end
-
           EOV
         end
 
@@ -175,8 +142,6 @@ module CustomFields
           end
         EOV
 
-        # self.change_metadata_klass(collection_name)
-
         # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass with custom fields every time we save a field)
         unless instance_methods.include?('write_attributes_with_custom_fields')
           class_eval do
@@ -219,44 +184,6 @@ module CustomFields
           Object.const_set(klass_name, klass)
         end
       end
-
-      # def change_metadata_klass(relation_name)
-      #   metadata = self.relations.delete(relation_name)
-      #
-      #   metadata = metadata.clone # 2 parent instances should not share the exact same option instance
-      #
-      #   custom_fields = self.send(:"ordered_#{custom_fields_association_name(association_name)}")
-      #
-      #   klass = metadata.klass.to_klass_with_custom_fields(custom_fields, self, association_name)
-      #
-      #   puts "\t[create_relation / #{metadata.name}] klass = #{klass.inspect} / #{metadata.object_id}"
-      #
-      #   metadata.instance_variable_set(:@klass, klass)
-      #
-      #   self.relations[relation_name] = metadata
-      # end
-
-      # def define_custom_field_metadata_relationship(target_collection_name)
-      #   collection_name, singular_name = '_metadata', 'metadata'
-      #
-      #   class_eval <<-EOV
-      #     embeds_one :#{collection_name}, :class_name => '::CustomFields::Metadata'
-      #
-      #     def safe_#{singular_name}
-      #       if self.#{collection_name}.nil?
-      #         puts "safe_#{singular_name} is nil"
-      #       else
-      #         puts "safe_#{singular_name} is NOT nil"
-      #       end
-      #
-      #       puts "build_#{collection_name}...."
-      #       foo = self.#{collection_name} || self.build_#{collection_name}
-      #       puts "...done"
-      #       foo
-      #     end
-      #
-      #   EOV
-      # end
 
     end
 
