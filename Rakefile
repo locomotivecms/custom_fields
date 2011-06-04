@@ -6,9 +6,6 @@ require 'rspec/core/rake_task'
 require 'rubygems/package_task'
 
 gemspec = eval(File.read('custom_fields.gemspec'))
-
-puts gemspec.version
-
 Gem::PackageTask.new(gemspec) do |pkg|
   pkg.gem_spec = gemspec
 end
