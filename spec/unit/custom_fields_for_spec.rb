@@ -2,6 +2,23 @@ require 'spec_helper'
 
 describe CustomFields::CustomFieldsFor do
 
+  describe 'helpers' do
+
+    before(:each) do
+      @project = Project.new
+    end
+
+    it 'keeps track of all the associations enhanced by the custom fields' do
+      @project.custom_fields.should_not be_empty
+    end
+
+    it 'tells if an association is enhanced by the custom fields' do
+      @project.custom_fields?(:people).should be_true
+      @project.custom_fields?(:tasks).should be_true
+    end
+
+  end
+
   context '#proxy class'  do
 
     before(:each) do

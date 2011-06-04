@@ -4,24 +4,25 @@ require 'active_support'
 require 'carrierwave/orm/mongoid'
 
 module CustomFields
-  
+
   @@options = {
     :reserved_aliases => Mongoid.destructive_fields
   }
-  
+
   def self.options=(options)
     @@options.merge!(options)
   end
-  
+
   def self.options
     @@options
   end
-  
+
 end
 
 require 'custom_fields/version'
 require 'custom_fields/extensions/mongoid/document'
 require 'custom_fields/extensions/mongoid/relations/accessors'
+require 'custom_fields/extensions/mongoid/relations/builders'
 require 'custom_fields/types/default'
 require 'custom_fields/types/string'
 require 'custom_fields/types/text'
