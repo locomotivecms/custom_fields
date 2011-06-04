@@ -4,7 +4,7 @@ Manage custom fields to a mongoid document or a collection. This module is one o
 
 h2. Requirements
 
-ActiveSupport 3.0.7, MongoDB 1.6 and Mongoid 2.0.1
+ActiveSupport 3.0.7, MongoDB 1.6 and Mongoid 2.0.2
 
 
 h2. Example
