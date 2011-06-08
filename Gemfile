@@ -6,7 +6,7 @@ gem 'rdoc'
 gem 'bson_ext', '~> 1.3.0'
 gem 'mongoid', '2.0.2'
 gem 'activesupport', '>= 3.0.7'
-gem 'locomotive_carrierwave', :require => 'carrierwave'
+gem 'carrierwave'
 gem 'SystemTimer', :platforms => :ruby_18
 
 group :test do

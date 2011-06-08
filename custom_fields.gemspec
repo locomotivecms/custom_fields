@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'mongoid', '2.0.2'
   s.add_dependency 'activesupport', '>= 3.0.7'
-  s.add_dependency 'locomotive_carrierwave'
+  # s.add_dependency 'locomotive_carrierwave'
 
   s.files        = Dir[ "init.rb",
                         "MIT-LICENSE",
