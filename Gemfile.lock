@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/floehopper/mocha.git
-  revision: 6da1242f26b12a24c4fcf67bf5921a25bc1bc88d
+  revision: d03843e763f4e5ceadb66bcb4c530d6c5d0cb293
   specs:
     mocha (0.9.12.20110213002255)
 

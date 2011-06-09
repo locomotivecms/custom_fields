@@ -1,7 +1,7 @@
 $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'active_support'
-require 'carrierwave/orm/mongoid'
+require 'carrierwave'
 
 module CustomFields
 
