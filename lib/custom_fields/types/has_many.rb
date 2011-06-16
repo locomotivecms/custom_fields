@@ -100,7 +100,7 @@ module CustomFields
             id_or_object
           else
             if self.target_klass.embedded?
-              self.target_klass._parent.send(self.target_klass.association_name).find(id_or_object)
+              self.target_klass._parent.reload.send(self.target_klass.association_name).find(id_or_object)
             else
               self.target_klass.find(id_or_object)
             end

@@ -39,7 +39,7 @@ module CustomFields
               target_klass = '#{self.target.to_s}'.constantize
 
               if target_klass.embedded?
-                @_#{self._name} = target_klass._parent.send(target_klass.association_name).find(target_id)
+                @_#{self._name} = target_klass._parent.reload.send(target_klass.association_name).find(target_id)
               else
                 @_#{self._name} = target_klass.find(target_id)
               end
