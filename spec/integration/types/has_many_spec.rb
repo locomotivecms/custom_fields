@@ -65,6 +65,17 @@ describe CustomFields::Types::HasMany do
   end
 
 
+  # Reverse has_many field
+
+  it 'returns all owned items in the target model'
+
+  it 'returns an empty array if there are no owned items'
+
+  it 'does not include elements with a different owner'
+
+  it 'does not include elements with no owner'
+
+
   # ___ helpers ___
 
   def attach_locations_to_task_and_save
