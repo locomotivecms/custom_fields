@@ -1,4 +1,4 @@
-class Project
+class Company
 
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -6,15 +6,10 @@ class Project
   include CustomFields::CustomFieldsFor
 
   field :name
-  field :description
 
-  references_many :people
-  embeds_many :tasks
+  embeds_many :people
 
   custom_fields_for :people
-  custom_fields_for :tasks
-
-  custom_fields_for :itself
 
   scope :ordered, :order_by => [[:name, :asc]]
 

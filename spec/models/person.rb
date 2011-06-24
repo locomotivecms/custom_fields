@@ -7,5 +7,6 @@ class Person
   field :full_name
 
   referenced_in :project, :inverse_of => :people
+  embedded_in :company, :inverse_of => :people
 
 end
