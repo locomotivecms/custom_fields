@@ -6,6 +6,7 @@ module CustomFields
 
       included do
         field :target
+        field :reverse_lookup
 
         validates_presence_of :target, :if => :has_many?
 
@@ -15,30 +16,50 @@ module CustomFields
       module InstanceMethods
 
         def apply_has_many_type(klass)
-          klass.class_eval <<-EOF
+          # If it's a reverse_lookup, only provide readonly access
+          if self.reverse_lookup
+            klass.class_eval <<-EOF
 
-            before_validation :store_#{self.safe_alias.singularize}_ids
+              before_validation :store_#{self.safe_alias.singularize}_ids
 
-            def #{self.safe_alias}=(ids_or_objects)
-              if @_#{self._name}.nil?
-                @_#{self._name} = ProxyCollection.new('#{self.target.to_s}', ids_or_objects)
-              else
-                @_#{self._name}.update(ids_or_objects)
+              def #{self.safe_alias}
+                @_#{self._name} ||= ReverseLookupProxyCollection.new('#{self.target.to_s}')
               end
-            end
 
-            def #{self.safe_alias}
-              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', read_attribute(:#{self._name}))
-            end
+              def #{self.safe_alias.singularize}_ids
+                self.#{self.safe_alias}.ids
+              end
 
-            def #{self.safe_alias.singularize}_ids
-              self.#{self.safe_alias}.ids
-            end
+              def store_#{self.safe_alias.singularize}_ids
+                # Do nothing. Mongoid wants to save the ids, but we don't actually need to store them
+              end
+            EOF
+          else
+            klass.class_eval <<-EOF
 
-            def store_#{self.safe_alias.singularize}_ids
-              write_attribute(:#{self._name}, #{self.safe_alias.singularize}_ids)
-            end
-          EOF
+              before_validation :store_#{self.safe_alias.singularize}_ids
+
+              def #{self.safe_alias}=(ids_or_objects)
+                if @_#{self._name}.nil?
+                  @_#{self._name} = ProxyCollection.new('#{self.target.to_s}', ids_or_objects)
+                else
+                  @_#{self._name}.update(ids_or_objects)
+                end
+              end
+
+              def #{self.safe_alias}
+                @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', read_attribute(:#{self._name}))
+              end
+
+              def #{self.safe_alias.singularize}_ids
+                self.#{self.safe_alias}.ids
+              end
+
+              def store_#{self.safe_alias.singularize}_ids
+                write_attribute(:#{self._name}, #{self.safe_alias.singularize}_ids)
+              end
+            EOF
+          end
         end
 
         def add_has_many_validation(klass)
@@ -112,6 +133,28 @@ module CustomFields
           nil
         end
 
+      end
+
+      # TODO shared code in initialize and find
+      class ReverseLookupProxyCollection
+
+        attr_accessor :target_klass
+        attr_reader :ids, :values
+
+        def initialize(target_klass_name)
+          self.target_klass = target_klass_name.constantize rescue nil
+        end
+
+        def find(id)
+          id = BSON::ObjectId(id) unless id.is_a?(BSON::ObjectId)
+          self.values.detect { |obj_id| obj_id == id }
+        end
+
+        def size
+          self.values.size
+        end
+
+        alias :length :size
       end
 
     end
