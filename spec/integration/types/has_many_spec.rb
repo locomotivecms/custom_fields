@@ -7,7 +7,7 @@ describe CustomFields::Types::HasMany do
     create_company
     create_project
     create_tasks
-    create_people
+    create_employees
 
     @task = @project.tasks.build :title => 'Managing team'
   end
@@ -107,7 +107,7 @@ describe CustomFields::Types::HasMany do
 
   def create_company
     @company = Company.new(:name => 'Colibri Software')
-    @company.person_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => Task.to_s
+    @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => Task.to_s
 
     @company.save!
   end
@@ -125,11 +125,11 @@ describe CustomFields::Types::HasMany do
     @task_2 = @project.tasks.build :title => 'Write code'
   end
 
-  def create_people
-    @person_1 = @company.people.build :full_name => 'John Doe', :task => @task_1
-    @person_2 = @company.people.build :full_name => 'Jane Doe', :task => @task_1
-    @person_3 = @company.people.build :full_name => 'John Smith', :task => @task_2
-    @person_4 = @company.people.build :full_name => 'John Smith'
+  def create_employees
+    @employee_1 = @company.employees.build :full_name => 'John Doe', :task => @task_1
+    @employee_2 = @company.employees.build :full_name => 'Jane Doe', :task => @task_1
+    @employee_3 = @company.employees.build :full_name => 'John Smith', :task => @task_2
+    @employee_4 = @company.employees.build :full_name => 'John Smith'
   end
 
 end

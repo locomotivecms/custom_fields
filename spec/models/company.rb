@@ -7,9 +7,9 @@ class Company
 
   field :name
 
-  embeds_many :people
+  embeds_many :employees
 
-  custom_fields_for :people
+  custom_fields_for :employees
 
   scope :ordered, :order_by => [[:name, :asc]]
 
