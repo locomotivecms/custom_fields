@@ -75,6 +75,8 @@ describe CustomFields::Types::HasMany do
 
   it 'does not include elements with no owner'
 
+  it 'creates owned objects with the correct owner'
+
 
   # ___ helpers ___
 
