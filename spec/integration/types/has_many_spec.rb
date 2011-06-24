@@ -70,7 +70,10 @@ describe CustomFields::Types::HasMany do
 
   # Reverse has_many field
 
-  it 'returns all owned items in the target model'
+  it 'returns all owned items in the target model' do
+    @task_1.developers.values.should == [@person_1, @person_2]
+    @task_2.developers.values.should == [@person_3]
+  end
 
   it 'returns an empty array if there are no owned items'
 
