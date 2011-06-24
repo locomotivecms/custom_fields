@@ -4,7 +4,10 @@ describe CustomFields::Types::HasMany do
 
   before(:each) do
     create_client
+    create_company
     create_project
+    create_tasks
+    create_people
 
     @task = @project.tasks.build :title => 'Managing team'
   end
@@ -99,10 +102,31 @@ describe CustomFields::Types::HasMany do
     @client.save!
   end
 
+  def create_company
+    @company = Company.new(:name => 'Colibri Software')
+    @company.person_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => Task.to_s
+
+    @company.save!
+  end
+
   def create_project
     @project = Project.new(:name => 'Locomotive')
     @project.task_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.location_klass.to_s
+    @project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => Person.to_s, :reverse_lookup => 'task'
+
     @project.save!
+  end
+
+  def create_tasks
+    @task_1 = @project.tasks.build :title => 'Write unit test'
+    @task_2 = @project.tasks.build :title => 'Write code'
+  end
+
+  def create_people
+    @person_1 = @company.people.build :full_name => 'John Doe', :task => @task_1
+    @person_2 = @company.people.build :full_name => 'Jane Doe', :task => @task_1
+    @person_3 = @company.people.build :full_name => 'John Smith', :task => @task_2
+    @person_4 = @company.people.build :full_name => 'John Smith'
   end
 
 end
