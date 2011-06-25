@@ -78,7 +78,9 @@ describe CustomFields::Types::HasMany do
     @task_2.developers.ids.should =~ [@employee_3._id]
   end
 
-  it 'returns an empty array if there are no owned items'
+  it 'returns an empty array if there are no owned items' do
+    @task_3.developers.values.should be_empty
+  end
 
   it 'does not include elements with a different owner'
 
@@ -128,6 +130,7 @@ describe CustomFields::Types::HasMany do
   def create_tasks
     @task_1 = @project.tasks.build :title => 'Write unit test'
     @task_2 = @project.tasks.build :title => 'Write code'
+    @task_3 = @project.tasks.build :title => 'Write UI'
 
     @project.save!
   end
