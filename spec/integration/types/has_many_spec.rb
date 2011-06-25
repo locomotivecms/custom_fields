@@ -97,7 +97,15 @@ describe CustomFields::Types::HasMany do
     @task_2.developers.ids.should_not include(@employee_4)
   end
 
-  it 'creates owned objects with the correct owner'
+  it 'creates owned objects with the correct owner' do
+    employee_5 = @task_1.developers.build :full_name => 'Bob'
+    employee_5.task.should == @task_1
+
+    employee_6 = @task_1.developers.build :full_name => 'Fred', :task => @task_1
+    employee_6.task.should == @task_1
+
+    @task_1.developers.build(:full_name => 'George', :task => @task_2).should raise_error
+  end
 
 
   # ___ helpers ___
