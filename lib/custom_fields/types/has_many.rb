@@ -18,12 +18,13 @@ module CustomFields
         def apply_has_many_type(klass)
           # If it's a reverse_lookup, only provide readonly access
           if self.reverse_lookup
+
             klass.class_eval <<-EOF
 
               before_validation :store_#{self.safe_alias.singularize}_ids
 
               def #{self.safe_alias}
-                @_#{self._name} ||= ReverseLookupProxyCollection.new('#{self.target.to_s}')
+                @_#{self._name} ||= ReverseLookupProxyCollection.new('#{self.target.to_s}', '#{self.reverse_lookup}', self._id)
               end
 
               def #{self.safe_alias.singularize}_ids
@@ -138,11 +139,29 @@ module CustomFields
       # TODO shared code in initialize and find
       class ReverseLookupProxyCollection
 
-        attr_accessor :target_klass
-        attr_reader :ids, :values
+        attr_accessor :target_klass, :reverse_lookup_field, :owner_id
 
-        def initialize(target_klass_name)
+        def initialize(target_klass_name, reverse_lookup_field, owner_id)
           self.target_klass = target_klass_name.constantize rescue nil
+
+          self.reverse_lookup_field = reverse_lookup_field
+          self.owner_id = owner_id
+        end
+
+        def values
+          arr = []
+          objects do |obj|
+            arr << obj
+          end
+          return arr
+        end
+
+        def ids
+          arr = []
+          objects do |obj|
+            arr << obj._id
+          end
+          return arr
         end
 
         def find(id)
@@ -155,6 +174,28 @@ module CustomFields
         end
 
         alias :length :size
+
+        protected
+
+        # TODO this is inefficient! Should translate the "reverse_lookup"
+        # string to a string like 'custom_field_#' and let mongo find the
+        # targets
+        def objects
+          if self.target_klass.embedded?
+            klass = self.target_klass._parent.reload.send(self.target_klass.association_name)
+          else
+            klass = self.target_klass
+          end
+
+          # TODO don't want to do `each': won't work if we hit the `else'
+          # statement above
+          klass.each do |obj|
+            reverse_lookup_field_val = obj.send(self.reverse_lookup_field)
+            if reverse_lookup_field_val && reverse_lookup_field_val._id == self.owner_id
+              yield obj
+            end
+          end
+        end
       end
 
     end
