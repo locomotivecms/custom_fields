@@ -74,12 +74,14 @@ describe CustomFields::Types::HasMany do
   it 'returns all owned items in the target model' do
 
     # TODO: test for values to be the same as well as ids
-    @task_1.developers.ids.should =~ [@employee_1._id, @employee_2._id]
-    @task_2.developers.ids.should =~ [@employee_3._id]
+    @task_1.developers.ids.should include(@employee_1._id)
+    @task_1.developers.ids.should include (@employee_2._id)
+    @task_2.developers.ids.should include(@employee_3._id)
   end
 
   it 'returns an empty array if there are no owned items' do
     @task_3.developers.values.should be_empty
+    @task_3.developers.ids.should be_empty
   end
 
   it 'does not include elements with a different owner'
