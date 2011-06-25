@@ -6,6 +6,7 @@ describe CustomFields::Types::HasMany do
     create_client
     create_company
     create_project
+    build_company_custom_field
     create_tasks
     create_employees
 
@@ -71,8 +72,10 @@ describe CustomFields::Types::HasMany do
   # Reverse has_many field
 
   it 'returns all owned items in the target model' do
-    @task_1.developers.values.should == [@employee_1, @employee_2]
-    @task_2.developers.values.should == [@employee_3]
+
+    # TODO: test for values to be the same as well as ids
+    @task_1.developers.ids.should =~ [@employee_1._id, @employee_2._id]
+    @task_2.developers.ids.should =~ [@employee_3._id]
   end
 
   it 'returns an empty array if there are no owned items'
@@ -107,22 +110,26 @@ describe CustomFields::Types::HasMany do
 
   def create_company
     @company = Company.new(:name => 'Colibri Software')
-    @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => Task.to_s
-
     @company.save!
   end
 
   def create_project
     @project = Project.new(:name => 'Locomotive')
     @project.task_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.location_klass.to_s
-    @project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => Person.to_s, :reverse_lookup => 'task'
+    @project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'task'
 
     @project.save!
+  end
+
+  def build_company_custom_field
+    @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
   end
 
   def create_tasks
     @task_1 = @project.tasks.build :title => 'Write unit test'
     @task_2 = @project.tasks.build :title => 'Write code'
+
+    @project.save!
   end
 
   def create_employees
@@ -130,6 +137,8 @@ describe CustomFields::Types::HasMany do
     @employee_2 = @company.employees.build :full_name => 'Jane Doe', :task => @task_1
     @employee_3 = @company.employees.build :full_name => 'John Smith', :task => @task_2
     @employee_4 = @company.employees.build :full_name => 'John Smith'
+
+    @company.save!
   end
 
 end
