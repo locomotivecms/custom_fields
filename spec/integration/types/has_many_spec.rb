@@ -91,7 +91,11 @@ describe CustomFields::Types::HasMany do
     @task_2.developers.ids.should_not include(@employee_2._id)
   end
 
-  it 'does not include elements with no owner'
+  it 'does not include elements with no owner' do
+    # TODO: test for values as well
+    @task_1.developers.ids.should_not include(@employee_4)
+    @task_2.developers.ids.should_not include(@employee_4)
+  end
 
   it 'creates owned objects with the correct owner'
 
