@@ -72,11 +72,20 @@ describe CustomFields::Types::HasMany do
   # Reverse has_many field
 
   it 'returns all owned items in the target model' do
-
-    # TODO: test for values to be the same as well as ids
     @task_1.developers.ids.should include(@employee_1._id)
+    @task_1.developers.values.select { |empl|
+      empl._id == @employee_1._id
+    }.should_not be_empty
+
     @task_1.developers.ids.should include (@employee_2._id)
+    @task_1.developers.values.select { |empl|
+      empl._id == @employee_2._id
+    }.should_not be_empty
+
     @task_2.developers.ids.should include(@employee_3._id)
+    @task_2.developers.values.select { |empl|
+      empl._id == @employee_3._id
+    }.should_not be_empty
   end
 
   it 'returns an empty array if there are no owned items' do
@@ -85,16 +94,32 @@ describe CustomFields::Types::HasMany do
   end
 
   it 'does not include elements with a different owner' do
-    # TODO: test for values as well
     @task_1.developers.ids.should_not include(@employee_3._id)
+    @task_1.developers.values.select { |empl|
+      empl._id == @employee_3._id
+    }.should be_empty
+
     @task_2.developers.ids.should_not include(@employee_1._id)
+    @task_2.developers.values.select { |empl|
+      empl._id == @employee_1._id
+    }.should be_empty
+
     @task_2.developers.ids.should_not include(@employee_2._id)
+    @task_2.developers.values.select { |empl|
+      empl._id == @employee_2._id
+    }.should be_empty
   end
 
   it 'does not include elements with no owner' do
-    # TODO: test for values as well
     @task_1.developers.ids.should_not include(@employee_4)
+    @task_1.developers.values.select { |empl|
+      empl._id == @employee_4._id
+    }.should be_empty
+
     @task_2.developers.ids.should_not include(@employee_4)
+    @task_2.developers.values.select { |empl|
+      empl._id == @employee_4._id
+    }.should be_empty
   end
 
   it 'creates owned objects with the correct owner' do
