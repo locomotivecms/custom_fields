@@ -45,6 +45,8 @@ module CustomFields
               end
 
               @_#{self._name}
+            rescue # target_klass does not exist anymore or the target element has been removed since
+              nil
             end
           EOF
         end

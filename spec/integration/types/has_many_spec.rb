@@ -36,6 +36,35 @@ describe CustomFields::Types::HasMany do
     @task.locations.should be_empty
   end
 
+  it 'does not include elements which have been removed' do
+    attach_locations_to_task_and_save
+
+    @task.locations = [@location_2._id, @location_1._id]
+
+    @task.save
+
+    @location_1.destroy
+
+    @task = Mongoid.reload_document(@task)
+
+    @task.locations.size.should == 1
+  end
+
+  it 'returns an empty array if the target class does not exist anymore' do
+    attach_locations_to_task_and_save
+
+    @task.locations = [@location_2._id, @location_1._id]
+
+    @task.save
+
+    @client.destroy
+
+    @task = Mongoid.reload_document(@task)
+
+    @task.locations.should be_empty
+  end
+
+
   # ___ helpers ___
 
   def attach_locations_to_task_and_save

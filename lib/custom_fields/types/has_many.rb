@@ -21,14 +21,14 @@ module CustomFields
 
             def #{self.safe_alias}=(ids_or_objects)
               if @_#{self._name}.nil?
-                @_#{self._name} = ProxyCollection.new('#{self.target.to_s}'.constantize, ids_or_objects)
+                @_#{self._name} = ProxyCollection.new('#{self.target.to_s}', ids_or_objects)
               else
                 @_#{self._name}.update(ids_or_objects)
               end
             end
 
             def #{self.safe_alias}
-              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}'.constantize, read_attribute(:#{self._name}))
+              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', read_attribute(:#{self._name}))
             end
 
             def #{self.safe_alias.singularize}_ids
@@ -53,8 +53,11 @@ module CustomFields
 
         attr_accessor :target_klass, :ids, :values
 
-        def initialize(target_klass, array = [])
-          self.target_klass = target_klass
+        def initialize(target_klass_name, array = [])
+          self.target_klass = target_klass_name.constantize rescue nil
+
+          array = [] if self.target_klass.nil?
+
           self.update(array || [])
         end
 
@@ -66,8 +69,8 @@ module CustomFields
         def update(values)
           values = [] if values.blank?
 
-          self.ids = values.collect { |obj| self.id_for_sure(obj) }
-          self.values = values.collect { |obj| self.object_for_sure(obj) }
+          self.ids = values.collect { |obj| self.id_for_sure(obj) }.compact
+          self.values = values.collect { |obj| self.object_for_sure(obj) }.compact
         end
 
         def <<(*args)
@@ -80,7 +83,7 @@ module CustomFields
         alias :push :<<
 
         def size
-          self.ids.size
+          self.values.size
         end
 
         alias :length :size
@@ -105,6 +108,8 @@ module CustomFields
               self.target_klass.find(id_or_object)
             end
           end
+        rescue # target_klass does not exist anymore or the target element has been removed since
+          nil
         end
 
       end

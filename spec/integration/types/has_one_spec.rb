@@ -18,10 +18,29 @@ describe CustomFields::Types::HasOne do
     @task.location = @location_1
     @task.save && @task = Mongoid.reload_document(@task)
 
-
     @task.location.should_not be_nil
     @task.location.name.should == 'office'
     @task.location.country.should == 'US'
+  end
+
+  it 'returns nil if the target element has been removed' do
+    @task.location = @location_1
+    @task.save
+
+    @location_1.destroy
+
+    @task = Mongoid.reload_document(@task)
+    @task.location.should be_nil
+  end
+
+  it 'returns nil if the target class does not exist anymore' do
+    @task.location = @location_1
+    @task.save
+
+    @client.destroy
+
+    @task = Mongoid.reload_document(@task)
+    @task.location.should be_nil
   end
 
   # ___ helpers ___
