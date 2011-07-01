@@ -13,8 +13,9 @@ module CustomFields
         def apply_date_type(klass)
 
           klass.class_eval <<-EOF
+
             def #{self.safe_alias}
-              self.#{self._name}.strftime(I18n.t('date.formats.default')) rescue nil
+              self.#{self._name}
             end
 
             def #{self.safe_alias}=(value)
@@ -25,7 +26,19 @@ module CustomFields
 
               self.#{self._name} = value
             end
+
+            def formatted_#{self.safe_alias}
+              self.#{self._name}.strftime(I18n.t('date.formats.default')) rescue nil
+            end
+
+            alias formatted_#{self.safe_alias}= #{self.safe_alias}=
           EOF
+
+          def add_date_validation(klass)
+            if self.required?
+              klass.validates_presence_of self.safe_alias.to_sym, :"formatted_#{self.safe_alias}"
+            end
+          end
 
         end
 

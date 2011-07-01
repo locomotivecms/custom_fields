@@ -27,17 +27,23 @@ describe CustomFields::Types::Date do
       @date = Date.parse('2010-06-29')
     end
 
+    it 'owns aliases to the getter/setter' do
+      @project.safe_metadata.respond_to?(:formatted_started_at).should be_true
+      @project.safe_metadata.respond_to?(:formatted_started_at=).should be_true
+    end
+
     it 'sets value from a date' do
       @project.safe_metadata.started_at = @date
-      @project.safe_metadata.started_at.should == '2010-06-29'
+      @project.safe_metadata.formatted_started_at.should == '2010-06-29'
+      @project.safe_metadata.started_at.should == @date
       @project.safe_metadata.field_1.class.should == Date
       @project.safe_metadata.field_1.should == @date
     end
 
     it 'sets value from a string' do
       @project.safe_metadata.started_at = '2010-06-29'
-      @project.safe_metadata.started_at.class.should == String
-      @project.safe_metadata.started_at.should == '2010-06-29'
+      @project.safe_metadata.formatted_started_at.class.should == String
+      @project.safe_metadata.formatted_started_at.should == '2010-06-29'
       @project.safe_metadata.field_1.class.should == Date
       @project.safe_metadata.field_1.should == @date
     end
@@ -45,7 +51,7 @@ describe CustomFields::Types::Date do
     it 'sets value (in French format) from a string' do
       I18n.stubs(:t).returns('%d/%m/%Y')
       @project.safe_metadata.started_at = '29/06/2010'
-      @project.safe_metadata.started_at.should == '29/06/2010'
+      @project.safe_metadata.formatted_started_at.should == '29/06/2010'
       @project.safe_metadata.field_1.should == @date
     end
 

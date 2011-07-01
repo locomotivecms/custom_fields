@@ -91,7 +91,7 @@ module CustomFields
           def aliased_attributes
             hash = { :created_at => self.created_at, :updated_at => self.updated_at } rescue {}
 
-            self.custom_fields.each do |field|
+            (self.custom_fields || []).each do |field|
               case field.kind
               when 'file' then hash[field._alias] = self.send(field._name.to_sym).url
               else
