@@ -5,15 +5,15 @@ module CustomFields
     extend ActiveSupport::Concern
 
     included do
-      cattr_accessor :custom_fields
+      cattr_accessor :_custom_fields_for
 
-      self.custom_fields = []
+      self._custom_fields_for = []
     end
 
     module InstanceMethods
 
-      def custom_fields?(collection_name)
-        self.class.custom_fields?(collection_name)
+      def custom_fields_for?(collection_name)
+        self.class.custom_fields_for?(collection_name)
       end
 
       def clone_metadata_for_custom_fields(metadata)
@@ -57,8 +57,8 @@ module CustomFields
     #
     module ClassMethods
 
-      def custom_fields?(collection_name)
-        self.custom_fields.include?(collection_name.to_s)
+      def custom_fields_for?(collection_name)
+        self._custom_fields_for.include?(collection_name.to_s)
       end
 
       def custom_fields_for(collection_name)
@@ -81,7 +81,7 @@ module CustomFields
         end
 
         # record the collection_name
-        self.custom_fields << collection_name.to_s
+        self._custom_fields_for << collection_name.to_s
 
         # common part
         class_eval <<-EOV

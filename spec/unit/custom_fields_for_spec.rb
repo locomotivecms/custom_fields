@@ -9,12 +9,12 @@ describe CustomFields::CustomFieldsFor do
     end
 
     it 'keeps track of all the associations enhanced by the custom fields' do
-      @project.custom_fields.should_not be_empty
+      @project._custom_fields_for.should_not be_empty
     end
 
     it 'tells if an association is enhanced by the custom fields' do
-      @project.custom_fields?(:people).should be_true
-      @project.custom_fields?(:tasks).should be_true
+      @project.custom_fields_for?(:people).should be_true
+      @project.custom_fields_for?(:tasks).should be_true
     end
 
   end

@@ -71,9 +71,12 @@ module CustomFields
               return unless field.valid?
             end
 
-            (self.custom_fields ||= []) << field
+            self.custom_fields ||= []
 
-            field.apply(self)
+             if self.lookup_custom_field(field._name).nil?
+               self.custom_fields << field
+               field.apply(self)
+             end
           end
 
           def self.lookup_custom_field(name)

@@ -5,7 +5,7 @@ gem 'rdoc'
 
 gem 'bson_ext', '~> 1.3.0'
 gem 'mongoid', '2.0.2'
-gem 'activesupport', '>= 3.0.7'
+gem 'activesupport', '~> 3.0.9'
 gem 'carrierwave'
 gem 'SystemTimer', :platforms => :ruby_18
 

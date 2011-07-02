@@ -16,7 +16,7 @@ module Mongoid # :nodoc:
       #
       # @since 2.0.0.rc.1
       def create_relation_with_custom_fields(object, metadata)
-        if self.respond_to?(:custom_fields?) && self.custom_fields?(metadata.name)
+        if self.respond_to?(:custom_fields_for?) && self.custom_fields_for?(metadata.name)
           metadata = self.clone_metadata_for_custom_fields(metadata)
         end
 
