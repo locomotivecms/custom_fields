@@ -143,15 +143,17 @@ module CustomFields
         EOV
 
         # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass with custom fields every time we save a field)
-        unless instance_methods.include?('write_attributes_with_custom_fields')
+        unless instance_methods.collect(&:to_s).include?('write_attributes_with_custom_fields')
+
           class_eval do
-            def write_attributes_with_custom_fields(attrs = nil)
+            def write_attributes_with_custom_fields(attrs = nil, guard_protected_attributes = true)
               self.instance_variable_set(:@_writing_attributes_with_custom_fields, true)
-              self.write_attributes_without_custom_fields(attrs)
+              self.write_attributes_without_custom_fields(attrs, guard_protected_attributes)
             end
 
             alias_method_chain :write_attributes, :custom_fields
           end
+
         end
 
         if itself
