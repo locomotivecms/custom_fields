@@ -169,6 +169,19 @@ module CustomFields
           self.values.detect { |obj_id| obj_id == id }
         end
 
+        def <<(obj)
+          # TODO should we make sure it's the right type?
+
+          # Check the owner id of the object to be added
+          obj_owner = obj.send(reverse_lookup_field.to_sym)
+          obj_owner_id = obj_owner._id if obj_owner
+          if obj_owner && obj_owner_id != owner_id
+            raise ArgumentError, "Object #{obj} cannot be added: already has an owner"
+          end
+
+          obj.send("#{reverse_lookup_field}=".to_sym, owner_id)
+        end
+
         def size
           self.values.size
         end
