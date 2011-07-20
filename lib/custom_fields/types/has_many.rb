@@ -17,7 +17,7 @@ module CustomFields
 
         def apply_has_many_type(klass)
           # If it's a reverse_lookup, only provide readonly access
-          if self.reverse_lookup
+          if self.reverse_lookup && !self.reverse_lookup.strip.blank?
 
             klass.class_eval <<-EOF
 
