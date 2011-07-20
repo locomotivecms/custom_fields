@@ -122,14 +122,17 @@ describe CustomFields::Types::HasMany do
     }.should be_empty
   end
 
-  it 'creates owned objects with the correct owner' do
-    employee_5 = @task_1.developers.build :full_name => 'Bob'
-    employee_5.task.should == @task_1
+  it 'allows adding objects with no owner or correct owner' do
+    employee_5 = @company.employees.build :full_name => 'Bob'
+    @task_1.developers << employee_5
+    employee_5.task._id.should == @task_1._id
 
-    employee_6 = @task_1.developers.build :full_name => 'Fred', :task => @task_1
-    employee_6.task.should == @task_1
+    employee_6 = @company.employees.build :full_name => 'Fred', :task => @task_1
+    @task_1.developers << employee_6
+    employee_6.task._id.should == @task_1._id
 
-    @task_1.developers.build(:full_name => 'George', :task => @task_2).should raise_error
+    employee_7 = @company.employees.build :full_name => 'George', :task => @task_2
+    lambda{@task_1.developers << employee_7}.should raise_error
   end
 
 
