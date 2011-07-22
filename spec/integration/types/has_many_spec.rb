@@ -135,6 +135,12 @@ describe CustomFields::Types::HasMany do
     lambda{@task_1.developers << employee_7}.should raise_error
   end
 
+  it 'allows clearing owned objects' do
+    @task_1.developers.clear!
+    @task_1.developers.ids.should be_empty
+    @task_1.developers.values.should be_empty
+  end
+
 
   # ___ helpers ___
 

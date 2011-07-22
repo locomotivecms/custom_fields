@@ -182,6 +182,16 @@ module CustomFields
           obj.send("#{reverse_lookup_field}=".to_sym, owner_id)
         end
 
+        def clear!
+          ret = []
+          objects do |obj|
+            obj.send("#{self.reverse_lookup_field}=".to_sym, nil)
+
+            # TODO: May not want to save them...may want the caller to do that
+            obj.save!
+          end
+        end
+
         def size
           self.values.size
         end
