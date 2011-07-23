@@ -147,6 +147,25 @@ describe CustomFields::Types::HasMany do
     @task_1.developers.values.should be_empty
   end
 
+  it 'allows updating owned objects' do
+    @task_1.developers.update([@employee_2, @employee_4])
+
+    reload_employees
+
+    #require 'ruby-debug'
+    #debugger
+
+    @employee_1.task.should be_nil
+    @employee_2.task._id.should == @task_1._id
+    @employee_3.task._id.should_not == @task_1._id
+    @employee_4.task._id.should == @task_1._id
+
+    @task_1.developers.ids.should_not include(@employee_1._id)
+    @task_1.developers.ids.should include(@employee_2._id)
+    @task_1.developers.ids.should_not include(@employee_3._id)
+    @task_1.developers.ids.should include(@employee_4._id)
+  end
+
 
   # ___ helpers ___
 
@@ -204,6 +223,7 @@ describe CustomFields::Types::HasMany do
   end
 
   def reload_employees
+    @company.reload
     @employee_1 = @company.employees.find(@employee_1._id)
     @employee_2 = @company.employees.find(@employee_2._id)
     @employee_3 = @company.employees.find(@employee_3._id)

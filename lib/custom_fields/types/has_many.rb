@@ -192,6 +192,23 @@ module CustomFields
           end
         end
 
+        def update(values)
+          self.clear!
+          values.each do |obj|
+            # Reload the object as it may have been changed
+            if obj.embedded?
+              obj = obj._parent.reload.send(obj.association_name).find(obj._id)
+            else
+              obj.reload
+            end
+
+            self << obj
+
+            # TODO: as above, may not want to save them here...
+            obj.save!
+          end
+        end
+
         def size
           self.values.size
         end
