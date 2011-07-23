@@ -137,6 +137,12 @@ describe CustomFields::Types::HasMany do
 
   it 'allows clearing owned objects' do
     @task_1.developers.clear!
+
+    reload_employees
+
+    @employee_1.task.should be_nil
+    @employee_2.task.should be_nil
+
     @task_1.developers.ids.should be_empty
     @task_1.developers.values.should be_empty
   end
@@ -195,6 +201,13 @@ describe CustomFields::Types::HasMany do
     @employee_4 = @company.employees.build :full_name => 'John Smith'
 
     @company.save!
+  end
+
+  def reload_employees
+    @employee_1 = @company.employees.find(@employee_1._id)
+    @employee_2 = @company.employees.find(@employee_2._id)
+    @employee_3 = @company.employees.find(@employee_3._id)
+    @employee_4 = @company.employees.find(@employee_4._id)
   end
 
 end
