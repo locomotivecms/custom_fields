@@ -152,8 +152,21 @@ describe CustomFields::Types::HasMany do
 
     reload_employees
 
-    #require 'ruby-debug'
-    #debugger
+    @employee_1.task.should be_nil
+    @employee_2.task._id.should == @task_1._id
+    @employee_3.task._id.should_not == @task_1._id
+    @employee_4.task._id.should == @task_1._id
+
+    @task_1.developers.ids.should_not include(@employee_1._id)
+    @task_1.developers.ids.should include(@employee_2._id)
+    @task_1.developers.ids.should_not include(@employee_3._id)
+    @task_1.developers.ids.should include(@employee_4._id)
+  end
+
+  it 'allows assignment to custom field' do
+    @task_1.developers = [@employee_2, @employee_4]
+
+    reload_employees
 
     @employee_1.task.should be_nil
     @employee_2.task._id.should == @task_1._id

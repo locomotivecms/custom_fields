@@ -21,18 +21,12 @@ module CustomFields
 
             klass.class_eval <<-EOF
 
-              before_validation :store_#{self.safe_alias.singularize}_ids
-
               def #{self.safe_alias}
                 @_#{self._name} ||= ReverseLookupProxyCollection.new('#{self.target.to_s}', '#{self.reverse_lookup}', self._id)
               end
 
-              def #{self.safe_alias.singularize}_ids
-                self.#{self.safe_alias}.ids
-              end
-
-              def store_#{self.safe_alias.singularize}_ids
-                # Do nothing. Mongoid wants to save the ids, but we don't actually need to store them
+              def #{self.safe_alias}=(objects)
+                self.#{self.safe_alias}.update(objects)
               end
             EOF
           else
