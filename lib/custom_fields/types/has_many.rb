@@ -209,6 +209,10 @@ module CustomFields
 
         alias :length :size
 
+        def empty?
+          self.values.empty?
+        end
+
         protected
 
         # TODO this is inefficient! Should translate the "reverse_lookup"
