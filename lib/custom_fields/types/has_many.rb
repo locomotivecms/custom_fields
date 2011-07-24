@@ -189,6 +189,8 @@ module CustomFields
         def update(values)
           self.clear!
           values.each do |obj|
+            obj = object_for_sure(obj)
+
             # Reload the object as it may have been changed
             if obj.embedded?
               obj = obj._parent.reload.send(obj.association_name).find(obj._id)
@@ -233,6 +235,21 @@ module CustomFields
               yield obj
             end
           end
+        end
+
+        # TODO: this is duplicated above!
+        def object_for_sure(id_or_object)
+          if id_or_object.respond_to?(:_id)
+            id_or_object
+          else
+            if self.target_klass.embedded?
+              self.target_klass._parent.reload.send(self.target_klass.association_name).find(id_or_object)
+            else
+              self.target_klass.find(id_or_object)
+            end
+          end
+        rescue # target_klass does not exist anymore or the target element has been removed since
+          nil
         end
       end
 
