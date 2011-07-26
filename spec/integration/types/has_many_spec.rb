@@ -179,6 +179,14 @@ describe CustomFields::Types::HasMany do
     @task_1.developers.ids.should include(@employee_4._id)
   end
 
+  it 'specifies whether it is a reverse has_many field' do
+    developers_field = @task_1.class.custom_fields.detect { |f| f._alias == 'developers' }
+    locations_field = @task_1.class.custom_fields.detect { |f| f._alias == 'locations' }
+
+    developers_field.reverse_has_many?.should be_true
+    locations_field.reverse_has_many?.should be_false
+  end
+
 
   # ___ helpers ___
 

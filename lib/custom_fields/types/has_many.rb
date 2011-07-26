@@ -15,9 +15,13 @@ module CustomFields
 
       module InstanceMethods
 
+        def reverse_has_many?
+          self.reverse_lookup && !self.reverse_lookup.strip.blank?
+        end
+
         def apply_has_many_type(klass)
           # If it's a reverse_lookup, only provide readonly access
-          if self.reverse_lookup && !self.reverse_lookup.strip.blank?
+          if reverse_has_many?
 
             klass.class_eval <<-EOF
 
