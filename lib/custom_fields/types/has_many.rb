@@ -215,8 +215,8 @@ module CustomFields
 
         alias :length :size
 
-        def empty?
-          self.values.empty?
+        def method_missing(name, *args, &block)
+          self.values.send(name, *args, &block)
         end
 
         protected
