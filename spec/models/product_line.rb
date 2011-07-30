@@ -1,4 +1,4 @@
-class Project
+class ProductLine
 
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -8,13 +8,7 @@ class Project
   field :name
   field :description
 
-  references_many :people
-  embeds_many :tasks
-
-  custom_fields_for :people
-  custom_fields_for :tasks
-
-  custom_fields_for :itself
+  custom_fields_for :products
 
   scope :ordered, :order_by => [[:name, :asc]]
 

@@ -37,6 +37,10 @@ describe CustomFields::Types::HasMany do
       task.valid?.should be_true
     end
 
+    it 'marks it as invalid if there are no owned items'
+
+    it 'marks it as valid if there are owned items'
+
   end
 
   def build_project_task_with_custom_field
