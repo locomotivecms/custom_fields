@@ -14,155 +14,155 @@ describe CustomFields::Types::HasMany do
     @task = @project.tasks.build :title => 'Managing team'
   end
 
-  # describe 'simple' do
-  #
-  #   it 'attaches many different locations to a task' do
-  #     attach_locations_to_task_and_save
-  #
-  #     @task.locations.should_not be_empty
-  #     @task.locations.collect(&:_id).should == [@location_1._id, @location_2._id]
-  #   end
-  #
-  #   it 'changes the order of the locations' do
-  #     attach_locations_to_task_and_save
-  #
-  #     @task.locations = [@location_2._id, @location_1._id]
-  #
-  #     @task.save && @task = Mongoid.reload_document(@task)
-  #
-  #     @task.locations.first.name.should == 'dev lab'
-  #   end
-  #
-  #   it 'resets the locations by passing a blank value' do
-  #     attach_locations_to_task_and_save
-  #
-  #     @task.locations = ''
-  #
-  #     @task.save && @task = Mongoid.reload_document(@task)
-  #
-  #     @task.locations.should be_empty
-  #   end
-  #
-  #   it 'does not include elements which have been removed' do
-  #     attach_locations_to_task_and_save
-  #
-  #     @task.locations = [@location_2._id, @location_1._id]
-  #
-  #     @task.save
-  #
-  #     @location_1.destroy
-  #
-  #     @task = Mongoid.reload_document(@task)
-  #
-  #     @task.locations.size.should == 1
-  #   end
-  #
-  #   it 'returns an empty array if the target class does not exist anymore' do
-  #     attach_locations_to_task_and_save
-  #
-  #     @task.locations = [@location_2._id, @location_1._id]
-  #
-  #     @task.save
-  #
-  #     @client.destroy
-  #
-  #     @task = Mongoid.reload_document(@task)
-  #
-  #     @task.locations.should be_empty
-  #   end
-  #
-  # end
+  describe 'simple' do
+
+    it 'attaches many different locations to a task' do
+      attach_locations_to_task_and_save
+
+      @task.locations.should_not be_empty
+      @task.locations.collect(&:_id).should == [@location_1._id, @location_2._id]
+    end
+
+    it 'changes the order of the locations' do
+      attach_locations_to_task_and_save
+
+      @task.locations = [@location_2._id, @location_1._id]
+
+      @task.save && @task = Mongoid.reload_document(@task)
+
+      @task.locations.first.name.should == 'dev lab'
+    end
+
+    it 'resets the locations by passing a blank value' do
+      attach_locations_to_task_and_save
+
+      @task.locations = ''
+
+      @task.save && @task = Mongoid.reload_document(@task)
+
+      @task.locations.should be_empty
+    end
+
+    it 'does not include elements which have been removed' do
+      attach_locations_to_task_and_save
+
+      @task.locations = [@location_2._id, @location_1._id]
+
+      @task.save
+
+      @location_1.destroy
+
+      @task = Mongoid.reload_document(@task)
+
+      @task.locations.size.should == 1
+    end
+
+    it 'returns an empty array if the target class does not exist anymore' do
+      attach_locations_to_task_and_save
+
+      @task.locations = [@location_2._id, @location_1._id]
+
+      @task.save
+
+      @client.destroy
+
+      @task = Mongoid.reload_document(@task)
+
+      @task.locations.should be_empty
+    end
+
+  end
 
   describe 'reverse' do
 
-    # it 'returns all owned items in the target model' do
-    #   @task_1.developers.reload
-    #
-    #   @task_1.developers.ids.should include(@employee_1._id)
-    #   @task_1.developers.values.select { |empl|
-    #     empl._id == @employee_1._id
-    #   }.should_not be_empty
-    #
-    #   @task_1.developers.ids.should include (@employee_2._id)
-    #   @task_1.developers.values.select { |empl|
-    #     empl._id == @employee_2._id
-    #   }.should_not be_empty
-    #
-    #   @task_2.developers.reload
-    #
-    #   @task_2.developers.ids.should include(@employee_3._id)
-    #   @task_2.developers.values.select { |empl|
-    #     empl._id == @employee_3._id
-    #   }.should_not be_empty
-    # end
+    it 'returns all owned items in the target model' do
+      @task_1.developers.reload
 
-    # it 'returns an empty array if there are no owned items' do
-    #   @task_3.developers.values.should be_empty
-    #   @task_3.developers.ids.should be_empty
-    # end
-    #
-    # it 'does not include elements with a different owner' do
-    #   @task_1.developers.ids.should_not include(@employee_3._id)
-    #   @task_1.developers.values.select { |empl|
-    #     empl._id == @employee_3._id
-    #   }.should be_empty
-    #
-    #   @task_2.developers.ids.should_not include(@employee_1._id)
-    #   @task_2.developers.values.select { |empl|
-    #     empl._id == @employee_1._id
-    #   }.should be_empty
-    #
-    #   @task_2.developers.ids.should_not include(@employee_2._id)
-    #   @task_2.developers.values.select { |empl|
-    #     empl._id == @employee_2._id
-    #   }.should be_empty
-    # end
-    #
-    # it 'does not include elements with no owner' do
-    #   @task_1.developers.ids.should_not include(@employee_4)
-    #   @task_1.developers.values.select { |empl|
-    #     empl._id == @employee_4._id
-    #   }.should be_empty
-    #
-    #   @task_2.developers.ids.should_not include(@employee_4)
-    #   @task_2.developers.values.select { |empl|
-    #     empl._id == @employee_4._id
-    #   }.should be_empty
-    # end
-    #
-    # it 'allows adding objects with no owner or correct owner' do
-    #   employee_5 = @company.employees.build :full_name => 'Bob'
-    #   @task_1.developers << employee_5
-    #   employee_5.task.should be_nil
-    #
-    #   employee_7 = @company.employees.build :full_name => 'George', :task => @task_2
-    #   lambda{@task_1.developers << employee_7}.should raise_error
-    # end
-    #
-    # it 'allows updating owned objects' do
-    #   @task_1.developers.reload
-    #
-    #   # puts "@employee_2 = #{@employee_2.inspect}"
-    #
-    #   @task_1.developers.update([@employee_2, @employee_4])
-    #
-    #   @task_1.save!
-    #
-    #   reload_employees
-    #
-    #   # puts "oooooooo test it ! ooooooooooo"
-    #
-    #   @employee_1.task.should be_nil
-    #   @employee_2.task._id.should == @task_1._id
-    #   @employee_3.task._id.should_not == @task_1._id
-    #   @employee_4.task._id.should == @task_1._id
-    #
-    #   @task_1.developers.ids.should_not include(@employee_1._id)
-    #   @task_1.developers.ids.should include(@employee_2._id)
-    #   @task_1.developers.ids.should_not include(@employee_3._id)
-    #   @task_1.developers.ids.should include(@employee_4._id)
-    # end
-    #
+      @task_1.developers.ids.should include(@employee_1._id)
+      @task_1.developers.values.select { |empl|
+        empl._id == @employee_1._id
+      }.should_not be_empty
+
+      @task_1.developers.ids.should include (@employee_2._id)
+      @task_1.developers.values.select { |empl|
+        empl._id == @employee_2._id
+      }.should_not be_empty
+
+      @task_2.developers.reload
+
+      @task_2.developers.ids.should include(@employee_3._id)
+      @task_2.developers.values.select { |empl|
+        empl._id == @employee_3._id
+      }.should_not be_empty
+    end
+
+    it 'returns an empty array if there are no owned items' do
+      @task_3.developers.values.should be_empty
+      @task_3.developers.ids.should be_empty
+    end
+
+    it 'does not include elements with a different owner' do
+      @task_1.developers.ids.should_not include(@employee_3._id)
+      @task_1.developers.values.select { |empl|
+        empl._id == @employee_3._id
+      }.should be_empty
+
+      @task_2.developers.ids.should_not include(@employee_1._id)
+      @task_2.developers.values.select { |empl|
+        empl._id == @employee_1._id
+      }.should be_empty
+
+      @task_2.developers.ids.should_not include(@employee_2._id)
+      @task_2.developers.values.select { |empl|
+        empl._id == @employee_2._id
+      }.should be_empty
+    end
+
+    it 'does not include elements with no owner' do
+      @task_1.developers.ids.should_not include(@employee_4)
+      @task_1.developers.values.select { |empl|
+        empl._id == @employee_4._id
+      }.should be_empty
+
+      @task_2.developers.ids.should_not include(@employee_4)
+      @task_2.developers.values.select { |empl|
+        empl._id == @employee_4._id
+      }.should be_empty
+    end
+
+    it 'allows adding objects with no owner or correct owner' do
+      employee_5 = @company.employees.build :full_name => 'Bob'
+      @task_1.developers << employee_5
+      employee_5.task.should be_nil
+
+      employee_7 = @company.employees.build :full_name => 'George', :task => @task_2
+      lambda{@task_1.developers << employee_7}.should raise_error
+    end
+
+    it 'allows updating owned objects' do
+      @task_1.developers.reload
+
+      # puts "@employee_2 = #{@employee_2.inspect}"
+
+      @task_1.developers.update([@employee_2, @employee_4])
+
+      @task_1.save!
+
+      reload_employees
+
+      # puts "oooooooo test it ! ooooooooooo"
+
+      @employee_1.task.should be_nil
+      @employee_2.task._id.should == @task_1._id
+      @employee_3.task._id.should_not == @task_1._id
+      @employee_4.task._id.should == @task_1._id
+
+      @task_1.developers.ids.should_not include(@employee_1._id)
+      @task_1.developers.ids.should include(@employee_2._id)
+      @task_1.developers.ids.should_not include(@employee_3._id)
+      @task_1.developers.ids.should include(@employee_4._id)
+    end
+
     it 'allows assignment to custom field' do
       @task_1.developers.reload
 
