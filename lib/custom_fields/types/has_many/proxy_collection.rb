@@ -18,12 +18,6 @@ module CustomFields
           else
             self.ids, self.values = [], []
           end
-
-          # array = options[:array] || []
-          #
-          # array = [] if self.target_klass.nil?
-          #
-          # self.update(array)
         end
 
         def find(id)
@@ -31,9 +25,7 @@ module CustomFields
           self.values.detect { |obj_id| obj_id == id }
         end
 
-        # TODO: refactor it
         def update(values)
-          # puts "update (values): #{values.inspect}"
           values = [] if values.blank?
 
           self.ids = values.collect { |obj| self.id_for_sure(obj) }.compact
@@ -87,26 +79,15 @@ module CustomFields
 
         def collection(reload_embedded = false)
           if self.target_klass.embedded?
-            # TODO: memoization
             parent_target_klass = self.target_klass._parent
 
             parent_target_klass = parent_target_klass.reload if reload_embedded
 
             parent_target_klass.send(self.target_klass.association_name)
-
-            # self.target_klass._parent.reload.send(self.target_klass.association_name)
           else
             self.target_klass
           end
         end
-
-        # def safe_
-        #   if self.target_klass.embedded?
-        #     self.target_klass._parent.reload.send(self.target_klass.association_name)
-        #   else
-        #     self.target_klass
-        #   end
-        # end
 
       end
 

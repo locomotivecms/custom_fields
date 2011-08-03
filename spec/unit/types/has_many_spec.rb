@@ -60,25 +60,11 @@ describe CustomFields::Types::HasMany do
 
       it 'marks it as valid if there are owned items' do
         task = @project.tasks.build :designers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
-        puts "task = #{task.inspect}"
         task.valid?.should be_true
       end
 
     end
 
   end
-
-  # def build_project_task_with_custom_field
-  #   Project.new.tap do |project|
-  #     project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true
-  #     project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'task', :required => true
-  #   end
-  # end
-  #
-  # def build_company_employee_with_custom_field
-  #   Company.new(:name => 'Colibri Software').tap do |company|
-  #     company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
-  #   end
-  # end
 
 end

@@ -150,15 +150,11 @@ describe CustomFields::Types::HasMany do
     it 'allows updating owned objects' do
       @task_1.developers.reload
 
-      # puts "@employee_2 = #{@employee_2.inspect}"
-
       @task_1.developers.update([@employee_2, @employee_4])
 
       @task_1.save!
 
       reload_employees
-
-      # puts "oooooooo test it ! ooooooooooo"
 
       @employee_1.task.should be_nil
       @employee_2.task._id.should == @task_1._id
@@ -175,10 +171,6 @@ describe CustomFields::Types::HasMany do
       @task_1.developers.reload
 
       @task_1.developers = [@employee_2, @employee_4]
-
-      puts "@employee_4 = #{@employee_4.inspect}"
-
-      puts "-----> GOOOOO !"
 
       @task_1.save!
 
@@ -232,9 +224,6 @@ describe CustomFields::Types::HasMany do
 
   def build_company_custom_field
     @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
-
-    # puts "[build_company_custom_field] 1/2 #{@company.inspect}"
-
     @company.save!
   end
 
@@ -258,29 +247,17 @@ describe CustomFields::Types::HasMany do
     @employee_3 = @company.employees.build :full_name => 'John Smith', :task => @task_2
     @employee_4 = @company.employees.build :full_name => 'John Smith'
 
-    # puts "[create_employees] 1/2 #{@company.inspect}"
-
-    # puts "[BUILD] @employee_2 = #{@employee_2.inspect}"
-
     @company.save!
 
     @company = Mongoid.reload_document(@company)
-
-    # puts @company.employee_klass._parent.employees.inspect
-    #
-    # puts "[create_employees] 2/2 #{@company.inspect} / #{@employee_4.valid?} / #{@employee_4._id.inspect}"
   end
 
   def reload_employees
     @company = Mongoid.reload_document(@company)
-    # puts "company = #{@company.inspect}"
-    # puts "@company.employee_custom_fields = #{@company.employee_custom_fields.inspect}"
     @employee_1 = @company.employees.find(@employee_1._id)
     @employee_2 = @company.employees.find(@employee_2._id)
     @employee_3 = @company.employees.find(@employee_3._id)
     @employee_4 = @company.employees.find(@employee_4._id)
-
-    # puts "[RELOAD] @employee_4 = #{@employee_4.inspect}"
   end
 
 end
