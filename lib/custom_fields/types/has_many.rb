@@ -62,8 +62,9 @@ module CustomFields
 
           if reverse_has_many?
             klass.class_eval <<-EOF
-              def build_#{self.safe_alias.singularize}_proxy_collection(args)
+              def build_#{self.safe_alias.singularize}_proxy_collection(ids_or_objects)
                 ::CustomFields::Types::HasMany::ReverseLookupProxyCollection.new(self, '#{self.target.to_s}', '#{self._name}', {
+                  :array => ids_or_objects,
                   :reverse_lookup_field => '#{self.safe_reverse_lookup}'
                 })
               end

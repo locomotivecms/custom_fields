@@ -20,34 +20,65 @@ describe CustomFields::Types::HasMany do
 
   end
 
-  context '#validation' do
+  describe '#validation' do
 
-    before(:each) do
-      @project = build_project_task_with_custom_field
+    describe 'simple' do
+
+      before(:each) do
+        @project = Project.new.tap do |project|
+          project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true
+        end
+      end
+
+      it 'marks it as invalid if the field is not filled in' do
+        task = @project.tasks.build
+        task.valid?.should be_false
+        task.errors[:developers].should_not be_empty
+      end
+
+      it 'marks the target class as valid if the field is filled in' do
+        task = @project.tasks.build :developers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
+        task.valid?.should be_true
+      end
+
     end
 
-    it 'marks it as invalid if the field is not filled in' do
-      task = @project.tasks.build
-      task.valid?.should be_false
-      task.errors[:developers].should_not be_empty
+    describe 'reverse' do
+
+      before(:each) do
+        CustomFields::Types::HasMany::ReverseLookupProxyCollection.any_instance.stubs(:collection).returns([])
+        @project, @company = Project.new, Company.new
+        @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
+        @project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'custom_field_1', :required => true
+      end
+
+      it 'marks it as invalid if there are no owned items' do
+        task = @project.tasks.build
+        task.valid?.should be_false
+        task.errors[:designers].should_not be_empty
+      end
+
+      it 'marks it as valid if there are owned items' do
+        task = @project.tasks.build :designers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
+        puts "task = #{task.inspect}"
+        task.valid?.should be_true
+      end
+
     end
-
-    it 'marks the target class as valid if the field is filled in' do
-      task = @project.tasks.build :developers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
-      task.valid?.should be_true
-    end
-
-    it 'marks it as invalid if there are no owned items'
-
-    it 'marks it as valid if there are owned items'
 
   end
 
-  def build_project_task_with_custom_field
-    Project.new.tap do |project|
-      project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true
-      project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'task', :required => true
-    end
-  end
+  # def build_project_task_with_custom_field
+  #   Project.new.tap do |project|
+  #     project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true
+  #     project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'task', :required => true
+  #   end
+  # end
+  #
+  # def build_company_employee_with_custom_field
+  #   Company.new(:name => 'Colibri Software').tap do |company|
+  #     company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
+  #   end
+  # end
 
 end

@@ -13,11 +13,17 @@ module CustomFields
 
           self.field_name = field_name
 
-          array = options[:array] || []
+          if options[:array]
+            self.update(options[:array])
+          else
+            self.ids, self.values = [], []
+          end
 
-          array = [] if self.target_klass.nil?
-
-          self.update(array || [])
+          # array = options[:array] || []
+          #
+          # array = [] if self.target_klass.nil?
+          #
+          # self.update(array)
         end
 
         def find(id)
@@ -27,6 +33,7 @@ module CustomFields
 
         # TODO: refactor it
         def update(values)
+          # puts "update (values): #{values.inspect}"
           values = [] if values.blank?
 
           self.ids = values.collect { |obj| self.id_for_sure(obj) }.compact

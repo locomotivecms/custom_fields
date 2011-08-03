@@ -75,6 +75,14 @@ describe CustomFields::Types::HasMany do
 
   describe 'reverse' do
 
+    it 'specifies whether it is a reverse has_many field' do
+      developers_field = @task_1.class.custom_fields.detect { |f| f._alias == 'developers' }
+      locations_field = @task_1.class.custom_fields.detect { |f| f._alias == 'locations' }
+
+      developers_field.reverse_has_many?.should be_true
+      locations_field.reverse_has_many?.should be_false
+    end
+
     it 'returns all owned items in the target model' do
       @task_1.developers.reload
 
@@ -168,6 +176,10 @@ describe CustomFields::Types::HasMany do
 
       @task_1.developers = [@employee_2, @employee_4]
 
+      puts "@employee_4 = #{@employee_4.inspect}"
+
+      puts "-----> GOOOOO !"
+
       @task_1.save!
 
       reload_employees
@@ -181,14 +193,6 @@ describe CustomFields::Types::HasMany do
       @task_1.developers.ids.should include(@employee_2._id)
       @task_1.developers.ids.should_not include(@employee_3._id)
       @task_1.developers.ids.should include(@employee_4._id)
-    end
-
-    it 'specifies whether it is a reverse has_many field' do
-      developers_field = @task_1.class.custom_fields.detect { |f| f._alias == 'developers' }
-      locations_field = @task_1.class.custom_fields.detect { |f| f._alias == 'locations' }
-
-      developers_field.reverse_has_many?.should be_true
-      locations_field.reverse_has_many?.should be_false
     end
 
   end
@@ -262,7 +266,9 @@ describe CustomFields::Types::HasMany do
 
     @company = Mongoid.reload_document(@company)
 
-    # puts "[create_employees] 2/2 #{@company.inspect}"
+    # puts @company.employee_klass._parent.employees.inspect
+    #
+    # puts "[create_employees] 2/2 #{@company.inspect} / #{@employee_4.valid?} / #{@employee_4._id.inspect}"
   end
 
   def reload_employees
@@ -274,7 +280,7 @@ describe CustomFields::Types::HasMany do
     @employee_3 = @company.employees.find(@employee_3._id)
     @employee_4 = @company.employees.find(@employee_4._id)
 
-    # puts "[RELOAD] @employee_2 = #{@employee_2.inspect}"
+    # puts "[RELOAD] @employee_4 = #{@employee_4.inspect}"
   end
 
 end
