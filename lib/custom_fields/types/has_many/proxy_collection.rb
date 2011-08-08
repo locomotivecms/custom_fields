@@ -6,18 +6,14 @@ module CustomFields
 
         attr_accessor :parent, :target_klass, :field_name, :ids, :values
 
-        def initialize(parent, target_klass_name, field_name, options = {})
+        def initialize(parent, target_klass, field_name, options = {})
           self.parent = parent
 
-          self.target_klass = target_klass_name.constantize rescue nil
+          self.target_klass = target_klass
 
           self.field_name = field_name
 
-          if options[:array]
-            self.update(options[:array])
-          else
-            self.ids, self.values = [], []
-          end
+          self.ids, self.values = [], []
         end
 
         def find(id)
@@ -26,7 +22,7 @@ module CustomFields
         end
 
         def update(values)
-          values = [] if values.blank?
+          values = [] if values.blank? || self.target_klass.nil?
 
           self.ids = values.collect { |obj| self.id_for_sure(obj) }.compact
           self.values = values.collect { |obj| self.object_for_sure(obj) }.compact

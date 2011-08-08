@@ -6,20 +6,16 @@ module CustomFields
 
         attr_accessor :reverse_lookup_field, :previous_state
 
-        def initialize(parent, target_klass_name, field_name, options = {})
-          array = options.delete(:array)
-
+        def initialize(parent, target_klass, field_name, options = {})
           super
 
           self.reverse_lookup_field = options[:reverse_lookup_field].to_sym
 
-          unless self.parent.new_record?
-            self.reload
-          else
+          if self.parent.new_record?
             self.previous_state = { :ids => [], :values => [] }
+          else
+            self.reload
           end
-
-          self.update(array)
         end
 
         def store_values

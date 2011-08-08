@@ -15,6 +15,10 @@ module CustomFields
 
       module InstanceMethods
 
+        def target_klass
+          self.target.constantize rescue nil
+        end
+
         def reverse_has_many?
           self.reverse_lookup && !self.reverse_lookup.strip.blank?
         end
@@ -23,8 +27,12 @@ module CustomFields
           if self.reverse_lookup =~ /^custom_field_[0-9]+$/
             self.reverse_lookup
           else
-            self.target.constantize.custom_field_alias_to_name(self.reverse_lookup)
+            self.target_klass.custom_field_alias_to_name(self.reverse_lookup)
           end
+        end
+
+        def reverse_lookup_alias
+          self.target_klass.custom_field_name_to_alias(self.reverse_lookup)
         end
 
         def apply_has_many_type(klass)
@@ -35,15 +43,15 @@ module CustomFields
             after_save :persist_#{self.safe_alias}
 
             def #{self.safe_alias}=(ids_or_objects)
-              if @_#{self._name}.nil?
-                @_#{self._name} = build_#{self.safe_alias.singularize}_proxy_collection(ids_or_objects)
-              else
-                @_#{self._name}.update(ids_or_objects)
-              end
+              self.#{self.safe_alias}.update(ids_or_objects)
             end
 
             def #{self.safe_alias}
-              @_#{self._name} ||= build_#{self.safe_alias.singularize}_proxy_collection(read_attribute(:#{self._name}))
+              @_#{self._name} ||= build_#{self.safe_alias.singularize}_proxy_collection
+            end
+
+            def #{self.safe_alias}_klass
+              '#{self.target.to_s}'.constantize rescue nil
             end
 
             def #{self.safe_alias.singularize}_ids
@@ -62,19 +70,18 @@ module CustomFields
 
           if reverse_has_many?
             klass.class_eval <<-EOF
-              def build_#{self.safe_alias.singularize}_proxy_collection(ids_or_objects)
-                ::CustomFields::Types::HasMany::ReverseLookupProxyCollection.new(self, '#{self.target.to_s}', '#{self._name}', {
-                  :array => ids_or_objects,
+              def build_#{self.safe_alias.singularize}_proxy_collection
+                ::CustomFields::Types::HasMany::ReverseLookupProxyCollection.new(self, self.#{self.safe_alias}_klass, '#{self._name}', {
                   :reverse_lookup_field => '#{self.safe_reverse_lookup}'
                 })
               end
             EOF
           else
             klass.class_eval <<-EOF
-              def build_#{self.safe_alias.singularize}_proxy_collection(ids_or_objects)
-                ::CustomFields::Types::HasMany::ProxyCollection.new(self, '#{self.target.to_s}', '#{self._name}', {
-                  :array => ids_or_objects
-                })
+              def build_#{self.safe_alias.singularize}_proxy_collection
+                ::CustomFields::Types::HasMany::ProxyCollection.new(self, self.#{self.safe_alias}_klass, '#{self._name}').tap do |collection|
+                  collection.update(self.#{self._name})
+                end
               end
             EOF
           end
