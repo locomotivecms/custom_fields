@@ -15,6 +15,9 @@ module CustomFields
       module InstanceMethods
 
         def apply_has_one_type(klass)
+
+          klass.field :"#{self._name}_position", :type => Integer, :default => 0 # needed by the has_many reverse
+
           klass.class_eval <<-EOF
 
             def #{self.safe_alias}=(id_or_object)

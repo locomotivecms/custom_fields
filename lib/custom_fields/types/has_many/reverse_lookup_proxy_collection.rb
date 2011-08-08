@@ -24,11 +24,11 @@ module CustomFields
 
         def persist
           (self.previous_state[:ids] - self.ids).each do |id|
-            self.set_foreign_key(id, nil)
+            self.set_foreign_key_and_position(id, nil)
           end
 
-          (self.ids - self.previous_state[:ids]).each do |id|
-            self.set_foreign_key(id, self.parent._id)
+          self.ids.each_with_index do |id, position|
+            self.set_foreign_key_and_position(id, self.parent._id, position)
           end
 
           if self.target_klass.embedded?
@@ -60,18 +60,21 @@ module CustomFields
         protected
 
         def reverse_collection
-          self.collection.where(self.reverse_lookup_field => self.parent._id)
+          self.collection.where(self.reverse_lookup_field => self.parent._id).order_by([[:"#{self.reverse_lookup_field}_position", :asc]])
         end
 
-        def set_foreign_key(object_id, value)
+        def set_foreign_key_and_position(object_id, value, position = nil)
           if self.target_klass.embedded?
             object = self.collection.find(object_id)
-
-            object.send("#{self.reverse_lookup_field}=".to_sym, value)
           else
             object = self.previous_state[:values].detect { |o| o._id == object_id }
+          end
 
-            object.send("#{self.reverse_lookup_field}=".to_sym, value)
+          object.send("#{self.reverse_lookup_field}=".to_sym, value)
+
+          object.send("#{self.reverse_lookup_field}_position=".to_sym, position)
+
+          if self.target_klass.embedded?
             object.save(:validate => false)
           end
         end
