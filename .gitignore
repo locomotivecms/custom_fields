@@ -1,3 +1,4 @@
 pkg/
 spec/tmp
 rdoc/
+.DS_Store

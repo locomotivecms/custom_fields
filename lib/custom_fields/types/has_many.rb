@@ -6,6 +6,7 @@ module CustomFields
 
       included do
         field :target
+        field :reverse_lookup
 
         validates_presence_of :target, :if => :has_many?
 
@@ -14,21 +15,43 @@ module CustomFields
 
       module InstanceMethods
 
+        def target_klass
+          self.target.constantize rescue nil
+        end
+
+        def reverse_has_many?
+          self.reverse_lookup && !self.reverse_lookup.strip.blank?
+        end
+
+        def safe_reverse_lookup
+          if self.reverse_lookup =~ /^custom_field_[0-9]+$/
+            self.reverse_lookup
+          else
+            self.target_klass.custom_field_alias_to_name(self.reverse_lookup)
+          end
+        end
+
+        def reverse_lookup_alias
+          self.target_klass.custom_field_name_to_alias(self.reverse_lookup)
+        end
+
         def apply_has_many_type(klass)
           klass.class_eval <<-EOF
 
             before_validation :store_#{self.safe_alias.singularize}_ids
 
+            after_save :persist_#{self.safe_alias}
+
             def #{self.safe_alias}=(ids_or_objects)
-              if @_#{self._name}.nil?
-                @_#{self._name} = ProxyCollection.new('#{self.target.to_s}', ids_or_objects)
-              else
-                @_#{self._name}.update(ids_or_objects)
-              end
+              self.#{self.safe_alias}.update(ids_or_objects)
             end
 
             def #{self.safe_alias}
-              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', self.send(:#{self._name}))
+              @_#{self._name} ||= build_#{self.safe_alias.singularize}_proxy_collection
+            end
+
+            def #{self.safe_alias}_klass
+              '#{self.target.to_s}'.constantize rescue nil
             end
 
             def #{self.safe_alias.singularize}_ids
@@ -36,80 +59,38 @@ module CustomFields
             end
 
             def store_#{self.safe_alias.singularize}_ids
-              write_attribute(:#{self._name}, #{self.safe_alias.singularize}_ids)
+              self.#{self.safe_alias}.store_values
             end
+
+            def persist_#{self.safe_alias}
+              self.#{self.safe_alias}.persist
+            end
+
           EOF
+
+          if reverse_has_many?
+            klass.class_eval <<-EOF
+              def build_#{self.safe_alias.singularize}_proxy_collection
+                ::CustomFields::Types::HasMany::ReverseLookupProxyCollection.new(self, self.#{self.safe_alias}_klass, '#{self._name}', {
+                  :reverse_lookup_field => '#{self.safe_reverse_lookup}'
+                })
+              end
+            EOF
+          else
+            klass.class_eval <<-EOF
+              def build_#{self.safe_alias.singularize}_proxy_collection
+                ::CustomFields::Types::HasMany::ProxyCollection.new(self, self.#{self.safe_alias}_klass, '#{self._name}').tap do |collection|
+                  collection.update(self.#{self._name})
+                end
+              end
+            EOF
+          end
         end
 
         def add_has_many_validation(klass)
           if self.required?
             klass.validates_length_of self.safe_alias.to_sym, :minimum => 1, :too_short => :blank
           end
-        end
-
-      end
-
-      class ProxyCollection
-
-        attr_accessor :target_klass, :ids, :values
-
-        def initialize(target_klass_name, array = [])
-          self.target_klass = target_klass_name.constantize rescue nil
-
-          array = [] if self.target_klass.nil?
-
-          self.update(array || [])
-        end
-
-        def find(id)
-          id = BSON::ObjectId(id) unless id.is_a?(BSON::ObjectId)
-          self.values.detect { |obj_id| obj_id == id }
-        end
-
-        def update(values)
-          values = [] if values.blank?
-
-          self.ids = values.collect { |obj| self.id_for_sure(obj) }.compact
-          self.values = values.collect { |obj| self.object_for_sure(obj) }.compact
-        end
-
-        def <<(*args)
-          args.flatten.compact.each do |obj|
-            self.ids << self.id_for_sure(obj)
-            self.values << self.object_for_sure(obj)
-          end
-        end
-
-        alias :push :<<
-
-        def size
-          self.values.size
-        end
-
-        alias :length :size
-
-        def method_missing(name, *args, &block)
-          self.values.send(name, *args, &block)
-        end
-
-        protected
-
-        def id_for_sure(id_or_object)
-          id_or_object.respond_to?(:_id) ? id_or_object._id : id_or_object
-        end
-
-        def object_for_sure(id_or_object)
-          if id_or_object.respond_to?(:_id)
-            id_or_object
-          else
-            if self.target_klass.embedded?
-              self.target_klass._parent.reload.send(self.target_klass.association_name).find(id_or_object)
-            else
-              self.target_klass.find(id_or_object)
-            end
-          end
-        rescue # target_klass does not exist anymore or the target element has been removed since
-          nil
         end
 
       end

@@ -83,6 +83,14 @@ module CustomFields
             self.custom_fields.detect { |f| f._name == name }
           end
 
+          def self.custom_field_alias_to_name(value)
+            self.custom_fields.detect { |f| f._alias == value }._name
+          end
+
+          def self.custom_field_name_to_alias(value)
+            self.custom_fields.detect { |f| f._name == value }._alias
+          end
+
           def self.hereditary?
             false
           end
