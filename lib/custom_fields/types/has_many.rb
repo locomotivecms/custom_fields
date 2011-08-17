@@ -28,7 +28,7 @@ module CustomFields
             end
 
             def #{self.safe_alias}
-              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', read_attribute(:#{self._name}))
+              @_#{self._name} ||= ProxyCollection.new('#{self.target.to_s}', self.send(:#{self._name}))
             end
 
             def #{self.safe_alias.singularize}_ids

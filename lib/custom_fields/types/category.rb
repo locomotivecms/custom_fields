@@ -63,11 +63,11 @@ module CustomFields
             def #{self.safe_alias}=(id)
               category = self.class.#{self.safe_alias}_items.find { |item| item.name == id || item._id.to_s == id.to_s }
               category_id = category ? category._id : nil
-              write_attribute(:#{self._name}, category_id)
+              self.send(:'#{self._name}=', category_id)
             end
 
             def #{self.safe_alias}
-              category_id = read_attribute(:#{self._name})
+              category_id = self.send(:#{self._name})
               category = self.class.#{self.safe_alias}_items.find { |item| item._id == category_id }
               category ? category.name : nil
             end

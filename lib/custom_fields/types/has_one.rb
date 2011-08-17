@@ -32,7 +32,7 @@ module CustomFields
             def #{self.safe_alias}
               return @_#{self._name} unless @_#{self._name}.blank? # memoization
 
-              target_id = read_attribute(:#{self._name})
+              target_id = self.send(:#{self._name})
 
               return nil if target_id.blank?
 
