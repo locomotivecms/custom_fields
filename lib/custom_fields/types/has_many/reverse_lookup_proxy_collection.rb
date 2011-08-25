@@ -23,17 +23,19 @@ module CustomFields
         end
 
         def persist
-          (self.previous_state[:ids] - self.ids).each do |id|
-            self.set_foreign_key_and_position(id, nil)
+          (self.previous_state[:values] - self.values).each do |object|
+            self.set_foreign_key_and_position(object, nil)
           end
 
-          self.ids.each_with_index do |id, position|
-            self.set_foreign_key_and_position(id, self.parent._id, position)
+          self.values.each_with_index do |object, position|
+            self.set_foreign_key_and_position(object, self.parent._id, position)
           end
 
           if self.target_klass.embedded?
             self.target_klass._parent.save!(:validate => false)
           end
+
+          self.reorder # update positions in the internal collection (self.values)
 
           self.reset_previous_state
         end
@@ -52,29 +54,35 @@ module CustomFields
         end
 
         def reload
-          self.update(self.reverse_collection)
+          self.update(self.reverse_collection(true))
 
           self.reset_previous_state
         end
 
         protected
 
-        def reverse_collection
-          self.collection.where(self.reverse_lookup_field => self.parent._id).order_by([[:"#{self.reverse_lookup_field}_position", :asc]])
+        def reverse_collection(reload = false)
+          self.collection(reload).where(self.reverse_lookup_field => self.parent._id).order_by([[:"#{self.reverse_lookup_field}_position", :asc]])
         end
 
-        def set_foreign_key_and_position(object_id, value, position = nil)
+        def reorder
+          self.values.sort! { |a, b| a.send(:"#{self.reverse_lookup_field}_position") <=> b.send(:"#{self.reverse_lookup_field}_position") }
+        end
+
+        def set_foreign_key_and_position(object, value, position = nil)
+          objects = [object]
+
           if self.target_klass.embedded?
-            object = self.collection.find(object_id)
-          else
-            object = self.previous_state[:values].detect { |o| o._id == object_id }
+            # Fixme (Did): objects in self.values are different from the ones in self.collection
+            objects << self.collection.find(object._id)
           end
 
-          object.send("#{self.reverse_lookup_field}=".to_sym, value)
+          objects.each do |o|
+            o.send("#{self.reverse_lookup_field}=".to_sym, value)
+            o.send("#{self.reverse_lookup_field}_position=".to_sym, position)
+          end
 
-          object.send("#{self.reverse_lookup_field}_position=".to_sym, position)
-
-          if self.target_klass.embedded?
+          unless self.target_klass.embedded?
             object.save(:validate => false)
           end
         end

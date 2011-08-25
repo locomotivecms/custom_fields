@@ -75,11 +75,11 @@ module CustomFields
 
         def collection(reload_embedded = false)
           if self.target_klass.embedded?
-            parent_target_klass = self.target_klass._parent
+            parent_target = self.target_klass._parent
 
-            parent_target_klass = parent_target_klass.reload if reload_embedded
+            parent_target = parent_target.reload if reload_embedded
 
-            parent_target_klass.send(self.target_klass.association_name)
+            parent_target.send(self.target_klass.association_name)
           else
             self.target_klass
           end

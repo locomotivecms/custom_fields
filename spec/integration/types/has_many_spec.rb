@@ -170,9 +170,12 @@ describe CustomFields::Types::HasMany do
 
       @task_1.save!
 
-      reload_employees
-
       @task_1.developers.ids.should == [@employee_4, @employee_3, @employee_2, @employee_1].collect(&:_id)
+      @task_1.developers.first.custom_field_1_position.should == 0
+      @task_1.developers.last.custom_field_1_position.should == 3
+
+      @task_1 = @task_1._parent.reload.tasks.find(@task_1._id) # reload task
+
       @task_1.developers.first.custom_field_1_position.should == 0
       @task_1.developers.last.custom_field_1_position.should == 3
     end

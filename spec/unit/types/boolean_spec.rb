@@ -33,17 +33,17 @@ describe CustomFields::Types::Boolean do
         it 'sets value from an integer' do
           @project.safe_metadata.active = 1
           @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == '1'
+          @project.safe_metadata.field_1.should == true
         end
 
         it 'sets value from a string' do
           @project.safe_metadata.active = '1'
           @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == '1'
+          @project.safe_metadata.field_1.should == true
 
           @project.safe_metadata.active = 'true'
           @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == 'true'
+          @project.safe_metadata.field_1.should == true
         end
 
       end
@@ -53,17 +53,17 @@ describe CustomFields::Types::Boolean do
         it 'sets value from an integer' do
           @project.safe_metadata.active = 0
           @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == '0'
+          @project.safe_metadata.field_1.should == false
         end
 
         it 'sets value from a string' do
           @project.safe_metadata.active = '0'
           @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == '0'
+          @project.safe_metadata.field_1.should == false
 
           @project.safe_metadata.active = 'false'
           @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == 'false'
+          @project.safe_metadata.field_1.should == false
         end
 
       end
