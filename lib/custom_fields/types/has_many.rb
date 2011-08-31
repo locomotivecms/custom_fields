@@ -80,7 +80,7 @@ module CustomFields
             klass.class_eval <<-EOF
               def build_#{self.safe_alias.singularize}_proxy_collection
                 ::CustomFields::Types::HasMany::ProxyCollection.new(self, self.#{self.safe_alias}_klass, '#{self._name}').tap do |collection|
-                  collection.update(self.#{self._name})
+                  collection.reload.update(self.#{self._name})
                 end
               end
             EOF

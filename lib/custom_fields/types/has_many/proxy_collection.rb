@@ -53,6 +53,11 @@ module CustomFields
 
         alias :length :size
 
+        def reload
+          self.collection(true)
+          self
+        end
+
         def method_missing(name, *args, &block)
           self.values.send(name, *args, &block)
         end
@@ -74,12 +79,18 @@ module CustomFields
         end
 
         def collection(reload_embedded = false)
+          return [] if self.target_klass.nil?
+
           if self.target_klass.embedded?
-            parent_target = self.target_klass._parent
+            if @embedded_collection.nil? || reload_embedded
+              parent_target = self.target_klass._parent
 
-            parent_target = parent_target.reload if reload_embedded
+              parent_target = parent_target.reload if reload_embedded
 
-            parent_target.send(self.target_klass.association_name)
+              @embedded_collection = parent_target.send(self.target_klass.association_name)
+            end
+
+            @embedded_collection
           else
             self.target_klass
           end
