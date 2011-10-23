@@ -88,6 +88,7 @@ module CustomFields
         end
 
         def add_has_many_validation(klass)
+          puts "called add_has_many_validation #{klass.inspect} / #{self.required?.inspect}"
           if self.required?
             klass.validates_length_of self.safe_alias.to_sym, :minimum => 1, :too_short => :blank
           end

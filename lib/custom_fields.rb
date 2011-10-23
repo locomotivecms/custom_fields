@@ -6,7 +6,7 @@ require 'carrierwave'
 module CustomFields
 
   @@options = {
-    :reserved_aliases => Mongoid.destructive_fields
+    :reserved_aliases => Mongoid.destructive_fields + %w(id _id send class)
   }
 
   def self.options=(options)

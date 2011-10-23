@@ -49,11 +49,17 @@ describe CustomFields::Types::HasMany do
         CustomFields::Types::HasMany::ReverseLookupProxyCollection.any_instance.stubs(:collection).returns([])
         @project, @company = Project.new, Company.new
         @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
+        puts "target_klass = #{@company.employee_klass.to_s.inspect}"
         @project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'custom_field_1', :required => true
+        @project.task_custom_fields.build :label => 'foo', :_alias => 'foo', :kind => 'string', :required => true
+        puts "======="
       end
 
       it 'marks it as invalid if there are no owned items' do
         task = @project.tasks.build
+        puts task.inspect
+        puts "#validators = #{task.class.validators.size}"
+        task.class.validators.each { |v| puts v.inspect }
         task.valid?.should be_false
         task.errors[:designers].should_not be_empty
       end

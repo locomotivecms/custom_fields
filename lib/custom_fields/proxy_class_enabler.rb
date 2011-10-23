@@ -56,7 +56,7 @@ module CustomFields
       end
 
       def self.build_proxy_class_with_custom_fields(fields, parent, association_name)
-        # puts "BUILDING PROXY CLASS #{association_name} / parent version #{self.custom_fields_version(parent, association_name)}" # for debug purpose
+        puts "BUILDING PROXY CLASS #{association_name} / parent version #{self.custom_fields_version(parent, association_name)}" # for debug purpose
 
         (klass = Class.new(self)).class_eval <<-EOF
 
@@ -67,11 +67,16 @@ module CustomFields
           end
 
           def self.apply_custom_field(field)
+            puts "apply_custom_field " + field.label + ', ' + field.persisted?.inspect
             unless field.persisted?
+              puts "field.valid?" + field.valid?.inspect
+              puts field.errors.inspect
               return unless field.valid?
             end
 
             self.custom_fields ||= []
+
+            puts "apply_custom_field " + field.label + ', ' + self.lookup_custom_field(field._name).inspect
 
              if self.lookup_custom_field(field._name).nil?
                self.custom_fields << field

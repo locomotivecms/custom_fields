@@ -2,7 +2,6 @@ module Mongoid # :nodoc:
   module Relations #:nodoc:
 
     module Builders
-      extend ActiveSupport::Concern
 
       module ClassMethods #:nodoc:
 
@@ -13,8 +12,12 @@ module Mongoid # :nodoc:
                 metadata = self.clone_metadata_for_custom_fields(metadata)
               end
 
-              document = Factory.build(metadata.klass, args.first || {})
-              send("#{name}=", document, :binding => true)
+              attributes = args.first || {}
+              options = args.size > 1 ? args[1] : {}
+              document = Factory.build(metadata.klass, attributes, options)
+              _building do
+                send("#{name}=", document)
+              end
             end
           end
         end
