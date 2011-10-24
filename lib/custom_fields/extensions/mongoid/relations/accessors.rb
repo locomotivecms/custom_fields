@@ -17,7 +17,6 @@ module Mongoid # :nodoc:
       # @since 2.0.0.rc.1
       def build_with_custom_fields(name, object, metadata)
         if self.respond_to?(:custom_fields_for?) && self.custom_fields_for?(metadata.name)
-          # puts "build_with_custom_fields #{metadata.name} / #{self.class.to_s} / metadata(#{metadata.object_id})"
           metadata = self.clone_metadata_for_custom_fields(metadata)
         end
 

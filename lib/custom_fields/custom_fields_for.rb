@@ -32,8 +32,7 @@ module CustomFields
       # @return [ Class ] The modified class.
       #
       def klass_with_custom_fields(name)
-        metadata = self.relations[name]
-        metadata.klass.current_klass_with_custom_fields(self, name)
+        self.class.klass_with_custom_fields(name, self)
       end
 
       # Returns the ordered list of custom fields for a relation
@@ -60,7 +59,15 @@ module CustomFields
       def build_klass_with_custom_fields(name, metadata)
         custom_fields = self.ordered_custom_fields_for(name)
 
-        metadata.klass.to_klass_with_custom_fields(custom_fields, self, name)
+        metadata.klass.to_klass_with_custom_fields(name, self, custom_fields)
+      end
+
+      # Marks the class enhanced by the custom fields as invalidated
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def mark_klass_with_custom_fields_as_invalidated(name)
+        self.send(:"invalidate_#{name}_klass_flag=", true)
       end
 
       # Determines if the enhanced class has to be invalidated.
@@ -70,7 +77,7 @@ module CustomFields
       # @return [ true, false ] True if enhanced, false if not.
       #
       def invalidate_klass_with_custom_fields?(name)
-        !!self.instance_variable_get(:"invalidate_#{name}_klass_flag")
+        !!self.send(:"invalidate_#{name}_klass_flag")
       end
 
       # Destroy the class enhanced by the custom fields so that next time we need it,
@@ -79,8 +86,7 @@ module CustomFields
       # @param [ String, Symbol ] name The name of the relation.
       #
       def invalidate_klass_with_custom_fields(name)
-        metadata = self.relations[name]
-        metadata.klass.invalidate_proxy_class_with_custom_fields(self, name)
+        self.class.invalidate_klass_with_custom_fields(name, self)
       end
 
       # Duplicates a metadata and assigns the enhanced class to it.
@@ -105,9 +111,21 @@ module CustomFields
       #
       def bump_custom_fields_version(name)
         if self.invalidate_klass_with_custom_fields?(name)
-          version = self.send(:"#{singular_name}_custom_fields_version") || 0
-          self.send(:"#{singular_name}_custom_fields_version=", version + 1)
+          version = self.send(:"#{name}_custom_fields_version") || 0
+          self.send(:"#{name}_custom_fields_version=", version + 1)
         end
+      end
+
+      # Increments by 1 the counter couting the number of added custom fields
+      # for a relation
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Integer ] The new value of the counter
+      #
+      def bump_custom_fields_counter(name)
+        counter = self.send(:"#{name}_custom_fields_counter") || 0
+        self.send(:"#{name}_custom_fields_counter=", counter + 1)
       end
 
       # Builds a new relation so that the builder takes the last version of
@@ -116,7 +134,7 @@ module CustomFields
       # @param [ String, Symbol ] name The name of the relation.
       #
       def rebuild_custom_fields_relation(name)
-        metadata = self.clone_metadata_for_custom_fields(self.relations[name])
+        metadata = self.clone_metadata_for_custom_fields(self.relations[name.to_s])
         self.build(name, nil, metadata)
       end
 
@@ -143,9 +161,6 @@ module CustomFields
       #
       # @example
       #   class Company
-      #
-      #     custom_fields_for :self
-      #
       #     embeds_many :employees
       #     custom_fields_for :employees
       #   end
@@ -155,7 +170,7 @@ module CustomFields
       #     field :name, String
       #   end
       #
-      #   company.employee_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
+      #   company.employees_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
       #   company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
       #
       def custom_fields_for(name)
@@ -174,14 +189,22 @@ module CustomFields
       #     custom_fields_for_itself
       #   end
       #
-      #   company.self_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
+      #   company.self_metadata_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
       #   company.self_metadata.address = '700 S Laflin, 60607 Chicago'
       #   other_company.self_metadata.address # returns a "not defined method" error
       #
       def custom_fields_for_itself
         self.embeds_one :self_metadata, :class_name => '::CustomFields::SelfMetadata'
 
-        self.custom_fields_for('self')
+        class_eval do
+          def self_metadata_with_automatic_build
+            object = self_metadata_without_automatic_build
+            object || self.build_self_metadata
+          end
+          alias_method_chain :self_metadata, :automatic_build
+        end
+
+        self.custom_fields_for('self_metadata')
       end
 
       protected
@@ -269,7 +292,7 @@ module CustomFields
       # @return [ Field ] The new field class.
       #
       def declare_embedded_in_definition_in_custom_field(name)
-        klass_name  = self.dynamic_custom_field_class_name(name)
+        klass_name = self.dynamic_custom_field_class_name(name)
 
         unless Object.const_defined?(klass_name)
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF

@@ -26,30 +26,33 @@ module CustomFields
 
     ## validations ##
     validates_presence_of   :label, :kind
-    validates_exclusion_of  :_alias, :in => lambda { |f|
-      CustomFields.options[:reserved_aliases].map(&:to_s)
-    }
+    validates_exclusion_of  :_alias, :in => lambda { |f| CustomFields.options[:reserved_aliases].map(&:to_s) }
     validates_format_of     :_alias, :with => /^[a-z]([A-Za-z0-9_]+)?$/
     validate                :uniqueness_of_label_and_alias
 
     ## other accessors ##
-    attr_accessor :association_name # missing in 2.0.0 rc 7
-
     attr_accessor :parentized_done # for performance purpose
 
     ## callbacks ##
     before_validation :set_alias
-    after_validation  :set_target_klass_flag
-
-    before_save     :invalidate_target_klass
-    after_destroy   :invalidate_target_klass
+    before_save       :invalidate_proxy_klass
+    after_destroy     :invalidate_proxy_klass
 
     ## methods ##
 
+    # Returns the type class related to this field
+    #
+    # @return [ Class ] The class defining the field type
+    #
     def field_type
       self.class.field_types[self.safe_kind.to_sym]
     end
 
+    # Enhance a document class by applying to it the information stored
+    # in the type related to this field
+    #
+    # @param [ Class ] klass The document class
+    #
     def apply(klass)
       klass.field self._name, :type => self.field_type if self.field_type
 
@@ -63,43 +66,56 @@ module CustomFields
 
       validation_method_name = :"add_#{self.safe_kind}_validation"
 
-      # puts "adding validation #{validation_method_name} ? #{label}"
-
       if self.respond_to?(validation_method_name)
-        # puts "validation #{validation_method_name} added"
         self.send(validation_method_name, klass)
       else
         add_default_validation(klass)
       end
     end
 
+    # Make sure it returns a valid alias
+    #
+    # @return [ String ] the alias
+    #
     def safe_alias
       self.set_alias
       self._alias
     end
 
+    # Returns the kind (or type) of the current field.
+    # Because of compatibility purpose, prior version of CustomFields used to have the value of kind in uppercase.
+    #
+    # @return [ String ] the kind
+    #
     def safe_kind
-      self.kind.downcase # for compatibility purpose: prior version of CustomFields used to have the value of kind in uppercase.
+      self.kind.downcase
     end
 
-    def write_attributes_with_invalidation(attrs = nil)
-      klass = self._parent.send(:"fetch_#{singular_target_name}_klass")
-
-      write_attributes_without_invalidation(attrs)
-
-      klass.apply_custom_field(self)
+    # Returns the name of the relation binding this field and the custom_fields in the parent class
+    #
+    # @example:
+    #   class Company
+    #     embeds_many :employees
+    #     custom_fields_for :employees
+    #   end
+    #
+    #   field = company.employees_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
+    #   field.custom_fields_relation_name == 'employees'
+    #
+    # @return [ String ] the relation's name
+    #
+    def custom_fields_relation_name
+      self.metadata.name.to_s.gsub('_custom_fields', '')
     end
 
-    alias_method_chain :write_attributes, :invalidation
-
-    def singular_target_name
-      if self.association_name.to_s == '_metadata_custom_fields'
-        'metadata'
-      else
-        self.association_name.to_s.gsub('_custom_fields', '').singularize
-      end
-    end
-
+    # Collects all the important attributes of this field.
+    # It also accepts an extra hash which will be merged with
+    # the one built by this method (by default, this is an empty hash)
+    #
+    # @param [ Hash ] more The extra hash
+    #
+    # @return [ Hash ] the hash
+    #
     def to_hash(more = {})
       self.fields.keys.inject({}) do |memo, meth|
         memo[meth] = self.send(meth.to_sym); memo
@@ -117,6 +133,10 @@ module CustomFields
       }).merge(more)
     end
 
+    # Overides the default behaviour of the to_json method by using the to_hash method
+    #
+    # @return [ String ] the json object
+    #
     def to_json
       ActiveSupport::JSON.encode(self.to_hash)
     end
@@ -146,21 +166,16 @@ module CustomFields
     end
 
     def increment_counter!
-      next_value = (self._parent.send(:"#{self.association_name}_counter") || 0) + 1
-      self._parent.send(:"#{self.association_name}_counter=", next_value)
-      next_value
+      name = self.custom_fields_relation_name
+      self._parent.bump_custom_fields_counter(name)
     end
 
     def siblings
-      self._parent.send(self.association_name)
+      self._parent.send(self.metadata.name)
     end
 
     def parentize_with_custom_fields(object)
       return if self.parentized_done
-
-      object_name = object.class.to_s.underscore
-
-      self.association_name = self.metadata ? self.metadata.name : self.relations[object_name].inverse_of
 
       parentize_without_custom_fields(object)
 
@@ -168,28 +183,24 @@ module CustomFields
 
       self.parentized_done = true
     end
-
     alias_method_chain :parentize, :custom_fields
 
-    def invalidate_target_klass
-      # puts "[field/#{self.label}] invalidate_target_klass" # for debug purpose
+    def invalidate_proxy_klass
       if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
         if self.destroyed? # force the parent to invalidate the related target class
-          self.set_target_klass_flag
+          self.mark_proxy_klass_flag_as_invalidated
         elsif self.changed?
-          self.set_target_klass_flag
+          self.mark_proxy_klass_flag_as_invalidated
         end
       else
-        self.set_target_klass_flag
+        self.mark_proxy_klass_flag_as_invalidated
         self._parent.save
       end
     end
 
-    def set_target_klass_flag
-      puts "[field/set_target_klass_flag/#{self.label}]/changed?#{self.changed?} called" # debug purpose
-      # if self.changed?
-        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
-      # end
+    def mark_proxy_klass_flag_as_invalidated
+      name = self.custom_fields_relation_name
+      self._parent.mark_klass_with_custom_fields_as_invalidated(name)
     end
 
   end

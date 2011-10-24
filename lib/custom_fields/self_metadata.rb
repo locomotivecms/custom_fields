@@ -3,7 +3,8 @@ module CustomFields
   class SelfMetadata
 
     include ::Mongoid::Document
-    include CustomFields::ProxyClassEnabler
+    extend  CustomFields::ProxyClass::Helper
+    extend  CustomFields::ProxyClass::Builder
 
     ## other accessors ##
     attr_accessor :association_name # missing in 2.0.0 rc

@@ -2,8 +2,8 @@ class ProductLine
 
   include Mongoid::Document
   include Mongoid::Timestamps
-  include CustomFields::ProxyClassEnabler
-  include CustomFields::CustomFieldsFor
+  include Mongoid::CustomFields
+  include Mongoid::TargetCustomFields
 
   field :name
   field :description
