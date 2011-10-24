@@ -3,10 +3,32 @@ require 'spec_helper'
 describe 'Invalidating proxy klass' do
 
   before(:each) do
+    puts "relations id = #{Project.relations.object_id}"
     @project = Project.new(:name => 'Locomotive')
+    puts "relations id = #{@project.relations.object_id}"
+
     @field = @project.task_custom_fields.build(:label => 'Hours', :_alias => 'hours', :kind => 'string')
     @project.task_custom_fields.build(:label => 'Done', :_alias => 'done', :kind => 'boolean')
-    @project.save && @project.reload
+    @project.save
+    puts "======================= RELOADING ================="
+    @project = Project.find(@project._id) # hard reload
+  end
+
+  it 'does not increment the version if there are no changes' do
+    puts "task_custom_fields_version (BEFORE)= #{@project.task_custom_fields_version.inspect} should == 1"
+    puts "relations id (after saving) = #{@project.relations.object_id}"
+    puts "-========-"
+    @project.name = 'Locomotive (TEST)'
+    @project.name_changed?.should be_true
+    @project.save!
+    puts "-=========-"
+    puts "task_custom_fields_version (AFTER) = #{@project.task_custom_fields_version.inspect} should == 1"
+    puts "task class object_id = #{@project.task_klass.object_id}"
+    task = @project.tasks.build
+    puts task.class.inspect
+    puts task.class.custom_fields_version(task.class._parent, 'tasks')
+    puts task.class.object_id
+    task.class.version.should == 1
   end
 
   context 'by adding field' do

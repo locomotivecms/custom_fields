@@ -47,7 +47,6 @@ module CustomFields
 
       def self.current_klass_with_custom_fields(parent, association_name)
         klass_name = self.klass_name_with_custom_fields(parent, association_name)
-
         Object.const_defined?(klass_name) ? Object.const_get(klass_name): nil
       end
 
@@ -67,16 +66,14 @@ module CustomFields
           end
 
           def self.apply_custom_field(field)
-            puts "apply_custom_field " + field.label + ', ' + field.persisted?.inspect
+            puts "apply_custom_field " + field.label.inspect + " is persisted ? " + field.persisted?.inspect
             unless field.persisted?
-              puts "field.valid?" + field.valid?.inspect
-              puts field.errors.inspect
+              puts "field " + field.label.inspect + " is valid ? " + field.valid?.inspect
+              puts "field errors " + field.errors.full_messages.inspect
               return unless field.valid?
             end
 
             self.custom_fields ||= []
-
-            puts "apply_custom_field " + field.label + ', ' + self.lookup_custom_field(field._name).inspect
 
              if self.lookup_custom_field(field._name).nil?
                self.custom_fields << field
@@ -89,6 +86,8 @@ module CustomFields
           end
 
           def self.custom_field_alias_to_name(value)
+            puts "value = " + value.inspect
+            puts "self.custom_fields = " + self.custom_fields.inspect
             self.custom_fields.detect { |f| f._alias == value }._name
           end
 
@@ -127,7 +126,11 @@ module CustomFields
 
         [*fields].each { |field| klass.apply_custom_field(field) }
 
+        puts "Setting version = #{self.custom_fields_version(parent, association_name)}"
+
         klass.version = self.custom_fields_version(parent, association_name)
+
+        puts klass.object_id
 
         klass
       end

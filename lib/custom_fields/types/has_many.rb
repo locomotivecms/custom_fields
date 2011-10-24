@@ -27,6 +27,7 @@ module CustomFields
           if self.reverse_lookup =~ /^custom_field_[0-9]+$/
             self.reverse_lookup
           else
+            puts "self.target_klass = #{self.target_klass.inspect} / #{self.reverse_lookup.inspect}"
             self.target_klass.custom_field_alias_to_name(self.reverse_lookup)
           end
         end
@@ -88,7 +89,6 @@ module CustomFields
         end
 
         def add_has_many_validation(klass)
-          puts "called add_has_many_validation #{klass.inspect} / #{self.required?.inspect}"
           if self.required?
             klass.validates_length_of self.safe_alias.to_sym, :minimum => 1, :too_short => :blank
           end

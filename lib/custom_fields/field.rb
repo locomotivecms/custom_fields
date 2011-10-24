@@ -27,12 +27,8 @@ module CustomFields
     ## validations ##
     validates_presence_of   :label, :kind
     validates_exclusion_of  :_alias, :in => lambda { |f|
-      # puts "validates_exclusion_of #{CustomFields.options[:reserved_aliases].inspect}"
       CustomFields.options[:reserved_aliases].map(&:to_s)
     }
-    # validates_exclusion_of    :_alias, :in => Module.new {
-    #   def self.include?(el); CustomFields.options[:reserved_aliases].include?(el); end
-    # }
     validates_format_of     :_alias, :with => /^[a-z]([A-Za-z0-9_]+)?$/
     validate                :uniqueness_of_label_and_alias
 
@@ -67,10 +63,10 @@ module CustomFields
 
       validation_method_name = :"add_#{self.safe_kind}_validation"
 
-      puts "adding validation #{validation_method_name} ? #{label}"
+      # puts "adding validation #{validation_method_name} ? #{label}"
 
       if self.respond_to?(validation_method_name)
-        puts "validation #{validation_method_name} added"
+        # puts "validation #{validation_method_name} added"
         self.send(validation_method_name, klass)
       else
         add_default_validation(klass)
@@ -190,8 +186,10 @@ module CustomFields
     end
 
     def set_target_klass_flag
-      # puts "[field/set_target_klass_flag/#{self.label}] called" # debug purpose
-      self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+      puts "[field/set_target_klass_flag/#{self.label}]/changed?#{self.changed?} called" # debug purpose
+      # if self.changed?
+        self._parent.send(:"invalidate_#{self.singular_target_name}_klass_flag=", true)
+      # end
     end
 
   end

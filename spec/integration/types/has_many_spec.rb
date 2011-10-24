@@ -236,8 +236,14 @@ describe CustomFields::Types::HasMany do
   end
 
   def build_company_custom_field
+    puts "_______________"
     @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
     @company.save!
+    puts "number of fields #{@company.employee_klass.custom_fields.try(:size) || 0}"
+    @company.invalidate_employee_klass
+    @company.fetch_employee_klass
+    puts @company.employee_klass.custom_fields.inspect
+    puts "_______________"
   end
 
   def add_project_reverse_has_many_field
@@ -247,6 +253,7 @@ describe CustomFields::Types::HasMany do
   end
 
   def create_tasks
+    puts "========"
     @task_1 = @project.tasks.build :title => 'Write unit test'
     @task_2 = @project.tasks.build :title => 'Write code'
     @task_3 = @project.tasks.build :title => 'Write UI'

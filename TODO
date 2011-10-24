@@ -6,3 +6,25 @@ x apply patches from locomotive
 - upgrade to mongoid 2.3.2
 
 
+
+
+
+
+=== MIGRATION from 1.0.0 to 1.1.0
+
+# http://pivotallabs.com/users/lee/blog/articles/1548-mongoid-migrations-using-the-mongo-driver
+
+mongo_db = ContentType.db
+
+content_type_hashes = mongo_db.collection('content_types').find({}, :fields => ["content_custom_fields"])
+
+content_type_hashes.each do |content_type_hash|
+
+  #create the new field
+  mongo_db.collection("content_types").update({"_id" => content_type_hash["_id"]}, {"$set" => {"contents_custom_fields" => content_type_hash["content_custom_fields"] }})
+
+  #remove the old field from collection
+  mongo_db.collection("content_types").update({"_id" => content_type_hash["_id"]}, {"$unset" => { "content_custom_fields" => 1}})
+end
+
+

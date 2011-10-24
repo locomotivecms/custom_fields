@@ -1,6 +1,6 @@
 module CustomFields
 
-  class Metadata
+  class SelfMetadata
 
     include ::Mongoid::Document
     include CustomFields::ProxyClassEnabler

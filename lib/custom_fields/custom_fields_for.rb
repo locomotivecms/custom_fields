@@ -12,177 +12,268 @@ module CustomFields
 
     module InstanceMethods
 
-      def custom_fields_for?(collection_name)
-        self.class.custom_fields_for?(collection_name)
+      # Determines if the relation is enhanced by the custom fields
+      #
+      # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
+      #   person.custom_fields_for?(:addresses)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ true, false ] True if enhanced, false if not.
+      #
+      def custom_fields_for?(name)
+        self.class.custom_fields_for?(name)
       end
 
+      # Returns the class enhanced by the custom fields defined in the parent class.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Class ] The modified class.
+      #
+      def klass_with_custom_fields(name)
+        metadata = self.relations[name]
+        metadata.klass.current_klass_with_custom_fields(self, name)
+      end
+
+      # Returns the ordered list of custom fields for a relation
+      #
+      # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
+      #   person.ordered_custom_fields_for(:addresses)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Collection ] The ordered list.
+      #
+      def ordered_custom_fields_for(name)
+        self.send(:"#{name}_custom_fields").sort { |a, b| (a.position || 0) <=> (b.position || 0) }
+      end
+
+      # Builds the class enhanced by the custom fields defined in the parent class.
+      # The new class inherits from the original one.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      # @param [ Metadata ] metadata The relation's metadata.
+      #
+      # @return [ Class ] The modified class.
+      #
+      def build_klass_with_custom_fields(name, metadata)
+        custom_fields = self.ordered_custom_fields_for(name)
+
+        metadata.klass.to_klass_with_custom_fields(custom_fields, self, name)
+      end
+
+      # Determines if the enhanced class has to be invalidated.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ true, false ] True if enhanced, false if not.
+      #
+      def invalidate_klass_with_custom_fields?(name)
+        !!self.instance_variable_get(:"invalidate_#{name}_klass_flag")
+      end
+
+      # Destroy the class enhanced by the custom fields so that next time we need it,
+      # we have a fresh new one.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def invalidate_klass_with_custom_fields(name)
+        metadata = self.relations[name]
+        metadata.klass.invalidate_proxy_class_with_custom_fields(self, name)
+      end
+
+      # Duplicates a metadata and assigns the enhanced class to it.
+      #
+      # @param [ Metadata ] metadata The relation's old metadata.
+      #
+      # @return [ Metadata ] The relation's new metadata
+      #
       def clone_metadata_for_custom_fields(metadata)
-        singular_name = metadata.name.to_s.singularize.gsub(/^_/, '')
+        klass = self.build_klass_with_custom_fields(metadata.name, metadata)
 
-        klass = self.send(:"fetch_#{singular_name}_klass")
-
-        # safer to do that because we are going to modify the metadata klass for next operations
+        # we do not want that other instances of the parent class have the same metadata
         metadata.clone.tap do |metadata|
           metadata.instance_variable_set(:@klass, klass)
         end
       end
 
-    end
-
-    # Enhance an embedded collection OR the instance itself (by passing self) by providing methods to manage custom fields.
-    #
-    # class Company
-    #
-    #   custom_fields_for :self
-    #
-    #   embeds_many :employees
-    #   custom_fields_for :employees
-    # end
-    #
-    # class Employee
-    #    embedded_in :company, :inverse_of => :employees
-    #    field :name, String
-    # end
-    #
-    # company.employee_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
-    #
-    # company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
-    #
-    #
-    # company.self_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
-    #
-    # company.metadata.address = '700 S Laflin, 60607 Chicago'
-    #
-    # other_company.metadata.address # returns a "not defined method" error
-    #
-    module ClassMethods
-
-      def custom_fields_for?(collection_name)
-        self._custom_fields_for.include?(collection_name.to_s)
+      # When the fields have been modified and before the object is saved,
+      # we bump the version.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def bump_custom_fields_version(name)
+        if self.invalidate_klass_with_custom_fields?(name)
+          version = self.send(:"#{singular_name}_custom_fields_version") || 0
+          self.send(:"#{singular_name}_custom_fields_version=", version + 1)
+        end
       end
 
-      def custom_fields_for(collection_name)
-        singular_name                   = collection_name.to_s.singularize
-        dynamic_custom_field_class_name = "#{self.name}#{singular_name.camelize}Field"
+      # Builds a new relation so that the builder takes the last version of
+      # the enhanced class when creating new instances
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def rebuild_custom_fields_relation(name)
+        metadata = self.clone_metadata_for_custom_fields(self.relations[name])
+        self.build(name, nil, metadata)
+      end
 
-        self.declare_embedded_in_definition_in_custom_field(collection_name)
+    end
 
-        # enhance the class itself
-        if (itself = %w(itself self).include?(collection_name.to_s))
-          collection_name, singular_name = '_metadata', 'metadata'
+    module ClassMethods
 
-          class_eval <<-EOV
-            embeds_one :#{collection_name}, :class_name => '::CustomFields::Metadata'
+      # Determines if the relation is enhanced by the custom fields
+      #
+      # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
+      #   Person.custom_fields_for?(:addresses)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ true, false ] True if enhanced, false if not.
+      #
+      def custom_fields_for?(name)
+        self._custom_fields_for.include?(name.to_s)
+      end
 
-            def safe_#{singular_name}
-              self.#{collection_name} || self.build_#{collection_name}
-            end
-          EOV
+      # Enhance an embedded collection OR the instance itself (by passing self) by providing methods to manage custom fields.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @example
+      #   class Company
+      #
+      #     custom_fields_for :self
+      #
+      #     embeds_many :employees
+      #     custom_fields_for :employees
+      #   end
+      #
+      #   class Employee
+      #     embedded_in :company, :inverse_of => :employees
+      #     field :name, String
+      #   end
+      #
+      #   company.employee_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
+      #   company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
+      #
+      def custom_fields_for(name)
+        self.declare_embedded_in_definition_in_custom_field(name)
+
+        # stores the relation name
+        self._custom_fields_for << name.to_s
+
+        self.extend_for_custom_fields(name)
+      end
+
+      # Enhances the class itself
+      #
+      # @example
+      #   class Company
+      #     custom_fields_for_itself
+      #   end
+      #
+      #   company.self_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
+      #   company.self_metadata.address = '700 S Laflin, 60607 Chicago'
+      #   other_company.self_metadata.address # returns a "not defined method" error
+      #
+      def custom_fields_for_itself
+        self.embeds_one :self_metadata, :class_name => '::CustomFields::SelfMetadata'
+
+        self.custom_fields_for('self')
+      end
+
+      protected
+
+      # Extends / Decorates the current class in order to be fully custom_fields compliant.
+      # it declares news fields, adds new callbacks, ...etc
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def extend_for_custom_fields(name)
+        class_eval do
+          field :"#{name}_custom_fields_counter", :type => Integer, :default => 0
+          field :"#{name}_custom_fields_version", :type => Integer, :default => 0
+
+          embeds_many :"#{name}_custom_fields", :class_name => self.dynamic_custom_field_class_name(name)
+
+          attr_accessor :"invalidate_#{name}_klass_flag" # flag for invalidating the custom class
+
+          accepts_nested_attributes_for :"#{name}_custom_fields", :allow_destroy => true
         end
 
-        # record the collection_name
-        self._custom_fields_for << collection_name.to_s
-
-        # common part
         class_eval <<-EOV
-          field :#{singular_name}_custom_fields_counter, :type => Integer, :default => 0
-          field :#{singular_name}_custom_fields_version, :type => Integer, :default => 0
 
-          embeds_many :#{singular_name}_custom_fields, :class_name => '#{dynamic_custom_field_class_name}' do
-            # def build(attributes = {}, type = nil, &block)
-            #   instantiated(type).tap do |doc|
-            #     append(doc, default_options(:binding => true))
-            #     doc.write_attributes(attributes)
-            #     doc.identify
-            #     block.call(doc) if block
-            #   end
-            # end
-            # alias :new :build
+          before_save   :bump_#{name}_custom_fields_version
+          after_save    :rebuild_#{name}_relation
+          after_destroy :invalidate_#{name}_klass
+
+          def #{name}_klass
+            self.klass_with_custom_fields('#{name}')
           end
 
-          attr_accessor :invalidate_#{singular_name}_klass_flag
-
-          before_save do |record|
-            if record.invalidate_#{singular_name}_klass?
-              record.#{singular_name}_custom_fields_version ||= 0
-              record.#{singular_name}_custom_fields_version += 1
-              # puts "[parent/before_save] set #{singular_name}_custom_fields_version " + record.#{singular_name}_custom_fields_version.to_s # debug purpose
-            end
+          def #{name}_klass_out_of_date?
+            self.#{name}_klass.nil? || self.#{name}_klass.version != self.#{name}_custom_fields_version
           end
 
-          after_destroy     :invalidate_#{singular_name}_klass
-
-          accepts_nested_attributes_for :#{singular_name}_custom_fields, :allow_destroy => true
-
-          def ordered_#{singular_name}_custom_fields
-            self.#{singular_name}_custom_fields.sort { |a, b| (a.position || 0) <=> (b.position || 0) }
+          def invalidate_#{name}_klass
+            self.invalidate_klass_with_custom_fields('#{name}')
           end
 
-          def fetch_#{singular_name}_klass
-            metadata = self.relations['#{collection_name.to_s}']
-            metadata.klass.to_klass_with_custom_fields(self.ordered_#{singular_name}_custom_fields, self, metadata.name)
+          def invalidate_#{name}_klass?
+            self.invalidate_klass_with_custom_fields?('#{name}')
           end
 
-          def #{singular_name}_klass
-            puts "#{singular_name}_klass called !"
-            metadata = self.relations['#{collection_name.to_s}']
-            puts "metadata = " + metadata.inspect
-            metadata.klass.current_klass_with_custom_fields(self, metadata.name)
+          def rebuild_#{name}_relation
+            self.rebuild_custom_fields_relation('#{name}')
           end
 
-          def #{singular_name}_klass_out_of_date?
-            self.#{singular_name}_klass.nil? || self.#{singular_name}_klass.version != self.#{singular_name}_custom_fields_version
-          end
+          protected
 
-          def invalidate_#{singular_name}_klass
-            metadata = self.relations['#{collection_name.to_s}']
-            metadata.klass.invalidate_proxy_class_with_custom_fields(self, metadata.name)
-          end
-
-          def invalidate_#{singular_name}_klass?
-            self.invalidate_#{singular_name}_klass_flag == true
+          def bump_#{name}_custom_fields_version
+            self.bump_custom_fields_version('#{name}')
           end
         EOV
 
         # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass with custom fields every time we save a field)
         unless instance_methods.collect(&:to_s).include?('write_attributes_with_custom_fields')
-
           class_eval do
             def write_attributes_with_custom_fields(attrs = nil, guard_protected_attributes = true)
               self.instance_variable_set(:@_writing_attributes_with_custom_fields, true)
               self.write_attributes_without_custom_fields(attrs, guard_protected_attributes)
             end
-
             alias_method_chain :write_attributes, :custom_fields
           end
-
         end
-
-        if itself
-          class_eval <<-EOV
-            alias :self_custom_fields :#{singular_name}_custom_fields
-          EOV
-        end
-
       end
 
-      protected
-
-      def dynamic_custom_field_class_name(collection_name)
-        "#{self.name}#{collection_name.to_s.singularize.camelize}Field"
+      # Returns the class name of the custom field which is based both on the parent class name
+      # and the name of the relation in order to avoid name conflicts (with other classes)
+      #
+      # @param [ Metadata ] metadata The relation's old metadata.
+      #
+      # @return [ String ] The class name
+      #
+      def dynamic_custom_field_class_name(name)
+        "#{self.name}#{name.to_s.singularize.camelize}Field"
       end
 
       # An embedded relationship has to be defined on both side in order for it
       # to work properly. But because custom_field can be embedded in different
       # models that it's not aware of, we have to declare manually the definition
       # once we know the target class.
-      def declare_embedded_in_definition_in_custom_field(target_collection_name)
-        singular_name   = target_collection_name.to_s.singularize
-        klass_name      = self.dynamic_custom_field_class_name(target_collection_name)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Field ] The new field class.
+      #
+      def declare_embedded_in_definition_in_custom_field(name)
+        klass_name  = self.dynamic_custom_field_class_name(name)
 
         unless Object.const_defined?(klass_name)
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
-            embedded_in :#{self.name.underscore}, :inverse_of => :#{singular_name}_custom_fields
+            embedded_in :#{self.name.underscore}, :inverse_of => :#{name}_custom_fields
           EOF
 
           Object.const_set(klass_name, klass)
@@ -194,3 +285,5 @@ module CustomFields
   end
 
 end
+
+

@@ -45,32 +45,44 @@ describe CustomFields::Types::HasMany do
 
     describe 'reverse' do
 
-      before(:each) do
-        CustomFields::Types::HasMany::ReverseLookupProxyCollection.any_instance.stubs(:collection).returns([])
-        @project, @company = Project.new, Company.new
-        @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
-        puts "target_klass = #{@company.employee_klass.to_s.inspect}"
-        @project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'custom_field_1', :required => true
-        @project.task_custom_fields.build :label => 'foo', :_alias => 'foo', :kind => 'string', :required => true
-        puts "======="
+      context '#embedded' do
+
+        before(:each) do
+          CustomFields::Types::HasMany::ReverseLookupProxyCollection.any_instance.stubs(:collection).returns([])
+          @project, @company = Project.new, Company.new
+
+          @project.fetch_task_klass
+          @company.fetch_employee_klass
+
+          @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
+          @company.invalidate_employee_klass
+          @company.fetch_employee_klass
+
+          @project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'custom_field_1', :required => true
+          @project.invalidate_task_klass
+          @project.fetch_task_klass
+        end
+
+        it 'marks it as invalid if there are no owned items' do
+          task = @project.tasks.build
+          task.valid?.should be_false
+          task.errors[:designers].should_not be_empty
+        end
+
+        it 'marks it as valid if there are owned items' do
+          task = @project.tasks.build :designers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
+          task.valid?.should be_true
+        end
+
       end
 
-      it 'marks it as invalid if there are no owned items' do
-        task = @project.tasks.build
-        puts task.inspect
-        puts "#validators = #{task.class.validators.size}"
-        task.class.validators.each { |v| puts v.inspect }
-        task.valid?.should be_false
-        task.errors[:designers].should_not be_empty
-      end
+      context '#referenced' do
 
-      it 'marks it as valid if there are owned items' do
-        task = @project.tasks.build :designers => [Person.new(:name => 'Rick Gervais'), Person.new(:name => 'Rick Olson')]
-        task.valid?.should be_true
+        # TODO
+
       end
 
     end
-
   end
 
 end
