@@ -59,6 +59,7 @@ describe CustomFields::ProxyClass::Base do
       CustomFields::Field.new(attributes).tap do |field|
         field.stubs(:persisted?).returns(true)
         field.stubs(:valid?).returns(is_valid)
+        field.stubs(:quick_valid?).returns(is_valid)
       end
     end
 

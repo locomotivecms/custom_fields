@@ -52,7 +52,8 @@ module CustomFields
         # @param [ Field ] field The custom field
         #
         def apply_custom_field(field)
-          return if !field.persisted? || !field.valid?
+          puts "field #{field._name} persisted? #{field.persisted?} / valid ? #{field.quick_valid?}"
+          return if !field.persisted? || !field.quick_valid?
 
           self.custom_fields ||= []
 

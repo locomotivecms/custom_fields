@@ -20,6 +20,7 @@ module CustomFields
 end
 
 require 'custom_fields/version'
+require 'custom_fields/extensions/active_support'
 require 'custom_fields/extensions/mongoid/document'
 require 'custom_fields/extensions/mongoid/relations/accessors'
 require 'custom_fields/extensions/mongoid/relations/builders'

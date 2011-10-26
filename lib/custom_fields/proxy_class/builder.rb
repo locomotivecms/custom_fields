@@ -40,6 +40,7 @@ module CustomFields
       # @return [ Class ] The proxy class.
       #
       def build_klass_with_custom_fields(name, parent, fields)
+        puts "CREATING new '#{name}' klass (#{self.klass_version_with_custom_fields(name, parent)})"
         Class.new(self).tap do |klass|
           klass.send :include, CustomFields::ProxyClass::Base
 
@@ -51,6 +52,8 @@ module CustomFields
           klass.version           = self.klass_version_with_custom_fields(name, parent)
 
           [*fields].each { |field| klass.apply_custom_field(field) }
+
+          puts "version created (#{klass.object_id})"
         end
       end
     end

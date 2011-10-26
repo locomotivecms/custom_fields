@@ -29,15 +29,14 @@ describe 'Caching ProxyClass defined by CustomFields' do
     end
 
     it 'does not bump the current version if no changes for the custom fields' do
-      @project.expects(:bump_custom_fields_version).with('tasks').never
       @project.send(:bump_tasks_custom_fields_version)
+      @project.tasks_custom_fields_version.should == 0
     end
 
     it 'does bump the current version if changes for the custom fields' do
       @project.mark_klass_with_custom_fields_as_invalidated('tasks')
-      puts @project.invalidate_tasks_klass_flag.inspect
-      @project.expects(:bump_custom_fields_version).with('tasks').once
       @project.send(:bump_tasks_custom_fields_version)
+      @project.tasks_custom_fields_version.should == 1
     end
 
     it 'does not invalidate a dynamic class when validating the model' do

@@ -35,7 +35,8 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    before_save       :invalidate_proxy_klass
+    after_validation  :invalidate_proxy_klass
+    # before_save       :invalidate_proxy_klass
     after_destroy     :invalidate_proxy_klass
 
     ## methods ##
@@ -106,6 +107,16 @@ module CustomFields
     #
     def custom_fields_relation_name
       self.metadata.name.to_s.gsub('_custom_fields', '')
+    end
+
+    # Checks if the field is valid without running the callback which marks
+    # the proxy class as invalidated
+    #
+    # @return [ Boolean ] true if the field has no errors, false otherwise
+    def quick_valid?
+      CustomFields::Field.without_callback(:validation, :after, :invalidate_proxy_klass) do
+        self.valid?
+      end
     end
 
     # Collects all the important attributes of this field.
@@ -186,19 +197,25 @@ module CustomFields
     alias_method_chain :parentize, :custom_fields
 
     def invalidate_proxy_klass
-      if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-        if self.destroyed? # force the parent to invalidate the related target class
-          self.mark_proxy_klass_flag_as_invalidated
-        elsif self.changed?
-          self.mark_proxy_klass_flag_as_invalidated
-        end
-      else
+      puts "#{self._name} _ invalidate_proxy_klass !!! #{self.destroyed?}"
+      if self.destroyed? || self.changed?
         self.mark_proxy_klass_flag_as_invalidated
-        self._parent.save
       end
+
+      # # if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
+      #   if self.destroyed? # force the parent to invalidate the related target class
+      #     self.mark_proxy_klass_flag_as_invalidated
+      #   elsif self.changed?
+      #     self.mark_proxy_klass_flag_as_invalidated
+      #   end
+      # else
+      #   self.mark_proxy_klass_flag_as_invalidated
+      #   self._parent.save
+      # end
     end
 
     def mark_proxy_klass_flag_as_invalidated
+      # puts "\t*** [mark_proxy_klass_flag_as_invalidated] called for '#{self._name}'"
       name = self.custom_fields_relation_name
       self._parent.mark_klass_with_custom_fields_as_invalidated(name)
     end
