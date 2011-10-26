@@ -134,7 +134,8 @@ module CustomFields
       # @param [ String, Symbol ] name The name of the relation.
       #
       def rebuild_custom_fields_relation(name)
-        metadata = self.clone_metadata_for_custom_fields(self.relations[name.to_s])
+        # metadata = self.clone_metadata_for_custom_fields(self.relations[name.to_s])
+        metadata = self.relations[name.to_s]
         self.build(name, nil, metadata)
       end
 
@@ -236,6 +237,10 @@ module CustomFields
             self.klass_with_custom_fields('#{name}')
           end
 
+          def #{name}_klass_name
+            self.class.klass_name_with_custom_fields('#{name}', self)
+          end
+
           def #{name}_klass_out_of_date?
             self.#{name}_klass.nil? || self.#{name}_klass.version != self.#{name}_custom_fields_version
           end
@@ -255,7 +260,9 @@ module CustomFields
           protected
 
           def bump_#{name}_custom_fields_version
-            self.bump_custom_fields_version('#{name}')
+            if invalidate_#{name}_klass?
+              self.bump_custom_fields_version('#{name}')
+            end
           end
         EOV
 

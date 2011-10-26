@@ -37,7 +37,7 @@ describe CustomFields::Types::Category do
   context 'on target class' do
 
     before(:each) do
-      @project = build_project #_with_category
+      @project = build_project
       @task = @project.tasks.build
     end
 
@@ -67,7 +67,7 @@ describe CustomFields::Types::Category do
 
       before(:each) do
         seed_tasks
-        @task_class = @project.fetch_task_klass
+        @task_class = @project.tasks_klass
         @groups = @task_class.group_by_global_category
       end
 
@@ -96,18 +96,24 @@ describe CustomFields::Types::Category do
   end
 
   def build_project
-    project = Project.new
+    Project.new.tap do |project|
+      project.tasks_custom_fields.build(:label => 'Global Category', :kind => 'Category', :_name => 'field_1').tap do |field|
+        field.category_items.build :name => 'Development', :_id => fake_bson_id(41), :position => 2
+        field.category_items.build :name => 'Design', :_id => fake_bson_id(42), :position => 1
+        field.category_items.build :name => 'Maintenance', :_id => fake_bson_id(43), :position => 0
 
-    field = project.task_custom_fields.build :label => 'Global Category', :kind => 'Category', :_name => 'field_1'
-    field.category_items.build :name => 'Development', :_id => fake_bson_id(41), :position => 2
-    field.category_items.build :name => 'Design', :_id => fake_bson_id(42), :position => 1
-    field.category_items.build :name => 'Maintenance', :_id => fake_bson_id(43), :position => 0
+        field.stubs(:persisted?).returns(true)
+      end
 
-    field = project.task_custom_fields.build :label => 'Domain Category', :kind => 'Category', :_name => 'field_2'
-    field.category_items.build :name => 'IT', :_id => fake_bson_id(44), :position => 0
-    field.category_items.build :name => 'Industry', :_id => fake_bson_id(45), :position => 0
+      project.tasks_custom_fields.build(:label => 'Domain Category', :kind => 'Category', :_name => 'field_2').tap do |field|
+        field.category_items.build :name => 'IT', :_id => fake_bson_id(44), :position => 0
+        field.category_items.build :name => 'Industry', :_id => fake_bson_id(45), :position => 0
 
-    project
+        field.stubs(:persisted?).returns(true)
+      end
+
+      project.rebuild_custom_fields_relation :tasks
+    end
   end
 
   def seed_tasks

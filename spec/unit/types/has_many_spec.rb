@@ -25,9 +25,7 @@ describe CustomFields::Types::HasMany do
     describe 'simple' do
 
       before(:each) do
-        @project = Project.new.tap do |project|
-          project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true
-        end
+        @project = build_project
       end
 
       it 'marks it as invalid if the field is not filled in' do
@@ -51,16 +49,8 @@ describe CustomFields::Types::HasMany do
           CustomFields::Types::HasMany::ReverseLookupProxyCollection.any_instance.stubs(:collection).returns([])
           @project, @company = Project.new, Company.new
 
-          @project.fetch_task_klass
-          @company.fetch_employee_klass
-
-          @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
-          @company.invalidate_employee_klass
-          @company.fetch_employee_klass
-
-          @project.task_custom_fields.build :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'custom_field_1', :required => true
-          @project.invalidate_task_klass
-          @project.fetch_task_klass
+          add_field @company, :employees, { :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.tasks_klass_name }
+          add_field @project, :tasks, { :label => 'Designers', :_alias => 'designers', :kind => 'has_many', :target => @company.employees_klass_name, :reverse_lookup => 'custom_field_1', :required => true }
         end
 
         it 'marks it as invalid if there are no owned items' do
@@ -83,6 +73,20 @@ describe CustomFields::Types::HasMany do
       end
 
     end
+  end
+
+  def build_project
+    Project.new.tap do |project|
+      project.tasks_custom_fields.build(:label => 'Developers', :_alias => 'developers', :kind => 'has_many', :_name => 'field_1', :target => 'Person', :required => true).tap do |field|
+        field.stubs(:persisted?).returns(true)
+      end
+      project.rebuild_custom_fields_relation :tasks
+    end
+  end
+
+  def add_field(document, name, attributes)
+    document.send(:"#{name}_custom_fields").build(attributes).stubs(:persisted?).returns(true)
+    document.rebuild_custom_fields_relation name
   end
 
 end

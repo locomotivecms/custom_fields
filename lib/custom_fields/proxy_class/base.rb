@@ -94,7 +94,7 @@ module CustomFields
 
         # Tells Mongoid that this class is a child of a super class (even if it is no true)
         #
-        def self.hereditary?
+        def hereditary?
           false
         end
 
