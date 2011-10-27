@@ -27,7 +27,6 @@ module CustomFields
           if self.reverse_lookup =~ /^custom_field_[0-9]+$/
             self.reverse_lookup
           else
-            puts "self.target_klass = #{self.target_klass.inspect} / #{self.reverse_lookup.inspect}"
             self.target_klass.custom_field_alias_to_name(self.reverse_lookup)
           end
         end
