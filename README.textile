@@ -1,16 +1,59 @@
 h1. CustomFields
 
 Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive.
+Basically, its aim is to provide to editors a way to manage extra fields to a Mongoid document through for instance a web UI.
+
+The main goals:
+
+* offering a very secure way to add / edit / delete extra fields to a Mongoid document
+* scoping the modifications added to a Mongoid document so that other documents of the same class won't be updated.
 
 h2. Requirements
 
-ActiveSupport 3.0.7, MongoDB 1.6 and Mongoid 2.0.2
+ActiveSupport 3.1.1, MongoDB 2.0 and Mongoid 2.3.2
 
+h2. Examples
 
-h2. Example
+h3. On a has_many relationship
 
-Coming soon but take a look of the tests to see what CustomFields is capable of.
+bc.. class Company
+  embeds_many :employees
 
+  custom_fields_for :employees
+end
+
+class Employee
+  field :name, String
+
+  embedded_in :company, :inverse_of => :employees
+end
+
+company = Company.new
+company.employees_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string', :required => true
+
+company.save
+
+company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
+
+another_company = Company.new
+employee = company.employees.build
+employee.position # returns a "not defined method" error
+
+h3. On the class itself
+
+bc.. class Company
+  custom_fields_for_itself
+end
+
+company = Company.new
+company.self_metadata_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
+
+company.save
+
+company.self_metadata.address = '700 S Laflin, 60607 Chicago'
+
+another_company = Company.new
+other_company.self_metadata.address # returns a "not defined method" error
 
 h2. Contact
 
