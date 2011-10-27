@@ -47,7 +47,7 @@ describe CustomFields::Types::HasOne do
 
   def create_client
     @client = Client.new(:name => 'NoCoffee')
-    @client.location_custom_fields.build :label => 'Country', :_alias => 'country', :kind => 'String'
+    @client.locations_custom_fields.build :label => 'Country', :_alias => 'country', :kind => 'String'
 
     @client.save!
 
@@ -59,7 +59,7 @@ describe CustomFields::Types::HasOne do
 
   def create_project
     @project = Project.new(:name => 'Locomotive')
-    @project.task_custom_fields.build :label => 'Task Location', :_alias => 'location', :kind => 'has_one', :target => @client.location_klass.to_s
+    @project.tasks_custom_fields.build :label => 'Task Location', :_alias => 'location', :kind => 'has_one', :target => @client.locations_klass.to_s
     @project.save!
   end
 
