@@ -35,9 +35,12 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    after_validation  :invalidate_proxy_klass
     # before_save       :invalidate_proxy_klass
-    after_destroy     :invalidate_proxy_klass
+    # after_validation  :invalidate_proxy_klass
+    before_save       :invalidate_proxy_klass
+    before_save { |r| puts "BEING SAVE #{r._name}" }
+    # before_destroy { |r| puts "DESTROYED #{r._name}" }
+    # after_destroy     :invalidate_proxy_klass
 
     ## methods ##
 
@@ -114,9 +117,18 @@ module CustomFields
     #
     # @return [ Boolean ] true if the field has no errors, false otherwise
     def quick_valid?
-      CustomFields::Field.without_callback(:validation, :after, :invalidate_proxy_klass) do
+      # true
+      # CustomFields::Field.without_callback(:validation, :after, :invalidate_proxy_klass) do
+      CustomFields::Field.without_callback(:save, :before, :invalidate_proxy_klass) do
         self.valid?
       end
+    end
+
+    def destroy
+      super
+      self.mark_proxy_klass_flag_as_invalidated
+      self._parent.save
+      puts "^^^^^^^^ PARENT SAVED / CHILD DESTROYED"
     end
 
     # Collects all the important attributes of this field.
@@ -197,9 +209,10 @@ module CustomFields
     alias_method_chain :parentize, :custom_fields
 
     def invalidate_proxy_klass
-      puts "#{self._name} _ invalidate_proxy_klass !!! #{self.destroyed?}"
-      if self.destroyed? || self.changed?
+      puts "#{self._name} / #{self._alias} _ invalidate_proxy_klass !!! #{self.flagged_for_destroy?} / #{self.destroyed?}"
+      if self.changed? || self.flagged_for_destroy?
         self.mark_proxy_klass_flag_as_invalidated
+      # else
       end
 
       # # if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)

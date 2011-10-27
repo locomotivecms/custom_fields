@@ -7,7 +7,6 @@ describe 'Invalidating proxy klass' do
     @field = @project.tasks_custom_fields.build(:label => 'Hours', :_alias => 'hours', :kind => 'string')
     @project.tasks_custom_fields.build(:label => 'Done', :_alias => 'done', :kind => 'boolean')
     @project.save
-    puts "============== SAVED (1st) ==========="
     @project = Project.find(@project._id) # hard reload
   end
 
@@ -23,12 +22,8 @@ describe 'Invalidating proxy klass' do
     it 'invalidates klass' do
       @project.tasks_custom_fields.build(:label => 'Price', :_alias => 'price', :kind => 'string')
       task = @project.tasks.build
-      puts "version returned (#{task.class.object_id}) / #{task.class.version}"
-      puts "============== BEFORE SAVING ========"
       @project.save # @project.reload
-      puts "============== SAVED (2nd)==========="
       task = @project.tasks.build
-      puts "version returned (#{task.class.object_id})"
       task.class.version.should == 2
       task.respond_to?(:price).should be_true
     end
@@ -73,7 +68,9 @@ describe 'Invalidating proxy klass' do
 
     it 'invalidates klass' do
       @project.tasks_custom_fields.first.destroy
-      @project.reload
+      @project.tasks_custom_fields.size.should == 1
+      @project.tasks_custom_fields_version.should == 2
+      @project = Project.find(@project._id) # hard reload
       task = @project.tasks.build
       task.class.version.should == 2
       task.respond_to?(:hours).should be_false
@@ -81,7 +78,7 @@ describe 'Invalidating proxy klass' do
 
     it 'invalidates klass through accepts_nested_attributes_for' do
       @project.update_attributes({ 'tasks_custom_fields_attributes' => {
-        '1' => { 'id' => @field._id.to_s, '_destroy' => true }
+        '1' => { 'id' => @field._id.to_s, '_destroy' => 'true' }
       } })
       @project.reload
       task = @project.tasks.build
