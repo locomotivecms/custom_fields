@@ -49,7 +49,7 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'has custom fields for embedded collection' do
-        @project.respond_to?(:task_custom_fields).should be_true
+        @project.respond_to?(:tasks_custom_fields).should be_true
       end
 
     end
@@ -58,7 +58,8 @@ describe CustomFields::CustomFieldsFor do
 
       before(:each) do
         @project = Project.new
-        @project.task_custom_fields.build :label => 'Short summary', :_alias => 'summary', :kind => 'string'
+        build_fake_persisted_field :tasks, :label => 'Short summary', :_alias => 'summary', :kind => 'string'
+        @project.rebuild_custom_fields_relation :tasks
         @task = @project.tasks.build
       end
 
@@ -67,7 +68,6 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'returns a new document with custom field' do
-        @project.tasks.build
         @task.respond_to?(:summary).should be_true
       end
 
@@ -89,7 +89,7 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'has custom fields for related collections' do
-        @project.respond_to?(:person_custom_fields).should be_true
+        @project.respond_to?(:people_custom_fields).should be_true
       end
 
     end
@@ -98,7 +98,8 @@ describe CustomFields::CustomFieldsFor do
 
       before(:each) do
         @project = Project.new
-        @project.person_custom_fields.build :label => 'Position in the project', :_alias => 'position', :kind => 'string'
+        build_fake_persisted_field :people, :label => 'Position in the project', :_alias => 'position', :kind => 'string'
+        @project.rebuild_custom_fields_relation :people
         @person = @project.people.build
       end
 
@@ -128,11 +129,7 @@ describe CustomFields::CustomFieldsFor do
       end
 
       it 'has custom fields' do
-        @project.respond_to?(:metadata_custom_fields).should be_true
-      end
-
-      it 'has also an alias to custom fields' do
-        @project.respond_to?(:self_custom_fields).should be_true
+        @project.respond_to?(:self_metadata_custom_fields).should be_true
       end
 
     end
@@ -141,29 +138,36 @@ describe CustomFields::CustomFieldsFor do
 
       before(:each) do
         @project = Project.new
-        @project.self_custom_fields.build :label => 'Manager name', :_alias => 'manager', :kind => 'string'
+        field = build_fake_persisted_field :self_metadata, :label => 'Manager name', :_alias => 'manager', :kind => 'string'
+        @project.rebuild_custom_fields_relation :self_metadata
       end
 
       it 'returns a new document whose Class is different from the original one' do
-        @project.safe_metadata.class.should_not == CustomFields::Metadata
+        @project.self_metadata.class.should_not == CustomFields::SelfMetadata
       end
 
       it 'returns a new document with custom field' do
-        @project.safe_metadata.respond_to?(:manager).should be_true
+        @project.self_metadata.respond_to?(:manager).should be_true
       end
 
       it 'sets/gets custom attributes' do
-        @project.safe_metadata.manager = 'Mr Harrison'
-        @project.safe_metadata.manager.should == 'Mr Harrison'
+        @project.self_metadata.manager = 'Mr Harrison'
+        @project.self_metadata.manager.should == 'Mr Harrison'
       end
 
       it 'does not modify other class instances' do
         @other_project = Project.new
-        @other_project.safe_metadata.respond_to?(:manager).should be_false
+        @other_project.self_metadata.respond_to?(:manager).should be_false
       end
 
     end
 
+  end
+
+  def build_fake_persisted_field(name, attributes)
+    @project.send(:"#{name}_custom_fields").build(attributes).tap do |field|
+      field.stubs(:persisted?).returns(true)
+    end
   end
 
 end

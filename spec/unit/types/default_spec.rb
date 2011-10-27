@@ -5,7 +5,7 @@ describe CustomFields::Types::Default do
   context 'on target class' do
 
     before(:all) do
-      @project = build_project_task_with_custom_field
+      @project = build_project
     end
 
     context '#validation' do
@@ -24,14 +24,17 @@ describe CustomFields::Types::Default do
     end
 
     it 'responds to to_hash even if modules do not have a custom to_hash method' do
-      @project.task_custom_fields.first.to_hash['label'].should == 'Person in charge'
+      @project.tasks_custom_fields.first.to_hash['label'].should == 'Person in charge'
     end
 
   end
 
-  def build_project_task_with_custom_field
+  def build_project
     Project.new.tap do |project|
-      project.task_custom_fields.build :label => 'Person in charge', :_alias => 'chef', :kind => 'string', :_name => 'field_1', :required => true
+      project.tasks_custom_fields.build(:label => 'Person in charge', :_alias => 'chef', :kind => 'string', :_name => 'field_1', :required => true).tap do |field|
+        field.stubs(:persisted?).returns(true)
+      end
+      project.rebuild_custom_fields_relation :tasks
     end
   end
 

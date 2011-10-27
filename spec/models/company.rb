@@ -2,8 +2,7 @@ class Company
 
   include Mongoid::Document
   include Mongoid::Timestamps
-  include CustomFields::ProxyClassEnabler
-  include CustomFields::CustomFieldsFor
+  include Mongoid::CustomFields
 
   field :name
 

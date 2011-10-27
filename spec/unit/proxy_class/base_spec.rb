@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe CustomFields::ProxyClassEnabler do
+describe CustomFields::ProxyClass::Base do
 
   context '#proxy klass' do
 
     before(:each) do
-      (@parent = Object.new).stubs(:task_custom_fields).returns([])
+      (@parent = Object.new).stubs(:tasks_custom_fields).returns([])
       @parent.stubs(:_id).returns(42)
-      @parent.stubs(:task_custom_field_custom_fields_version).returns(0)
-      @parent.stubs(:invalidate_task_klass_flag=).returns(true)
-      @klass = Task.to_klass_with_custom_fields([], @parent, 'task_custom_fields')
+      @parent.stubs(:tasks_custom_fields_version).returns(0)
+      @parent.stubs(:invalidate_tasks_klass_flag=).returns(true)
+      @klass = Task.to_klass_with_custom_fields('tasks', @parent, [])
     end
 
     it 'does not be flagged as a inherited document' do
@@ -24,18 +24,9 @@ describe CustomFields::ProxyClassEnabler do
       @klass.model_name.should == 'Task'
     end
 
-    it 'adds field to itself' do
-      @klass.apply_custom_field(CustomFields::Field.new({
-        :label => 'In charge',
-        :kind => 'string',
-        :_name => 'custom_field_1',
-        :_alias => 'person',
-        :_parent => @parent,
-        :association_name => 'task_custom_fields'
-      }))
-
-      @klass.custom_fields.should_not be_empty
-      @klass.custom_fields.first.label = 'In charge'
+    it 'does not add a field if it is not valid' do
+      @klass.apply_custom_field(build_custom_field({ :label => 'In charge', :kind => 'string' }, false))
+      @klass.custom_fields.should == nil
     end
 
     it 'adds field to itself' do
@@ -61,7 +52,15 @@ describe CustomFields::ProxyClassEnabler do
         :association_name => 'task_custom_fields'
       }.merge(attributes)
 
-      klass.apply_custom_field(CustomFields::Field.new(attributes))
+      klass.apply_custom_field(build_custom_field(attributes))
+    end
+
+    def build_custom_field(attributes, is_valid = true)
+      CustomFields::Field.new(attributes).tap do |field|
+        field.stubs(:persisted?).returns(true)
+        field.stubs(:valid?).returns(is_valid)
+        field.stubs(:quick_valid?).returns(is_valid)
+      end
     end
 
   end

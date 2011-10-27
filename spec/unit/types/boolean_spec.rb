@@ -23,7 +23,7 @@ describe CustomFields::Types::Boolean do
   context 'on target class' do
 
     before(:each) do
-      @project = build_project_with_boolean
+      @project = build_project
     end
 
     context '#setting' do
@@ -31,19 +31,19 @@ describe CustomFields::Types::Boolean do
       context '#true' do
 
         it 'sets value from an integer' do
-          @project.safe_metadata.active = 1
-          @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == true
+          @project.self_metadata.active = 1
+          @project.self_metadata.active.should == true
+          @project.self_metadata.field_1.should == true
         end
 
         it 'sets value from a string' do
-          @project.safe_metadata.active = '1'
-          @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == true
+          @project.self_metadata.active = '1'
+          @project.self_metadata.active.should == true
+          @project.self_metadata.field_1.should == true
 
-          @project.safe_metadata.active = 'true'
-          @project.safe_metadata.active.should == true
-          @project.safe_metadata.field_1.should == true
+          @project.self_metadata.active = 'true'
+          @project.self_metadata.active.should == true
+          @project.self_metadata.field_1.should == true
         end
 
       end
@@ -51,19 +51,19 @@ describe CustomFields::Types::Boolean do
       context '#false' do
 
         it 'sets value from an integer' do
-          @project.safe_metadata.active = 0
-          @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == false
+          @project.self_metadata.active = 0
+          @project.self_metadata.active.should == false
+          @project.self_metadata.field_1.should == false
         end
 
         it 'sets value from a string' do
-          @project.safe_metadata.active = '0'
-          @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == false
+          @project.self_metadata.active = '0'
+          @project.self_metadata.active.should == false
+          @project.self_metadata.field_1.should == false
 
-          @project.safe_metadata.active = 'false'
-          @project.safe_metadata.active.should == false
-          @project.safe_metadata.field_1.should == false
+          @project.self_metadata.active = 'false'
+          @project.self_metadata.active.should == false
+          @project.self_metadata.field_1.should == false
         end
 
       end
@@ -72,10 +72,13 @@ describe CustomFields::Types::Boolean do
 
   end
 
-  def build_project_with_boolean
-    project = Project.new
-    project.self_custom_fields.build :label => 'Active', :kind => 'Boolean', :_name => 'field_1'
-    project
+  def build_project
+    Project.new.tap do |project|
+      project.self_metadata_custom_fields.build(:label => 'Active', :kind => 'Boolean', :_name => 'field_1').tap do |field|
+        field.stubs(:persisted?).returns(true)
+      end
+      project.rebuild_custom_fields_relation :self_metadata
+    end
   end
 
 end

@@ -4,8 +4,8 @@ describe CustomFields::Types::Category do
 
   before(:each) do
     @project = Project.new(:name => 'Locomotive')
-    @field = @project.task_custom_fields.build(:label => 'Main category', :_alias => 'main_category', :kind => 'Category')
-    @another_field = @project.task_custom_fields.build(:label => 'Domain category', :_alias => 'domain_category', :kind => 'Category')
+    @field = @project.tasks_custom_fields.build(:label => 'Main category', :_alias => 'main_category', :kind => 'Category')
+    @another_field = @project.tasks_custom_fields.build(:label => 'Domain category', :_alias => 'domain_category', :kind => 'Category')
   end
 
   context 'saving category items' do
@@ -18,8 +18,8 @@ describe CustomFields::Types::Category do
     it 'persists items' do
       @field.save.should be_true
       @project.reload
-      @project.task_custom_fields.first.category_items.size.should == 2
-      @project.task_custom_fields.last.category_items.size.should == 0
+      @project.tasks_custom_fields.first.category_items.size.should == 2
+      @project.tasks_custom_fields.last.category_items.size.should == 0
     end
 
     it 'does not mix items of 2 category fields' do
@@ -35,6 +35,10 @@ describe CustomFields::Types::Category do
     end
 
     context 'assigning a category and persists' do
+
+      before(:each) do
+        @project.save # persists the custom fields
+      end
 
       it 'sets the category from a category name' do
         task = @project.tasks.build(:main_category => 'Design')

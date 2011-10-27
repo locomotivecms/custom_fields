@@ -4,26 +4,27 @@ module Mongoid # :nodoc:
 
     module Accessors
 
-      # Create a relation from an object and metadata.
+      # Builds the related document and creates the relation based on the class
+      # enhanced by the custom_fields functionnality (if set up for the relation).
       #
-      # @example Create the relation.
-      #   person.create_relation(document, metadata)
-      #
-      # @param [ Document, Array<Document ] object The relation target.
-      # @param [ Metadata ] metadata The relation metadata.
+      # @param [ String, Symbol ] name The name of the relation.
+      # @param [ Hash, BSON::ObjectId ] object The id or attributes to use.
+      # @param [ Metadata ] metadata The relation's metadata.
+      # @param [ true, false ] building If we are in a build operation.
       #
       # @return [ Proxy ] The relation.
       #
       # @since 2.0.0.rc.1
-      def create_relation_with_custom_fields(object, metadata)
+      def build_with_custom_fields(name, object, metadata)
         if self.respond_to?(:custom_fields_for?) && self.custom_fields_for?(metadata.name)
+          # puts "[Accessors] build_with_custom_fields #{name}"
           metadata = self.clone_metadata_for_custom_fields(metadata)
         end
 
-        create_relation_without_custom_fields(object, metadata)
+        build_without_custom_fields(name, object, metadata)
       end
 
-      alias_method_chain :create_relation, :custom_fields
+      alias_method_chain :build, :custom_fields
     end
 
   end

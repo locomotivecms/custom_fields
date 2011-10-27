@@ -19,7 +19,7 @@ require 'custom_fields'
 
 Dir[File.join(MODELS, "*.rb")].sort.each { |file| require File.basename(file) }
 
-Rspec.configure do |config|
+RSpec.configure do |config|
   config.mock_with :mocha
 
   require 'database_cleaner'

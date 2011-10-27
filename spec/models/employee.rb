@@ -2,7 +2,7 @@ class Employee
 
   include Mongoid::Document
   include Mongoid::Timestamps
-  include CustomFields::ProxyClassEnabler
+  include Mongoid::TargetCustomFields
 
   field :full_name
 

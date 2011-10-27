@@ -2,7 +2,7 @@ class Client
 
   include Mongoid::Document
   include Mongoid::Timestamps
-  include CustomFields::CustomFieldsFor
+  include Mongoid::CustomFields
 
   field :name
 

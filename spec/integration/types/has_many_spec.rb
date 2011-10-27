@@ -213,7 +213,7 @@ describe CustomFields::Types::HasMany do
 
   def create_client
     @client = Client.new(:name => 'NoCoffee')
-    @client.location_custom_fields.build :label => 'Country', :_alias => 'country', :kind => 'String'
+    @client.locations_custom_fields.build :label => 'Country', :_alias => 'country', :kind => 'String'
 
     @client.save!
 
@@ -230,19 +230,18 @@ describe CustomFields::Types::HasMany do
 
   def create_project
     @project = Project.new(:name => 'Locomotive')
-    @project.task_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.location_klass.to_s
+    @project.tasks_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.locations_klass.to_s
 
     @project.save!
   end
 
   def build_company_custom_field
-    @company.employee_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.task_klass.to_s
+    @company.employees_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.tasks_klass.to_s
     @company.save!
   end
 
   def add_project_reverse_has_many_field
-    @project.task_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => @company.employee_klass.to_s, :reverse_lookup => 'task'
-
+    @project.tasks_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => @company.employees_klass.to_s, :reverse_lookup => 'task'
     @project.save! && @project = Mongoid.reload_document(@project)
   end
 

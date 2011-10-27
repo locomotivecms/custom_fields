@@ -23,7 +23,7 @@ describe CustomFields::Types::HasOne do
   context '#validation' do
 
     before(:each) do
-      @project = build_project_task_with_custom_field
+      @project = build_project
     end
 
     it 'marks it as invalid if the field is not filled in' do
@@ -39,9 +39,12 @@ describe CustomFields::Types::HasOne do
 
   end
 
-  def build_project_task_with_custom_field
+  def build_project
     Project.new.tap do |project|
-      project.task_custom_fields.build :label => 'Person in charge', :_alias => 'chef', :kind => 'has_one', :_name => 'field_1', :target => 'Person', :required => true
+      project.tasks_custom_fields.build(:label => 'Person in charge', :_alias => 'chef', :kind => 'has_one', :_name => 'field_1', :target => 'Person', :required => true).tap do |field|
+        field.stubs(:persisted?).returns(true)
+      end
+      project.rebuild_custom_fields_relation :tasks
     end
   end
 

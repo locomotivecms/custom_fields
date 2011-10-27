@@ -1,18 +1,17 @@
-source :rubygems
+source 'http://rubygems.org'
+gemspec
 
 gem 'rake'
-gem 'rdoc'
 
-gem 'bson_ext', '~> 1.3.0'
-gem 'mongoid', '2.0.2'
-gem 'activesupport', '~> 3.0.9'
-gem 'carrierwave'
-gem 'SystemTimer', :platforms => :ruby_18
+platforms :mri_18 do
+  unless ENV['CI']
+    gem 'ruby-debug'
+  end
+  gem 'SystemTimer'
+end
 
-group :test do
-  gem 'rspec', '~> 2.0.0'
-  gem 'mocha', :git => 'git://github.com/floehopper/mocha.git'
-  gem 'database_cleaner'
-  gem 'ruby-debug',   :platform => :mri_18
-  gem 'ruby-debug19', :platform => :mri_19, :require => 'ruby-debug'
+platforms :mri_19 do
+  unless ENV['CI']
+    gem 'ruby-debug19', :require => 'ruby-debug' if RUBY_VERSION < '1.9.3'
+  end
 end
