@@ -35,12 +35,7 @@ module CustomFields
 
     ## callbacks ##
     before_validation :set_alias
-    # before_save       :invalidate_proxy_klass
-    # after_validation  :invalidate_proxy_klass
     before_save       :invalidate_proxy_klass
-    before_save { |r| puts "BEING SAVE #{r._name}" }
-    # before_destroy { |r| puts "DESTROYED #{r._name}" }
-    # after_destroy     :invalidate_proxy_klass
 
     ## methods ##
 
@@ -124,11 +119,18 @@ module CustomFields
       end
     end
 
-    def destroy
-      super
-      self.mark_proxy_klass_flag_as_invalidated
-      self._parent.save
-      puts "^^^^^^^^ PARENT SAVED / CHILD DESTROYED"
+    # Destroys a field and saves the parent too in order to keep track of the changes
+    # for the parent (for instance, the version has to be bumped).
+    #
+    # @param [ Hash ] options Options to pass to destroy.
+    #
+    # @return [ true, false ] True if successful, false if not.
+    #
+    def destroy(options = {})
+      super.tap do
+        self.mark_proxy_klass_flag_as_invalidated
+        self._parent.save
+      end
     end
 
     # Collects all the important attributes of this field.
@@ -209,22 +211,10 @@ module CustomFields
     alias_method_chain :parentize, :custom_fields
 
     def invalidate_proxy_klass
-      puts "#{self._name} / #{self._alias} _ invalidate_proxy_klass !!! #{self.flagged_for_destroy?} / #{self.destroyed?}"
+      # puts "#{self._name} / #{self._alias} _ invalidate_proxy_klass !!! #{self.flagged_for_destroy?} / #{self.destroyed?}"
       if self.changed? || self.flagged_for_destroy?
         self.mark_proxy_klass_flag_as_invalidated
-      # else
       end
-
-      # # if self._parent.instance_variable_get(:@_writing_attributes_with_custom_fields)
-      #   if self.destroyed? # force the parent to invalidate the related target class
-      #     self.mark_proxy_klass_flag_as_invalidated
-      #   elsif self.changed?
-      #     self.mark_proxy_klass_flag_as_invalidated
-      #   end
-      # else
-      #   self.mark_proxy_klass_flag_as_invalidated
-      #   self._parent.save
-      # end
     end
 
     def mark_proxy_klass_flag_as_invalidated

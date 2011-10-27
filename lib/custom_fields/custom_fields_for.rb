@@ -118,7 +118,7 @@ module CustomFields
       # @return [ Metadata ] The relation's new metadata
       #
       def clone_metadata_for_custom_fields(metadata)
-        puts "-> clone_metadata_for_custom_fields #{metadata.name}"
+        # puts "-> clone_metadata_for_custom_fields #{metadata.name}"
 
         klass = self.build_klass_with_custom_fields(metadata.name, metadata)
 
@@ -161,7 +161,7 @@ module CustomFields
       def rebuild_custom_fields_relation(name)
         # metadata = self.clone_metadata_for_custom_fields(self.relations[name.to_s])
 
-        puts "rebuild_custom_fields_relation #{name}"
+        # puts "rebuild_custom_fields_relation #{name}"
 
         metadata = self.relations[name.to_s]
         self.build(name, nil, metadata)
@@ -257,7 +257,6 @@ module CustomFields
 
         class_eval <<-EOV
 
-          before_validation { |r| puts "--> BEFORE VALIDATION (#{name}) / " + r.#{name}_klass.inspect  }
           before_save   :bump_#{name}_custom_fields_version
           after_save    :mark_#{name}_custom_fields_as_persisted
           after_save    :rebuild_#{name}_relation
@@ -285,9 +284,9 @@ module CustomFields
           end
 
           def rebuild_#{name}_relation
-            puts "--> AFTER SAVE (#{name})"
+            # puts "--> AFTER SAVE (#{name})"
             if self.#{name}_klass_out_of_date?
-              puts 'rebuild relation for #{name} after save'
+              # puts 'rebuild relation for #{name} after save'
               self.rebuild_custom_fields_relation('#{name}')
             end
           end
@@ -295,7 +294,7 @@ module CustomFields
           protected
 
           def bump_#{name}_custom_fields_version
-            puts "--> BEFORE SAVE (#{name})"
+            # puts "--> BEFORE SAVE (#{name})"
             self.bump_custom_fields_version('#{name}')
           end
 
@@ -308,17 +307,6 @@ module CustomFields
           end
 
         EOV
-
-        # # mongoid tiny patch: for performance optimization (ie: we do want to invalidate klass with custom fields every time we save a field)
-        # unless instance_methods.collect(&:to_s).include?('write_attributes_with_custom_fields')
-        #   class_eval do
-        #     def write_attributes_with_custom_fields(attrs = nil, guard_protected_attributes = true)
-        #       self.instance_variable_set(:@_writing_attributes_with_custom_fields, true)
-        #       self.write_attributes_without_custom_fields(attrs, guard_protected_attributes)
-        #     end
-        #     alias_method_chain :write_attributes, :custom_fields
-        #   end
-        # end
       end
 
       # Returns the class name of the custom field which is based both on the parent class name
