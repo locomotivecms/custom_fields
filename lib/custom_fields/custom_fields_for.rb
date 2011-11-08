@@ -317,7 +317,7 @@ module CustomFields
       # @return [ String ] The class name
       #
       def dynamic_custom_field_class_name(name)
-        "#{self.name}#{name.to_s.singularize.camelize}Field"
+        "#{self.name.demodulize}#{name.to_s.singularize.camelize}Field"
       end
 
       # An embedded relationship has to be defined on both side in order for it
@@ -332,12 +332,14 @@ module CustomFields
       def declare_embedded_in_definition_in_custom_field(name)
         klass_name = self.dynamic_custom_field_class_name(name)
 
-        unless Object.const_defined?(klass_name)
+        source = self.parents.size > 1 ? self.parents.first : Object
+
+        unless source.const_defined?(klass_name)
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
-            embedded_in :#{self.name.underscore}, :inverse_of => :#{name}_custom_fields
+            embedded_in :#{self.name.demodulize.underscore}, :inverse_of => :#{name}_custom_fields, :class_name => '#{self.name}'
           EOF
 
-          Object.const_set(klass_name, klass)
+          source.const_set(klass_name, klass)
         end
       end
 
