@@ -16,12 +16,14 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.3.6'
   s.rubyforge_project         = 'nowarning'
 
-  s.add_dependency 'mongoid', '~> 2.3.2'
+  s.add_dependency 'mongoid', '~> 2.3.3'
   s.add_dependency 'activesupport', '~> 3.1.1'
   s.add_dependency 'carrierwave-mongoid', '~> 0.1.3'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
-  s.add_development_dependency('bson_ext', ['~> 1.4.1'])
+  s.add_development_dependency('bson', ['~> 1.3.1'])
+  s.add_development_dependency('mongo', ['~> 1.3.1'])
+  s.add_development_dependency('bson_ext', ['~> 1.3.1'])
   s.add_development_dependency('mocha', ['~> 0.9.12'])
   s.add_development_dependency('rspec', ['~> 2.6'])
   s.add_development_dependency('database_cleaner', ['~> 0.6.7'])
