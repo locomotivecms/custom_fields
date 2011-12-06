@@ -11,7 +11,7 @@ module CustomFields
       # @return [ String ] The class name
       #
       def klass_name_with_custom_fields(name, parent)
-        "#{name.to_s.gsub(/^_/, '').singularize.camelize}#{parent.class.name.camelize}#{parent._id}"
+        "#{name.to_s.gsub(/^_/, '').singularize.camelize}#{parent.class.name.demodulize.camelize}#{parent._id}"
       end
 
       # Returns the current proxy class built with the custom fields.

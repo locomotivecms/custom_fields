@@ -4,11 +4,11 @@ describe 'Namespaced models' do
   let(:parent) { Namespaced::Parent.new }
 
   it 'correctly loads up the association' do
-    parent.children.be_blank
+    parent.children.should be_blank
   end
 
   it 'allows access to the custom fields' do
-    parent.children_custom_fields.be_blank
+    parent.children_custom_fields.should be_blank
   end
 
   it 'allows custom fields to be build' do
