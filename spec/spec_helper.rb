@@ -15,9 +15,13 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 MODELS = File.join(File.dirname(__FILE__), 'models')
 $LOAD_PATH.unshift(MODELS)
 
+NAMESPACED_MODELS = File.join(File.dirname(__FILE__), 'models', 'namespaced')
+$LOAD_PATH.unshift(NAMESPACED_MODELS)
+
 require 'custom_fields'
 
 Dir[File.join(MODELS, "*.rb")].sort.each { |file| require File.basename(file) }
+Dir[File.join(NAMESPACED_MODELS, "*.rb")].sort.each { |file| require File.basename(file) }
 
 RSpec.configure do |config|
   config.mock_with :mocha
