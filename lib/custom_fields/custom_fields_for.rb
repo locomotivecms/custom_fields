@@ -317,7 +317,7 @@ module CustomFields
       # @return [ String ] The class name
       #
       def dynamic_custom_field_class_name(name)
-        "#{self.name.demodulize}#{name.to_s.singularize.camelize}Field"
+        "#{self.name}#{name.to_s.singularize.camelize}Field"
       end
 
       # An embedded relationship has to be defined on both side in order for it
@@ -330,7 +330,7 @@ module CustomFields
       # @return [ Field ] The new field class.
       #
       def declare_embedded_in_definition_in_custom_field(name)
-        klass_name = self.dynamic_custom_field_class_name(name)
+        klass_name = self.dynamic_custom_field_class_name(name).split('::').last # Use only the class, ignore the modules
 
         source = self.parents.size > 1 ? self.parents.first : Object
 
