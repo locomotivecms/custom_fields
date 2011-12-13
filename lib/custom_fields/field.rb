@@ -39,8 +39,6 @@ module CustomFields
     ## methods ##
 
     def collect_diff(memo)
-      # self._diff_memo = { '$set' => {}, '$unset' => {}, '$rename' => {} }
-
       method_name = :"collect_#{self.type}_diff"
 
       if self.respond_to?(method_name)
@@ -49,16 +47,6 @@ module CustomFields
         collect_default_diff(memo)
       end
     end
-
-    # def convert_diff_into_attributes(memo)
-    #   method_name = :"turn_#{self.type}_diff_"
-    #
-    #   if self.respond_to?(method_name)
-    #     self.send(method_name, self.memo)
-    #   else
-    #     apply_default_diff(self.memo)
-    #   end
-    # end
 
     # Returns the name of the relation binding this field and the custom_fields in the parent class
     #

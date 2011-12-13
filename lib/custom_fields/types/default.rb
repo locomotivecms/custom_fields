@@ -10,7 +10,7 @@ module CustomFields
             if self.destroyed?
               memo['$unset'][self.alias] = 1
             elsif self.changed?
-              if self.changes.has?(:alias)
+              if self.changes.key?(:alias)
                 old_name, new_name = self.changes[:alias]
                 memo['$rename'][old_name] = new_name
               end

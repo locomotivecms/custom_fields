@@ -32,5 +32,7 @@ end
 
 === EXPERIMENTAL ===
 
-
+- posts.build => doit rajouter le custom_fields_recipe automatiquement
+- target custom fields
+  - ajoute des methods a la classe target => Recipe ?
 

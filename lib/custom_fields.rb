@@ -20,29 +20,17 @@ module CustomFields
 end
 
 require 'custom_fields/version'
+require 'custom_fields/extensions/mongoid/relations/referenced/many'
+# require 'custom_fields/extensions/mongoid/relations/accessors'
+# require 'custom_fields/extensions/mongoid/relations/builders'
 require 'custom_fields/types/default'
 require 'custom_fields/field'
-require 'custom_fields/custom_fields_for'
+require 'custom_fields/source'
+require 'custom_fields/target'
 
 # Load all the translation files
 I18n.load_path += Dir[File.join(File.dirname(__FILE__), '..', 'config', 'locales', '*.yml')]
 
-module Mongoid
-  module CustomFields
-    extend ActiveSupport::Concern
-    included do
-      include ::CustomFields::CustomFieldsFor
-    end
-  end
-
-  # module TargetCustomFields
-  #   extend ActiveSupport::Concern
-  #   included do
-  #     extend ::CustomFields::ProxyClass::Helper
-  #     extend ::CustomFields::ProxyClass::Builder
-  #   end
-  # end
-end
 
 
 

@@ -1,6 +1,6 @@
 module CustomFields
 
-  module CustomFieldsFor
+  module Source
 
     extend ActiveSupport::Concern
 
@@ -14,11 +14,50 @@ module CustomFields
 
     module InstanceMethods
 
+      # Determines if the relation is enhanced by the custom fields
+      #
+      # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
+      #   person.custom_fields_for?(:addresses)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ true, false ] True if enhanced, false if not.
+      #
+      def custom_fields_for?(name)
+        self.class.custom_fields_for?(name)
+      end
+
+      # Returns the ordered list of custom fields for a relation
+      #
+      # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
+      #   person.ordered_custom_fields(:addresses)
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Collection ] The ordered list.
+      #
+      def ordered_custom_fields(name)
+        self.send(:"#{name}_custom_fields").sort { |a, b| (a.position || 0) <=> (b.position || 0) }
+      end
+
+      #
+      # TODO
+      #
+      def custom_fields_recipe_for(name)
+        self.ordered_custom_fields(name).map(&:to_recipe)
+      end
+
+      #
+      # TODO
+      #
       def initialize_custom_fields_diff(name)
         @_custom_fields_diff ||= {}
         self._custom_fields_diff[name] = { '$set' => {}, '$unset' => {}, '$rename' => {} }
       end
 
+      #
+      # TODO
+      #
       def collect_custom_fields_diff(name, fields)
         puts "==> collect_custom_fields_diff for #{name}, #{fields.size}"
 
@@ -29,6 +68,9 @@ module CustomFields
         end
       end
 
+      #
+      # TODO
+      #
       def apply_custom_fields_diff(name)
         puts "==> apply_custom_fields_recipes for #{name}, #{fields.size}"
 
@@ -37,17 +79,10 @@ module CustomFields
 
         puts "selector = #{selector.inspect}, memo = #{attributes.inspect}"
 
-        collection.update selector, attributes
-
-        # fields.each { |field| field.apply_diff }
-
-        # self._custom_fields_diff[name].each do |diff|
-        #   diff[:field].apply_diff(diff)
-        # end
+        collection.update selector, attributes, :multi => true
       end
 
     end
-
 
     module ClassMethods
 

@@ -6,6 +6,7 @@ module Mongoid # :nodoc:
       module ClassMethods #:nodoc:
 
         def builder_with_custom_fields(name, metadata)
+          puts "builder_with_custom_fields #{name}"
           tap do
             define_method("build_#{name}") do |*args|
               if self.custom_fields_for?(metadata.name)

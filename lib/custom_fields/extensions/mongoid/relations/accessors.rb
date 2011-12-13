@@ -16,9 +16,10 @@ module Mongoid # :nodoc:
       #
       # @since 2.0.0.rc.1
       def build_with_custom_fields(name, object, metadata)
+        # puts "build_with_custom_fields #{name} / #{object.inspect} / #{metadata.name} / #{self.inspect}"
         if self.respond_to?(:custom_fields_for?) && self.custom_fields_for?(metadata.name)
-          # puts "[Accessors] build_with_custom_fields #{name}"
-          metadata = self.clone_metadata_for_custom_fields(metadata)
+          puts "[Accessors] build_with_custom_fields #{name}"
+          # metadata = self.clone_metadata_for_custom_fields(metadata)
         end
 
         build_without_custom_fields(name, object, metadata)
