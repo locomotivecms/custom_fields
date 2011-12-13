@@ -8,10 +8,4 @@ class Post
 
   belongs_to :blog
 
-  # after_initialize :foo
-  #
-  # def foo
-  #   "YEEAAAAH FOOO !"
-  # end
-
 end

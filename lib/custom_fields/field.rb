@@ -7,7 +7,10 @@ module CustomFields
 
     ## types ##
     include Types::Default
-    # include Types::String
+    include Types::String
+    include Types::Date
+
+
     # include Types::Text
     # include Types::Category
     # include Types::Boolean
@@ -18,7 +21,7 @@ module CustomFields
 
     ## fields ##
     field :label
-    field :alias
+    field :name
     field :type
     field :hint
     field :position, :type => Integer, :default => 0
@@ -26,18 +29,21 @@ module CustomFields
 
     ## validations ##
     validates_presence_of   :label, :type
-    validates_exclusion_of  :alias, :in => lambda { |f| CustomFields.options[:reserved_aliases].map(&:to_s) }
-    validates_format_of     :alias, :with => /^[a-z]([A-Za-z0-9_]+)?$/
-    validate                :uniqueness_of_label_and_alias
+    validates_exclusion_of  :name, :in => lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
+    validates_format_of     :name, :with => /^[a-z]([A-Za-z0-9_]+)?$/
+    validate                :uniqueness_of_label_and_name
 
     ## other accessors ##
     # attr_accessor :_diff_memo
 
     ## callbacks ##
-    before_validation :set_alias
+    before_validation :set_name
 
     ## methods ##
 
+    #
+    # TODO
+    #
     def collect_diff(memo)
       method_name = :"collect_#{self.type}_diff"
 
@@ -65,18 +71,11 @@ module CustomFields
       self.metadata.name.to_s.gsub('_custom_fields', '')
     end
 
-    # Checks if the field is valid without running the callback which marks
-    # the proxy class as invalidated
-    #
-    # @return [ Boolean ] true if the field has no errors, false otherwise
-    def quick_valid?
-      CustomFields::Field.without_callback(:save, :before, :invalidate_proxy_klass) do
-        self.valid?
-      end
-    end
-
     def to_recipe
-      { :alias => self.alias, :type => self.type, :required => self.required }
+      method_name       = :"#{self.type}_to_recipe"
+      custom_to_recipe  = self.send(method_name) rescue {}
+
+      { 'name' => self.name, 'type' => self.type, 'required' => self.required }.merge(custom_to_recipe)
     end
 
     # # Collects all the important attributes of this field.
@@ -114,21 +113,21 @@ module CustomFields
 
     protected
 
-    def uniqueness_of_label_and_alias
+    def uniqueness_of_label_and_name
       if self.siblings.any? { |f| f.label == self.label && f._id != self._id }
         self.errors.add(:label, :taken)
       end
 
-      if self.siblings.any? { |f| f.alias == self.alias && f._id != self._id }
-        self.errors.add(:alias, :taken)
+      if self.siblings.any? { |f| f.name == self.name && f._id != self._id }
+        self.errors.add(:name, :taken)
       end
     end
 
-    def set_alias
-      return if self.label.blank? && self.alias.blank?
+    def set_name
+      return if self.label.blank? && self.name.blank?
 
-      if self.alias.blank?
-        self.alias = self.label.parameterize('_').gsub('-', '_').downcase
+      if self.name.blank?
+        self.name = self.label.parameterize('_').gsub('-', '_').downcase
       end
     end
 

@@ -2,79 +2,33 @@ require 'spec_helper'
 
 describe CustomFields::Types::Date do
 
-  context 'on field class' do
-
-    before(:each) do
-      @field = CustomFields::Field.new
-    end
-
-    it 'returns true if it is a Date' do
-      @field.kind = 'Date'
-      @field.date?.should be_true
-    end
-
-    it 'returns false if it is not a Date' do
-      @field.kind = 'string'
-      @field.date?.should be_false
-    end
-
+  before(:each) do
+    @blog = build_blog
+    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+    @date = Date.parse('2010-06-29')
   end
 
-  context 'on target class' do
-
-    before(:each) do
-      @project = build_project
-      @date = Date.parse('2010-06-29')
-    end
-
-    it 'owns aliases to the getter/setter' do
-      @project.self_metadata.respond_to?(:formatted_started_at).should be_true
-      @project.self_metadata.respond_to?(:formatted_started_at=).should be_true
-    end
-
-    it 'sets value from a date' do
-      @project.self_metadata.started_at = @date
-      @project.self_metadata.formatted_started_at.should == '2010-06-29'
-      @project.self_metadata.started_at.should == @date
-      @project.self_metadata.field_1.class.should == Date
-      @project.self_metadata.field_1.should == @date
-    end
-
-    it 'sets value from a string' do
-      @project.self_metadata.started_at = '2010-06-29'
-      @project.self_metadata.formatted_started_at.class.should == String
-      @project.self_metadata.formatted_started_at.should == '2010-06-29'
-      @project.self_metadata.field_1.class.should == Date
-      @project.self_metadata.field_1.should == @date
-    end
-
-    it 'sets value (in French format) from a string' do
-      I18n.stubs(:t).returns('%d/%m/%Y')
-      @project.self_metadata.started_at = '29/06/2010'
-      @project.self_metadata.formatted_started_at.should == '29/06/2010'
-      @project.self_metadata.field_1.should == @date
-    end
-
-    it 'sets nil value' do
-      @project.self_metadata.started_at = nil
-      @project.self_metadata.started_at.should be_nil
-      @project.self_metadata.field_1.should be_nil
-    end
-
-    it 'sets empty value' do
-      @project.self_metadata.started_at = ''
-      @project.self_metadata.started_at.should be_nil
-      @project.self_metadata.field_1.should be_nil
-    end
-
+  it 'sets value (in French format) from a string' do
+    I18n.stubs(:t).returns('%d/%m/%Y')
+    @post.posted_at = '29/06/2010'
+    @post.formatted_posted_at.should == '29/06/2010'
+    @post.posted_at.should == @date
   end
 
-  def build_project
-    Project.new.tap do |project|
-      project.self_metadata_custom_fields.build(:label => 'Started at', :kind => 'Date', :_name => 'field_1').tap do |field|
-        field.stubs(:persisted?).returns(true)
-      end
-      project.rebuild_custom_fields_relation :self_metadata
+  it 'sets nil value' do
+    @post.posted_at = nil
+    @post.posted_at.should be_nil
+  end
+
+  it 'sets empty value' do
+    @post.posted_at = ''
+    @post.posted_at.should be_nil
+  end
+
+  def build_blog
+    Blog.new(:name => 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build :label => 'Posted _at', :type => 'date'
+      field.valid?
     end
   end
 

@@ -6,7 +6,7 @@ require 'carrierwave/mongoid'
 module CustomFields
 
   @@options = {
-    :reserved_aliases => Mongoid.destructive_fields + %w(id _id send class)
+    :reserved_names => Mongoid.destructive_fields + %w(id _id send class)
   }
 
   def self.options=(options)
@@ -21,9 +21,9 @@ end
 
 require 'custom_fields/version'
 require 'custom_fields/extensions/mongoid/relations/referenced/many'
-# require 'custom_fields/extensions/mongoid/relations/accessors'
-# require 'custom_fields/extensions/mongoid/relations/builders'
 require 'custom_fields/types/default'
+require 'custom_fields/types/string'
+require 'custom_fields/types/date'
 require 'custom_fields/field'
 require 'custom_fields/source'
 require 'custom_fields/target'

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CustomFields::CustomFieldsFor do
+describe 'CustomFieldsFor' do
 
   describe 'helpers' do
 
@@ -14,7 +14,6 @@ describe CustomFields::CustomFieldsFor do
 
     it 'tells if an association is enhanced by the custom fields' do
       @blog.custom_fields_for?(:posts).should be_true
-      # @project.custom_fields_for?(:tasks).should be_true
     end
 
   end

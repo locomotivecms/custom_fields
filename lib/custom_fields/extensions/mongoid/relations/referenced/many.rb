@@ -8,12 +8,30 @@ module Mongoid #:nodoc:
       class Many < Relations::Many
 
         def build_with_custom_fields(attributes = {}, options = {}, type = nil)
-          build_without_custom_fields(attributes, options, type).tap do |doc|
-            if base.custom_fields_for?(metadata.name)
-              puts "build powered by custom_fields" # DEBUG
-              doc.custom_fields_recipe = base.custom_fields_recipe_for(metadata.name)
+          if base.custom_fields_for?(metadata.name)
+            puts "build powered by custom_fields #{attributes.inspect}" # DEBUG
+
+            default_attribute = {
+              :custom_fields_recipe => base.custom_fields_recipe_for(metadata.name)
+            }
+
+            build_without_custom_fields(default_attribute, options, type).tap do |doc|
+              doc.attributes = attributes
             end
+
+          else
+            build_without_custom_fields(attributes, options, type)
           end
+
+          # attributes[:custom_fields_recipe] = base.custom_fields_recipe_for(metadata.name)
+          # doc.custom_fields_recipe = base.custom_fields_recipe_for(metadata.name)
+
+          # .tap do |doc|
+          #   if base.custom_fields_for?(metadata.name)
+          #     puts "build powered by custom_fields" # DEBUG
+          #     doc.custom_fields_recipe = base.custom_fields_recipe_for(metadata.name)
+          #   end
+          # end
         end
 
         alias_method_chain :build, :custom_fields
