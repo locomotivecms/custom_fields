@@ -12,14 +12,14 @@ The main goals:
 
 h2. Requirements
 
-ActiveSupport 3.1.1, MongoDB 2.0 and Mongoid 2.3.2
+ActiveSupport 3.1.1, MongoDB 2.0 and Mongoid 2.3.3
 
 h2. Examples
 
 h3. On a has_many relationship
 
 bc.. class Company
-  embeds_many :employees
+  has_many :employees
 
   custom_fields_for :employees
 end
@@ -27,11 +27,11 @@ end
 class Employee
   field :name, String
 
-  embedded_in :company, :inverse_of => :employees
+  belongs_to :company, :inverse_of => :employees
 end
 
 company = Company.new
-company.employees_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string', :required => true
+company.employees_custom_fields.build :label => 'His/her position', :name => 'position', :type => 'string', :required => true
 
 company.save
 
@@ -43,12 +43,14 @@ employee.position # returns a "not defined method" error
 
 h3. On the class itself
 
+[IN PROGRESS]
+
 bc.. class Company
   custom_fields_for_itself
 end
 
 company = Company.new
-company.self_metadata_custom_fields.build :label => 'Shipping Address', :_alias => 'address', :kind => 'text'
+company.self_metadata_custom_fields.build :label => 'Shipping Address', :name => 'address', :type => 'text'
 
 company.save
 

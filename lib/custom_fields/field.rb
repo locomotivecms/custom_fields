@@ -11,9 +11,8 @@ module CustomFields
     include Types::Text
     include Types::Date
     include Types::Boolean
+    include Types::File
 
-
-    # include Types::Boolean
     # include Types::File
     # include Types::Category
     # include Types::HasOne
@@ -34,7 +33,6 @@ module CustomFields
     validate                :uniqueness_of_label_and_name
 
     ## other accessors ##
-    # attr_accessor :_diff_memo
 
     ## callbacks ##
     before_validation :set_name

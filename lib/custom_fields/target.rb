@@ -10,6 +10,7 @@ module CustomFields
       include CustomFields::Types::Text::TargetMethods
       include CustomFields::Types::Date::TargetMethods
       include CustomFields::Types::Boolean::TargetMethods
+      include CustomFields::Types::File::TargetMethods
 
       field :custom_fields_recipe, :type => Array
 
