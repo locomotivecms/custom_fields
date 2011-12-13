@@ -5,9 +5,11 @@ module CustomFields
     extend ActiveSupport::Concern
 
     included do
+      include CustomFields::Types::Default::TargetMethods
       include CustomFields::Types::String::TargetMethods
       include CustomFields::Types::Text::TargetMethods
       include CustomFields::Types::Date::TargetMethods
+      include CustomFields::Types::Boolean::TargetMethods
 
       field :custom_fields_recipe, :type => Array
 

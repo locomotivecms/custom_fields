@@ -12,17 +12,12 @@ describe CustomFields::Types::Text do
       @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
     end
 
-    it 'sets the excerpt from the manual way' do
-      @post.send :set_text, :excerpt, 'Bla bla bla bla'
-      @post.attributes['excerpt'].should == 'Bla bla bla bla'
-    end
-
     it 'sets the excerpt' do
       @post.excerpt = 'Well, hello world'
       @post.attributes['excerpt'].should == 'Well, hello world'
     end
 
-    it 'returns the author' do
+    it 'returns the excerpt' do
       @post.excerpt = 'Well, hello world'
       @post.excerpt.should == 'Well, hello world'
     end

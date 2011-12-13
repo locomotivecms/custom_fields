@@ -27,7 +27,7 @@ describe CustomFields::Types::Date do
 
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Posted _at', :type => 'date'
+      field = blog.posts_custom_fields.build :label => 'Posted at', :type => 'date'
       field.valid?
     end
   end

@@ -10,6 +10,7 @@ module CustomFields
     include Types::String
     include Types::Text
     include Types::Date
+    include Types::Boolean
 
 
     # include Types::Boolean

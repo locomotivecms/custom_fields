@@ -12,11 +12,6 @@ describe CustomFields::Types::String do
       @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
     end
 
-    it 'sets the author from the manual way' do
-      @post.send :set_string, :author, 'Jane Doe'
-      @post.attributes['author'].should == 'Jane Doe'
-    end
-
     it 'sets the author' do
       @post.author = 'John Doe'
       @post.attributes['author'].should == 'John Doe'
