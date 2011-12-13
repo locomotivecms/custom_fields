@@ -6,7 +6,7 @@ module CustomFields
       module TargetMethods
 
         def apply_date_custom_field(name)
-          puts "...define singleton methods :#{name} / :formatted_#{name} & :#{name}= / :formatted_#{name}="
+          puts "...define singleton methods :#{name} / :formatted_#{name} & :#{name}= / :formatted_#{name}=" # DEBUG
 
           # getter
           define_singleton_method(name) { get_date(name) }
@@ -24,7 +24,7 @@ module CustomFields
         end
 
         def set_date(name, value)
-          puts "set_date #{name} = #{value}"
+          puts "set_date #{name} = #{value}" # DEBUG
 
           value = Serializable.serialize(value)
 

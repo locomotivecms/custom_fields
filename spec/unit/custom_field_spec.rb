@@ -46,20 +46,9 @@ describe CustomFields::Field do
       end
     end
 
-    # it 'owns a method to validate without running the invalidate_proxy_klass callback' do
-    #   @field.stubs(:uniqueness_of_label_and_name).returns(true)
-    #   @field.expects(:invalidate_proxy_klass).never
-    #   @field.quick_valid?.should be_false
-    #   @field.label = 'Foo'
-    #   @field._name = 'foo'
-    #   @field.kind = 'string'
-    #   @field.quick_valid?.should be_true
-    # end
-
   end
 
   def stub_field_for_validation(field)
-    # field.stubs(:invalidate_proxy_klass).returns(true)
     field.stubs(:uniqueness_of_label_and_name).returns(true)
   end
 

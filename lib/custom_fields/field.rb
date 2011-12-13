@@ -8,14 +8,13 @@ module CustomFields
     ## types ##
     include Types::Default
     include Types::String
+    include Types::Text
     include Types::Date
 
 
-    # include Types::Text
-    # include Types::Category
     # include Types::Boolean
-    # include Types::Date
     # include Types::File
+    # include Types::Category
     # include Types::HasOne
     # include Types::HasMany
 
@@ -71,6 +70,9 @@ module CustomFields
       self.metadata.name.to_s.gsub('_custom_fields', '')
     end
 
+    #
+    # TODO
+    #
     def to_recipe
       method_name       = :"#{self.type}_to_recipe"
       custom_to_recipe  = self.send(method_name) rescue {}

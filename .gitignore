@@ -4,3 +4,4 @@ rdoc/
 .DS_Store
 doc/
 .yardoc/
+lib/custom_fields/types_old/
