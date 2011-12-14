@@ -39,8 +39,7 @@ describe 'CustomFieldsFor' do
 
       @blog.posts_custom_fields.build :label => 'Main Author',  :type => 'string'
       @blog.posts_custom_fields.build :label => 'Location',     :type => 'string'
-      @blog.save
-      @blog.reload
+      @blog.save & @blog.reload
     end
 
     it 'includes the new fields' do

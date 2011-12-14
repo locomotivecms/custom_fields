@@ -23,7 +23,7 @@ module CustomFields
             memo['$set'][self.name] = nil
           end
 
-          (memo['$set']['custom_fields_recipe'] ||= []) << self.to_recipe
+          (memo['$set']['custom_fields_recipe.rules'] ||= []) << self.to_recipe
         end
 
       end
@@ -36,18 +36,40 @@ module CustomFields
 
         protected
 
-        def apply_custom_field(name)
+        def apply_custom_field(name, accessors_module)
           # puts "...define singleton methods :#{name} & :#{name}=" # DEBUG
 
-          # getter
-          define_singleton_method(name) do
-            read_attribute(name.to_s)
-          end
+          accessors_module.class_eval <<-EOV
+            def #{name}
+              read_attribute('#{name}')
+            end
 
-          # setter
-          define_singleton_method(:"#{name}=") do |value|
-            write_attribute(name.to_s, value)
-          end
+            def #{name}=(value)
+              write_attribute('#{name}', value)
+            end
+          EOV
+
+          # singleton_class.class_eval <<-EOV
+          #
+          #   def #{name}
+          #     read_attribute('#{name}')
+          #   end
+          #
+          #   def #{name}=(value)
+          #     write_attribute('#{name}', value)
+          #   end
+          #
+          # EOV
+          #
+          # # getter
+          # define_singleton_method(name) do
+          #   read_attribute(name.to_s)
+          # end
+          #
+          # # setter
+          # define_singleton_method(:"#{name}=") do |value|
+          #   write_attribute(name.to_s, value)
+          # end
         end
 
       end

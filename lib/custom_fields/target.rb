@@ -5,35 +5,138 @@ module CustomFields
     extend ActiveSupport::Concern
 
     included do
-      include CustomFields::Types::Default::TargetMethods
-      include CustomFields::Types::String::TargetMethods
-      include CustomFields::Types::Text::TargetMethods
-      include CustomFields::Types::Date::TargetMethods
-      include CustomFields::Types::Boolean::TargetMethods
-      include CustomFields::Types::File::TargetMethods
 
-      field :custom_fields_recipe, :type => Array
+      ## modules ##
+      include AccessorsBuilder
+      include Types::Default::TargetMethods
+      include Types::String::TargetMethods
+      include Types::Text::TargetMethods
+      include Types::Date::TargetMethods
+      include Types::Boolean::TargetMethods
+      include Types::File::TargetMethods
 
+      ## fields ##
+      field :custom_fields_recipe, :type => Hash
+
+      ## callbacks ##
       after_initialize :enhance_with_custom_fields
+
+      ## accessors ##
+      attr_accessor :enhanced_with_custom_fields
     end
+
+    # module Foo
+    #
+    #   def location=(value); end
+    #   def location; end
+    #
+    #   def main_author=(value); end
+    #   def main_author; end
+    #
+    #   def posted_at=(value); end
+    #   def formtatted_posted_at=(value); end
+    #   def posted_at; end
+    #   def formatted_posted_at; end
+    #
+    #   def published=(value); end
+    #   def published; end
+    #
+    # end
 
     module InstanceMethods
 
-      def enhance_with_custom_fields
-        puts "[enhance_with_custom_fields] #{self.singleton_methods.inspect}" # DEBUG
-
-        return if self.custom_fields_recipe.nil?
-
-        self.custom_fields_recipe.each do |rule|
-          puts "rule = #{rule.inspect}" # DEBUG
-
-          next if self.singleton_methods.include?(rule['name'].to_sym)
-
-          self.send(:"apply_#{rule['type']}_custom_field", rule['name'])
-        end
-
-        # puts "[enhance_with_custom_fields] AFTER #{self.singleton_methods.inspect}" # DEBUG
+      #
+      # TODO
+      #
+      def enhanced_with_custom_fields?
+        !!self.enhanced_with_custom_fields
       end
+
+      protected
+
+      #
+      # TODO
+      #
+      def enhance_with_custom_fields
+        # puts "[enhance_with_custom_fields] #{self.singleton_methods.inspect} / #{self.enhanced_with_custom_fields?} / #{self.custom_fields_recipe.inspect}" # DEBUG
+
+        return if self.custom_fields_recipe.blank? || self.enhanced_with_custom_fields?
+
+        # singleton_class.send(:include, Foo)
+        singleton_class.send(:include, self.custom_fields_accessors_module)
+
+        # self.custom_fields_recipe.each do |rule|
+        #   # puts "rule = #{rule.inspect}" # DEBUG
+        #
+        #   # next if self.singleton_methods.include?(rule['name'].to_sym)
+        #
+        #   self.send(:"apply_#{rule['type']}_custom_field", rule['name'])
+        # end
+
+        # prepare_custom_fields_validation
+
+        # validate_presence_of_custom_fields
+
+        self.enhanced_with_custom_fields = true
+      end
+
+      #
+      # TODO
+      #
+      def prepare_custom_fields_validation
+        # tie _validators to the singleton class instead of the class
+        self.singleton_class.cattr_accessor :_validators
+        self.singleton_class._validators = self.class._validators.clone
+      end
+
+      #
+      # TODO
+      #
+      def validate_presence_of_custom_fields
+        puts "singleton_class = #{self.singleton_class.object_id}"
+        puts self.singleton_class.validators.inspect
+
+        names = self.custom_fields_recipe.find_all do |rule|
+          !!rule['required'] && self.singleton_class.validators_on(rule['name']).empty?
+        end.map { |rule| rule['name'] }
+
+        puts "validates_presence_of #{names.inspect}" # DEBUG
+
+        return if names.empty?
+
+        self.singleton_class.validates_presence_of names
+      end
+
+      #
+      # TODO
+      #
+      # def apply_custom_field_rule(rule)
+      #   unless self.singleton_methods.include?(rule['name'].to_sym)
+      #     self.send(:"apply_#{rule['type']}_custom_field", rule['name'])
+      #   end
+      # end
+
+      #
+      # TODO
+      #
+      # def add_custom_field_validation(rule)
+      #   puts "required? #{!!rule['required'].inspect} && validators #{self.singleton_class.validators_on(rule['name']).inspect}"
+      #   if !!rule['required'] && self.singleton_class.validators_on(rule['name']).empty?
+      #     puts "ADD VALIDATES_PRESENCE_OF #{} for the singleton class"
+      #   end
+      # end
+
+      #
+      # TODO
+      #
+
+      # def validate_presence_of_custom_fields
+      #   puts "[validate_presence_of_custom_fields]" # DEBUG
+      #
+      #   self.custom_fields_recipe.each do |rule|
+      #
+      #   end
+      # end
 
     end
 

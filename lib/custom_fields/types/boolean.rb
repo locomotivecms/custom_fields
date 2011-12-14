@@ -9,14 +9,24 @@ module CustomFields
       #
       module TargetMethods
 
-        def apply_boolean_custom_field(name)
+        def apply_boolean_custom_field(name, accessors_module)
           # puts "...define singleton methods :#{name} & :#{name}=" # DEBUG
 
-          # getter
-          define_singleton_method(name) { get_boolean(name) }
+          # # getter
+          # define_singleton_method(name) { get_boolean(name) }
+          #
+          # # setter
+          # define_singleton_method(:"#{name}=") { |value| set_boolean(name, value) }
 
-          # setter
-          define_singleton_method(:"#{name}=") { |value| set_boolean(name, value) }
+          accessors_module.class_eval <<-EOV
+            def #{name}
+              get_boolean('#{name}')
+            end
+
+            def #{name}=(value)
+              set_boolean('#{name}', value)
+            end
+          EOV
         end
 
         protected

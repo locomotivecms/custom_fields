@@ -13,8 +13,8 @@ module CustomFields
       #
       module TargetMethods
 
-        def apply_text_custom_field(name)
-          apply_custom_field(name)
+        def apply_text_custom_field(name, accessors_module)
+          apply_custom_field(name, accessors_module)
         end
 
       end

@@ -6,7 +6,6 @@ module CustomFields
 
     included do
       cattr_accessor :_custom_fields_for
-
       self._custom_fields_for = []
 
       attr_accessor :_custom_fields_diff
@@ -51,8 +50,18 @@ module CustomFields
       # TODO
       #
       def initialize_custom_fields_diff(name)
-        @_custom_fields_diff ||= {}
+        self._custom_fields_diff ||= {}
         self._custom_fields_diff[name] = { '$set' => {}, '$unset' => {}, '$rename' => {} }
+      end
+
+      #
+      # TODO
+      #
+      def custom_fields_changed?(name)
+        self._custom_fields_diff[name] &&
+        (!self._custom_fields_diff[name]['$set'].empty? ||
+        !self._custom_fields_diff[name]['$unset'].empty? ||
+        !self._custom_fields_diff[name]['$rename'].empty?)
       end
 
       #
@@ -68,18 +77,42 @@ module CustomFields
         end
       end
 
+      # #
+      # # TODO
+      # #
+      # def custom_fields_version(name)
+      #   self.send(:"#{name}_custom_fields_version") || 0
+      # end
+      #
+      # # Everytime the source is modified
+      # # we bump the version.
+      # #
+      # # @param [ String, Symbol ] name The name of the relation.
+      # #
+      # def bump_custom_fields_version(name)
+      #   if self.custom_fields_changed?(name)
+      #     version = self.custom_fields_version(name)
+      #     self.send(:"#{name}_custom_fields_version=", version + 1)
+      #
+      #     puts "new version for #{name} => #{version} => #{version + 1}" # DEBUG
+      #   end
+      # end
+
       #
       # TODO
       #
       def apply_custom_fields_diff(name)
         # puts "==> apply_custom_fields_recipes for #{name}, #{fields.size}"
 
-        attributes = self._custom_fields_diff[name]
+        return unless self.custom_fields_changed?(name) # no need to update them if no changes
+
+        operations = self._custom_fields_diff[name]
+        operations['$inc'] = { 'custom_fields_recipe.version' => 1 }
         collection, selector = self.send(name).collection, self.send(name).criteria.selector
 
         # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}"
 
-        collection.update selector, attributes, :multi => true
+        collection.update selector, operations, :multi => true
       end
 
     end

@@ -9,10 +9,14 @@ module Mongoid #:nodoc:
 
         def build_with_custom_fields(attributes = {}, options = {}, type = nil)
           if base.custom_fields_for?(metadata.name)
-            puts "build powered by custom_fields #{attributes.inspect}" # DEBUG
+            # puts "build powered by custom_fields #{attributes.inspect}" # DEBUG
 
             default_attribute = {
-              :custom_fields_recipe => base.custom_fields_recipe_for(metadata.name)
+              :custom_fields_recipe => {
+                'name'     => "#{metadata.name.to_s.classify}#{base._id}",
+                'rules'    => base.custom_fields_recipe_for(metadata.name),
+                'version'  => 0
+              }
             }
 
             build_without_custom_fields(default_attribute, options, type).tap do |doc|

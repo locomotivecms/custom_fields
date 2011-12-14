@@ -9,16 +9,34 @@ module CustomFields
         #
         # TODO
         #
-        def apply_date_custom_field(name)
-          puts "...define singleton methods :#{name} / :formatted_#{name} & :#{name}= / :formatted_#{name}=" # DEBUG
+        def apply_date_custom_field(name, accessors_module)
+          # puts "...define singleton methods :#{name} / :formatted_#{name} & :#{name}= / :formatted_#{name}=" # DEBUG
 
-          # getter
-          define_singleton_method(name) { get_date(name) }
-          define_singleton_method(:"formatted_#{name}") { get_formatted_date(name) }
+          # # getter
+          # define_singleton_method(name) { get_date(name) }
+          # define_singleton_method(:"formatted_#{name}") { get_formatted_date(name) }
+          #
+          # # setter
+          # define_singleton_method(:"#{name}=") { |value| set_date(name, value) }
+          # define_singleton_method(:"formatted_#{name}=") { |value| set_formatted_date(name, value) }
 
-          # setter
-          define_singleton_method(:"#{name}=") { |value| set_date(name, value) }
-          define_singleton_method(:"formatted_#{name}=") { |value| set_formatted_date(name, value) }
+          accessors_module.class_eval <<-EOV
+            def #{name}
+              get_date('#{name}')
+            end
+
+            def formatted_#{name}
+              get_formatted_date('#{name}')
+            end
+
+            def #{name}=(value)
+              set_date('#{name}', value)
+            end
+
+            def formatted_#{name}=(value)
+              set_formatted_date('#{name}', value)
+            end
+          EOV
         end
 
         protected
@@ -28,7 +46,7 @@ module CustomFields
         end
 
         def set_date(name, value)
-          puts "set_date #{name} = #{value}" # DEBUG
+          # puts "set_date #{name} = #{value}" # DEBUG
 
           value = self.date_serializer.serialize(value)
 
