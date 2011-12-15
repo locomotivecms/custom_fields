@@ -11,6 +11,11 @@ module Mongoid #:nodoc:
           if base.custom_fields_for?(metadata.name)
             # puts "build powered by custom_fields #{attributes.inspect}" # DEBUG
 
+            # TODO <---- Contruct class here
+            puts "metadata = #{metadata.inspect} / #{type.inspect}"
+
+            target_class_name = "#{metadata.name.to_s.classify}#{base._id}"
+
             default_attribute = {
               :custom_fields_recipe => {
                 'name'     => "#{metadata.name.to_s.classify}#{base._id}",
@@ -19,7 +24,11 @@ module Mongoid #:nodoc:
               }
             }
 
-            build_without_custom_fields(default_attribute, options, type).tap do |doc|
+            klass = metadata.klass.klass_with_custom_fields(default_attribute[:custom_fields_recipe])
+
+            puts "klass = #{klass.inspect}"
+
+            build_without_custom_fields(default_attribute, options, klass).tap do |doc|
               doc.attributes = attributes
             end
 
