@@ -20,6 +20,7 @@ module CustomFields
 end
 
 require 'custom_fields/version'
+require 'custom_fields/extensions/mongoid/factory'
 require 'custom_fields/extensions/mongoid/relations/referenced/many'
 require 'custom_fields/accessors_builder'
 require 'custom_fields/types/default'

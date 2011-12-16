@@ -145,6 +145,13 @@ module CustomFields
       #
       # TODO
       #
+      def with_custom_fields?
+        true
+      end
+
+      #
+      # TODO
+      #
       def build_klass_with_custom_fields(recipe)
         # puts "CREATING new '#{name}' klass (#{self.klass_version_with_custom_fields(name, parent)})"
         Class.new(self).tap do |klass|
@@ -169,7 +176,9 @@ module CustomFields
 
         puts "klass name = #{name}"
 
-        parent = (modules = self.name.split('::')).join('::').constantize
+        (modules = self.name.split('::')).pop
+
+        parent = modules.empty? ? Object : modules.join('::').constantize
 
         klass = parent.const_defined?(name) ? parent.const_get(name) : nil
 
