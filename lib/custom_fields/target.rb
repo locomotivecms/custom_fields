@@ -152,8 +152,16 @@ module CustomFields
       #
       # TODO
       #
+      def ensure_klass_with_custom_fields(recipe)
+        # puts "ensure_klass_with_custom_fields #{recipe.inspect}" # DEBUG
+        klass_with_custom_fields(recipe)
+      end
+
+      #
+      # TODO
+      #
       def build_klass_with_custom_fields(recipe)
-        # puts "CREATING new '#{name}' klass (#{self.klass_version_with_custom_fields(name, parent)})"
+        # puts "CREATING new '#{name}' klass (#{self.klass_version_with_custom_fields(name, parent)})" # DEBUG
         Class.new(self).tap do |klass|
           klass.cattr_accessor :version
 
@@ -174,7 +182,7 @@ module CustomFields
       def klass_with_custom_fields(recipe)
         name = recipe['name']
 
-        puts "klass name = #{name}"
+        # puts "klass name = #{name}"
 
         (modules = self.name.split('::')).pop
 

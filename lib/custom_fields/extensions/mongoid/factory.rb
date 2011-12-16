@@ -4,9 +4,12 @@ module Mongoid #:nodoc:
   # Instantiates documents that came from the database.
   module Factory
 
-    def from_db(klass, attributes = {})
-      if klass.methods.include?(:with_custom_fields)
-        puts "klass with custom_fields"
+    def from_db_with_custom_fields(klass, attributes = {})
+      # puts "from_db.....#{klass.inspect}"
+
+      if klass.methods.include?(:with_custom_fields?)
+        # puts "klass with custom_fields"
+        klass.ensure_klass_with_custom_fields(attributes['custom_fields_recipe'])
       end
 
       # super
@@ -19,8 +22,9 @@ module Mongoid #:nodoc:
       # end
     end
 
-    alias_method_chain :from_db, :custom_fields
-
+    # equivalent for "alias_method_chain :from_db, :custom_fields"
+    alias_method :from_db_without_custom_fields, :from_db unless method_defined?(:from_db_without_custom_fields)
+    alias_method :from_db, :from_db_with_custom_fields
   end
 
 end

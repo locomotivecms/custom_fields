@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'Performance' do
 
-  occurences = 1000
+  occurences = 100
 
   context 'with custom fields' do
 
@@ -59,6 +59,8 @@ describe 'Performance' do
       if custom_fields
         blog.posts_custom_fields.build :label => 'Main Author', :type => 'string'
         blog.posts_custom_fields.build :label => 'Location',    :type => 'string'
+        blog.posts_custom_fields.build :label => 'Posted at', :type => 'string'
+        blog.posts_custom_fields.build :label => 'Published',    :type => 'string'
         # blog.posts_custom_fields.build :label => 'Posted at',   :type => 'date'
         # blog.posts_custom_fields.build :label => 'Published',   :type => 'boolean'
       end

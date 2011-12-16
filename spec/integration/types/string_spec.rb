@@ -29,7 +29,7 @@ describe CustomFields::Types::String do
     before(:each) do
       @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :author => 'John Doe'
 
-      puts @post.custom_fields_recipe['name'].inspect
+      # puts @post.custom_fields_recipe['name'].inspect
 
       Object.send(:remove_const, @post.custom_fields_recipe['name'])
 
@@ -38,6 +38,12 @@ describe CustomFields::Types::String do
 
     it 'returns the author' do
       @post.author.should == 'John Doe'
+    end
+
+    it 'also returns the author' do
+      blog = Blog.find(@blog._id)
+      post = blog.posts.find(@post._id)
+      post.author.should == 'John Doe'
     end
 
     it 'sets a new author' do
