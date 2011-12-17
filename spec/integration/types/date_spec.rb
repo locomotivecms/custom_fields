@@ -13,11 +13,6 @@ describe CustomFields::Types::Date do
       @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
     end
 
-    it 'sets the posted_at date from the manual way' do
-      @post.send :set_date, :posted_at, '2007-06-29'
-      @post.attributes['posted_at'].should == @date
-    end
-
     it 'sets the posted_at date' do
       @post.posted_at = '2007-06-29'
       @post.attributes['posted_at'].should == @date

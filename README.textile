@@ -3,7 +3,7 @@
 h1. CustomFields
 
 Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive.
-Basically, its aim is to provide to editors a way to manage extra fields to a Mongoid document through for instance a web UI.
+Basically, its aim is to provide to editors a way to manage extra fields to a Mongoid document through, for instance, a web UI.
 
 The main goals:
 
@@ -19,12 +19,16 @@ h2. Examples
 h3. On a has_many relationship
 
 bc.. class Company
+  include CustomFields::Source
+
   has_many :employees
 
   custom_fields_for :employees
 end
 
 class Employee
+  include CustomFields::Target
+
   field :name, String
 
   belongs_to :company, :inverse_of => :employees

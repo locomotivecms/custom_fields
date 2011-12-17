@@ -1,78 +1,61 @@
 module CustomFields
+
   module Types
+
     module Date
 
-      extend ActiveSupport::Concern
+      module Field; end
 
-      module TargetMethods
+      module Target
 
-        #
-        # TODO
-        #
-        def apply_date_custom_field(name, accessors_module)
-          # puts "...define singleton methods :#{name} / :formatted_#{name} & :#{name}= / :formatted_#{name}=" # DEBUG
+        extend ActiveSupport::Concern
 
-          # # getter
-          # define_singleton_method(name) { get_date(name) }
-          # define_singleton_method(:"formatted_#{name}") { get_formatted_date(name) }
+        module ClassMethods
+
+          # Adds a date field
           #
-          # # setter
-          # define_singleton_method(:"#{name}=") { |value| set_date(name, value) }
-          # define_singleton_method(:"formatted_#{name}=") { |value| set_formatted_date(name, value) }
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_date_custom_field(klass, rule)
+            name = rule['name']
 
-          accessors_module.class_eval <<-EOV
-            def #{name}
-              get_date('#{name}')
+            klass.field name, :type => Date
+
+            # other methods
+            klass.send(:define_method, :"formatted_#{name}") { get_formatted_date(name) }
+            klass.send(:define_method, :"formatted_#{name}=") { |value| set_formatted_date(name, value) }
+
+            if rule['required']
+              klass.validates_presence_of name, :"formatted_#{name}"
             end
-
-            def formatted_#{name}
-              get_formatted_date('#{name}')
-            end
-
-            def #{name}=(value)
-              set_date('#{name}', value)
-            end
-
-            def formatted_#{name}=(value)
-              set_formatted_date('#{name}', value)
-            end
-          EOV
-        end
-
-        protected
-
-        def get_date(name)
-          self.date_serializer.deserialize(self.read_attribute(name.to_s))
-        end
-
-        def set_date(name, value)
-          # puts "set_date #{name} = #{value}" # DEBUG
-
-          value = self.date_serializer.serialize(value)
-
-          self.write_attribute(name.to_s, value)
-        end
-
-        def set_formatted_date(name, value)
-          if value.is_a?(::String) && !value.blank?
-            date  = ::Date._strptime(value, I18n.t('date.formats.default'))
-            value = ::Date.new(date[:year], date[:mon], date[:mday])
           end
 
-          self.set_date(name, value)
         end
 
-        def get_formatted_date(name)
-          self.get_date(name).strftime(I18n.t('date.formats.default')) rescue nil
-        end
+        module InstanceMethods
 
-        #:nodoc:
-        def date_serializer
-          @date_serializer = ::Mongoid::Fields::Serializable::Date.new
+          protected
+
+          def set_formatted_date(name, value)
+            if value.is_a?(::String) && !value.blank?
+              date  = ::Date._strptime(value, I18n.t('date.formats.default'))
+              value = ::Date.new(date[:year], date[:mon], date[:mday])
+            end
+
+            self.send(:"#{name}=", value)
+          end
+
+          def get_formatted_date(name)
+            self.send(name.to_sym).strftime(I18n.t('date.formats.default')) rescue nil
+          end
+
         end
 
       end
 
     end
+
   end
+
 end

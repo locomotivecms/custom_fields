@@ -1,25 +1,32 @@
 module CustomFields
+
   module Types
+
     module String
 
-      extend ActiveSupport::Concern
+      module Field; end
 
-      #
-      # TODO
-      #
-      module TargetMethods
+      module Target
 
-        # def apply_string_custom_field(name, accessors_module)
-        #   apply_custom_field(name, accessors_module)
-        # end
+        extend ActiveSupport::Concern
 
-        def apply_string_custom_field(klass, name)
-          klass.field name
-          # apply_custom_field(name, accessors_module)
+        module ClassMethods
+
+          # Adds a string field
+          #
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_string_custom_field(klass, rule)
+            apply_custom_field(klass, rule)
+          end
+
         end
 
       end
 
     end
+
   end
+
 end

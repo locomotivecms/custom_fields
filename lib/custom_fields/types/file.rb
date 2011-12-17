@@ -1,22 +1,34 @@
 module CustomFields
+
   module Types
+
     module File
 
-      extend ActiveSupport::Concern
+      module Field; end
 
-      #
-      # TODO
-      #
-      module TargetMethods
+      module Target
 
-        def apply_file_custom_field(name, accessors_module)
-          unique_name = "#{name}_#{self._id}"
+        extend ActiveSupport::Concern
 
-          if !self.class.method_exists?('uploaders') || self.class.uploaders.key?(unique_name)
-            self.class.mount_uploader unique_name, FileUploader
+        module ClassMethods
+
+          # Adds a file field (using carrierwave)
+          #
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_file_custom_field(klass, rule)
+            name = rule['name']
+
+            klass.field name, :type => Boolean
+
+            klass.mount_uploader name, FileUploader
+
+            if rule['required']
+              klass.validates_presence_of name
+            end
           end
 
-          accessors_module
         end
 
       end
@@ -25,5 +37,7 @@ module CustomFields
       end
 
     end
+
   end
+
 end

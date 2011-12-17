@@ -1,13 +1,17 @@
 module CustomFields
+
   module Types
+
     module Default
 
-      extend ActiveSupport::Concern
+      module Field
 
-      module InstanceMethods
-
+        # Build the mongodb updates based on
+        # the new state of the field
         #
-        # TODO
+        # @param [ Hash ] memo Store the updates
+        #
+        # @return [ Hash ] The memo object upgraded
         #
         def collect_default_diff(memo)
           if self.persisted?
@@ -24,56 +28,39 @@ module CustomFields
           end
 
           (memo['$set']['custom_fields_recipe.rules'] ||= []) << self.to_recipe
+
+          memo
         end
 
       end
 
-      module ClassMethods
+      module Target
 
-      end
+        extend ActiveSupport::Concern
 
-      module TargetMethods
+        module ClassMethods
 
-        protected
+          # Modify the target class according to the rule.
+          # By default, it declares the field and a validator
+          # if specified by the rule
+          #
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_custom_field(klass, rule)
+            klass.field rule['name']
 
-        def apply_custom_field(name, accessors_module)
-          # puts "...define singleton methods :#{name} & :#{name}=" # DEBUG
-
-          accessors_module.class_eval <<-EOV
-            def #{name}
-              read_attribute('#{name}')
+            if rule['required']
+              klass.validates_presence_of rule['name']
             end
+          end
 
-            def #{name}=(value)
-              write_attribute('#{name}', value)
-            end
-          EOV
-
-          # singleton_class.class_eval <<-EOV
-          #
-          #   def #{name}
-          #     read_attribute('#{name}')
-          #   end
-          #
-          #   def #{name}=(value)
-          #     write_attribute('#{name}', value)
-          #   end
-          #
-          # EOV
-          #
-          # # getter
-          # define_singleton_method(name) do
-          #   read_attribute(name.to_s)
-          # end
-          #
-          # # setter
-          # define_singleton_method(:"#{name}=") do |value|
-          #   write_attribute(name.to_s, value)
-          # end
         end
 
       end
 
     end
+
   end
+
 end

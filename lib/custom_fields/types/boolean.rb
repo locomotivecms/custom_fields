@@ -1,51 +1,36 @@
 module CustomFields
+
   module Types
+
     module Boolean
 
-      extend ActiveSupport::Concern
+      module Field; end
 
-      #
-      # TODO
-      #
-      module TargetMethods
+      module Target
 
-        def apply_boolean_custom_field(name, accessors_module)
-          # puts "...define singleton methods :#{name} & :#{name}=" # DEBUG
+        extend ActiveSupport::Concern
 
-          # # getter
-          # define_singleton_method(name) { get_boolean(name) }
+        module ClassMethods
+
+          # Adds a boolean field
           #
-          # # setter
-          # define_singleton_method(:"#{name}=") { |value| set_boolean(name, value) }
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_boolean_custom_field(klass, rule)
+            klass.field rule['name'], :type => Boolean
 
-          accessors_module.class_eval <<-EOV
-            def #{name}
-              get_boolean('#{name}')
+            if rule['required']
+              klass.validates_presence_of rule['name']
             end
+          end
 
-            def #{name}=(value)
-              set_boolean('#{name}', value)
-            end
-          EOV
-        end
-
-        protected
-
-        def get_boolean(name)
-          self.boolean_serializer.deserialize(self.read_attribute(name.to_s))
-        end
-
-        def set_boolean(name, value)
-          self.write_attribute(name.to_s, self.boolean_serializer.serialize(value))
-        end
-
-        #:nodoc:
-        def boolean_serializer
-          @boolean_serializer ||= Mongoid::Fields::Serializable::Boolean.new
         end
 
       end
 
     end
+
   end
+
 end

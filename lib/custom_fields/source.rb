@@ -39,23 +39,32 @@ module CustomFields
         self.send(:"#{name}_custom_fields").sort { |a, b| (a.position || 0) <=> (b.position || 0) }
       end
 
+      # Returns the recipe (meaning all the rules) needed to
+      # build the custom klass
       #
-      # TODO
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Array ] An array of hashes
       #
       def custom_fields_recipe_for(name)
         self.ordered_custom_fields(name).map(&:to_recipe)
       end
 
+      # Initializes the object tracking the modifications
+      # of the custom fields
       #
-      # TODO
+      # @param [ String, Symbol ] name The name of the relation.
       #
       def initialize_custom_fields_diff(name)
         self._custom_fields_diff ||= {}
         self._custom_fields_diff[name] = { '$set' => {}, '$unset' => {}, '$rename' => {} }
       end
 
+      # Tells if one or many custom fields got modified.
       #
-      # TODO
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Boolean ] True if they got modified
       #
       def custom_fields_changed?(name)
         self._custom_fields_diff[name] &&
@@ -64,11 +73,14 @@ module CustomFields
         !self._custom_fields_diff[name]['$rename'].empty?)
       end
 
+      # Collects all the modifications of the custom fields
       #
-      # TODO
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Array ] An array of hashes storing the modifications
       #
       def collect_custom_fields_diff(name, fields)
-        # puts "==> collect_custom_fields_diff for #{name}, #{fields.size}"
+        # puts "==> collect_custom_fields_diff for #{name}, #{fields.size}" # DEBUG
 
         memo = self.initialize_custom_fields_diff(name)
 
@@ -77,32 +89,14 @@ module CustomFields
         end
       end
 
-      # #
-      # # TODO
-      # #
-      # def custom_fields_version(name)
-      #   self.send(:"#{name}_custom_fields_version") || 0
-      # end
+      # Apply the modifications collected from the custom fields by
+      # updating all the documents of the relation.
+      # The update uses the power of mongodb to make it fully optimized.
       #
-      # # Everytime the source is modified
-      # # we bump the version.
-      # #
-      # # @param [ String, Symbol ] name The name of the relation.
-      # #
-      # def bump_custom_fields_version(name)
-      #   if self.custom_fields_changed?(name)
-      #     version = self.custom_fields_version(name)
-      #     self.send(:"#{name}_custom_fields_version=", version + 1)
-      #
-      #     puts "new version for #{name} => #{version} => #{version + 1}" # DEBUG
-      #   end
-      # end
-
-      #
-      # TODO
+      # @param [ String, Symbol ] name The name of the relation.
       #
       def apply_custom_fields_diff(name)
-        # puts "==> apply_custom_fields_recipes for #{name}, #{fields.size}"
+        # puts "==> apply_custom_fields_recipes for #{name}, #{fields.size}" # DEBUG
 
         return unless self.custom_fields_changed?(name) # no need to update them if no changes
 
@@ -110,7 +104,7 @@ module CustomFields
         operations['$inc'] = { 'custom_fields_recipe.version' => 1 }
         collection, selector = self.send(name).collection, self.send(name).criteria.selector
 
-        # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}"
+        # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
 
         collection.update selector, operations, :multi => true
       end
@@ -132,7 +126,7 @@ module CustomFields
         self._custom_fields_for.include?(name.to_s)
       end
 
-      # Enhance an embedded collection OR the instance itself (by passing self) by providing methods to manage custom fields.
+      # Enhance a referenced collection OR the instance itself (by passing self) by providing methods to manage custom fields.
       #
       # @param [ String, Symbol ] name The name of the relation.
       #
@@ -148,6 +142,7 @@ module CustomFields
       #   end
       #
       #   company.employees_custom_fields.build :label => 'His/her position', :name => 'position', :kind => 'string'
+      #   company.save
       #   company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
       #
       def custom_fields_for(name)

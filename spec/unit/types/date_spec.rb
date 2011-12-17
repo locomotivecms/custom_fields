@@ -15,6 +15,12 @@ describe CustomFields::Types::Date do
     @post.posted_at.should == @date
   end
 
+  it 'sets value (in French format) from the formatted_<date> accessor' do
+    I18n.stubs(:t).returns('%d/%m/%Y')
+    @post.formatted_posted_at = '29/06/2010'
+    @post.posted_at.should == @date
+  end
+
   it 'sets nil value' do
     @post.posted_at = nil
     @post.posted_at.should be_nil

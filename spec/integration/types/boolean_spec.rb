@@ -12,11 +12,6 @@ describe CustomFields::Types::String do
       @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
     end
 
-    it 'sets the visible flag from the manual way' do
-      @post.send :set_boolean, :visible, '1'
-      @post.attributes['visible'].should == true
-    end
-
     it 'sets the visible flag' do
       @post.visible = 'true'
       @post.attributes['visible'].should == true
