@@ -33,6 +33,10 @@ end
 === EXPERIMENTAL ===
 
 x posts.build => doit rajouter le custom_fields_recipe automatiquement
-- target custom fields
-  - ajoute des methods a la classe target => Recipe ?
+x target custom fields
+  x ajoute des methods a la classe target => Recipe ?
+- types:
+  - picker
+  - has_many / belongs_to
+  - tags: https://github.com/wilkerlucio/mongoid_taggable
 
