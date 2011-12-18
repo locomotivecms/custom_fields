@@ -15,13 +15,10 @@ describe CustomFields::Types::String do
   describe 'validation' do
 
     [nil, ''].each do |value|
-    # [nil].each do |value|
       it "should not valid if the value is #{value.inspect}" do
-        puts "8>-----------"
         @post.author = value
         @post.valid?.should be_false
         @post.errors[:author].should_not be_blank
-        puts "-----------<8"
       end
     end
 

@@ -23,8 +23,8 @@ module CustomFields
             klass.field name, :type => Date
 
             # other methods
-            klass.send(:define_method, :"formatted_#{name}") { get_formatted_date(name) }
-            klass.send(:define_method, :"formatted_#{name}=") { |value| set_formatted_date(name, value) }
+            klass.send(:define_method, :"formatted_#{name}") { _get_formatted_date(name) }
+            klass.send(:define_method, :"formatted_#{name}=") { |value| _set_formatted_date(name, value) }
 
             if rule['required']
               klass.validates_presence_of name, :"formatted_#{name}"
@@ -37,7 +37,7 @@ module CustomFields
 
           protected
 
-          def set_formatted_date(name, value)
+          def _set_formatted_date(name, value)
             if value.is_a?(::String) && !value.blank?
               date  = ::Date._strptime(value, I18n.t('date.formats.default'))
               value = ::Date.new(date[:year], date[:mon], date[:mday])
@@ -46,7 +46,7 @@ module CustomFields
             self.send(:"#{name}=", value)
           end
 
-          def get_formatted_date(name)
+          def _get_formatted_date(name)
             self.send(name.to_sym).strftime(I18n.t('date.formats.default')) rescue nil
           end
 

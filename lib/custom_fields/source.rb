@@ -26,6 +26,20 @@ module CustomFields
         self.class.custom_fields_for?(name)
       end
 
+      # Returns the class enhanced by the custom fields.
+      # Be careful, call this method only if the source class
+      # has been saved with success.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Class ] The modified class.
+      #
+      def klass_with_custom_fields(name)
+        recipe = self.custom_fields_recipe_for(name)
+        target = self.send(name).metadata.klass
+        target.klass_with_custom_fields(recipe)
+      end
+
       # Returns the ordered list of custom fields for a relation
       #
       # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
@@ -47,7 +61,31 @@ module CustomFields
       # @return [ Array ] An array of hashes
       #
       def custom_fields_recipe_for(name)
-        self.ordered_custom_fields(name).map(&:to_recipe)
+        {
+          'name'     => "#{name.to_s.classify}#{self._id}",
+          'rules'    => self.ordered_custom_fields(name).map(&:to_recipe),
+          'version'  => self.custom_fields_version(name)
+        }
+      end
+
+      # Returns the number of the version for relation with custom fields
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      # @return [ Integer ] The version number
+      #
+      def custom_fields_version(name)
+        self.send(:"#{name}_custom_fields_version") || 0
+      end
+
+      # When the fields have been modified and before the object is saved,
+      # we bump the version.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def bump_custom_fields_version(name)
+        version = self.custom_fields_version(name) + 1
+        self.send(:"#{name}_custom_fields_version=", version)
       end
 
       # Initializes the object tracking the modifications
@@ -58,19 +96,6 @@ module CustomFields
       def initialize_custom_fields_diff(name)
         self._custom_fields_diff ||= {}
         self._custom_fields_diff[name] = { '$set' => {}, '$unset' => {}, '$rename' => {} }
-      end
-
-      # Tells if one or many custom fields got modified.
-      #
-      # @param [ String, Symbol ] name The name of the relation.
-      #
-      # @return [ Boolean ] True if they got modified
-      #
-      def custom_fields_changed?(name)
-        self._custom_fields_diff[name] &&
-        (!self._custom_fields_diff[name]['$set'].empty? ||
-        !self._custom_fields_diff[name]['$unset'].empty? ||
-        !self._custom_fields_diff[name]['$rename'].empty?)
       end
 
       # Collects all the modifications of the custom fields
@@ -96,12 +121,10 @@ module CustomFields
       # @param [ String, Symbol ] name The name of the relation.
       #
       def apply_custom_fields_diff(name)
-        # puts "==> apply_custom_fields_recipes for #{name}, #{fields.size}" # DEBUG
-
-        return unless self.custom_fields_changed?(name) # no need to update them if no changes
+        # puts "==> apply_custom_fields_recipes for #{name}, #{self._custom_fields_diff[name].inspect}" # DEBUG
 
         operations = self._custom_fields_diff[name]
-        operations['$inc'] = { 'custom_fields_recipe.version' => 1 }
+        operations['$set'].merge!({ 'custom_fields_recipe.version' => self.custom_fields_version(name) })
         collection, selector = self.send(name).collection, self.send(name).criteria.selector
 
         # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
@@ -163,17 +186,24 @@ module CustomFields
       #
       def extend_for_custom_fields(name)
         class_eval do
+          field :"#{name}_custom_fields_version", :type => Integer, :default => 0
+
           embeds_many :"#{name}_custom_fields", :class_name => self.dynamic_custom_field_class_name(name) #, :cascade_callbacks => true # FIXME ?????
 
           accepts_nested_attributes_for :"#{name}_custom_fields", :allow_destroy => true
         end
 
         class_eval <<-EOV
-
-          before_save       :collect_#{name}_custom_fields_diff
-          after_save        :apply_#{name}_custom_fields_diff
+          before_update :bump_#{name}_custom_fields_version
+          before_update :collect_#{name}_custom_fields_diff
+          after_update  :apply_#{name}_custom_fields_diff
 
           protected
+
+          def bump_#{name}_custom_fields_version
+            # puts "--> BEFORE UPDATE (#{name})"
+            self.bump_custom_fields_version('#{name}')
+          end
 
           def collect_#{name}_custom_fields_diff
             self.collect_custom_fields_diff(:#{name}, self.#{name}_custom_fields)

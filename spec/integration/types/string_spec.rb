@@ -29,8 +29,6 @@ describe CustomFields::Types::String do
     before(:each) do
       @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :author => 'John Doe'
 
-      # puts @post.custom_fields_recipe['name'].inspect
-
       Object.send(:remove_const, @post.custom_fields_recipe['name'])
 
       @post = Post.find(@post._id)

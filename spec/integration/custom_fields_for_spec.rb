@@ -44,16 +44,16 @@ describe 'CustomFieldsFor' do
 
     it 'includes the new fields' do
       post = @blog.posts.first
-      post.attributes.key?('main_author').should be_true
-      post.attributes.key?('location').should be_true
+      post.respond_to?(:main_author).should be_true
+      post.respond_to?(:location).should be_true
     end
 
     it 'renames field' do
       @blog.posts_custom_fields.first.name = 'author'
       @blog.save & @blog.reload
       post = @blog.posts.first
-      post.attributes.key?('author').should be_true
-      post.attributes.key?('main_author').should be_false
+      post.respond_to?(:author).should be_true
+      post.respond_to?(:main_author).should be_false
     end
 
   end

@@ -23,8 +23,6 @@ module CustomFields
                 memo['$rename'][old_name] = new_name
               end
             end
-          else
-            memo['$set'][self.name] = nil
           end
 
           (memo['$set']['custom_fields_recipe.rules'] ||= []) << self.to_recipe
