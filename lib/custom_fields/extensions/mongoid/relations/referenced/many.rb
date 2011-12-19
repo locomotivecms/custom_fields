@@ -8,7 +8,7 @@ module Mongoid #:nodoc:
       class Many < Relations::Many
 
         def build_with_custom_fields(attributes = {}, options = {}, type = nil)
-          if base.custom_fields_for?(metadata.name)
+          if base.respond_to?(:custom_fields_for?) && base.custom_fields_for?(metadata.name)
             # all the information about how to build the custom class are stored here
             recipe = base.custom_fields_recipe_for(metadata.name)
 
