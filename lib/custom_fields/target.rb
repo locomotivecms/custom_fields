@@ -7,7 +7,7 @@ module CustomFields
     included do
 
       ## types ##
-      %w(default string text date boolean file category).each do |type|
+      %w(default string text date boolean file select).each do |type|
         include "CustomFields::Types::#{type.classify}::Target".constantize
       end
 

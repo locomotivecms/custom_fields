@@ -198,6 +198,10 @@ module CustomFields
           before_update :collect_#{name}_custom_fields_diff
           after_update  :apply_#{name}_custom_fields_diff
 
+          def ordered_#{name}_custom_fields
+            self.ordered_custom_fields('#{name}')
+          end
+
           protected
 
           def bump_#{name}_custom_fields_version

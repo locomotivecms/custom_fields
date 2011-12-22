@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CustomFields::Types::Text do
+describe CustomFields::Types::Select do
 
   before(:each) do
     @blog = create_blog
@@ -48,7 +48,7 @@ describe CustomFields::Types::Text do
     end
 
     it 'create a new category and assigns it' do
-      category = @blog.posts_custom_fields.first.category_items.build :name => 'Sales'
+      category = @blog.posts_custom_fields.first.select_options.build :name => 'Sales'
       @blog.save
       @post = Post.find(@post._id)
       @post.main_category = 'Sales'
@@ -69,7 +69,7 @@ describe CustomFields::Types::Text do
       @blog.posts.create :title => 'Hello world 3 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
 
       klass = @blog.klass_with_custom_fields(:posts)
-      @groups = klass.group_by_category(:main_category)
+      @groups = klass.group_by_select_option(:main_category)
     end
 
     it 'is an non empty array' do
@@ -91,11 +91,11 @@ describe CustomFields::Types::Text do
 
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Main category', :type => 'category'
+      field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select'
 
-      @design_cat       = field.category_items.build :name => 'Design'
-      @development_cat  = field.category_items.build :name => 'Development'
-      @marketing_cat    = field.category_items.build :name => 'Marketing'
+      @design_cat       = field.select_options.build :name => 'Design'
+      @development_cat  = field.select_options.build :name => 'Development'
+      @marketing_cat    = field.select_options.build :name => 'Marketing'
 
       blog.save & blog.reload
     end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CustomFields::Types::Category do
+describe CustomFields::Types::Select do
 
   before(:each) do
     @blog = build_blog
@@ -8,11 +8,11 @@ describe CustomFields::Types::Category do
   end
 
   it 'stores the list of categories' do
-    @field.respond_to?(:category_items).should be_true
+    @field.respond_to?(:select_options).should be_true
   end
 
   it 'adds the categories when calling to_recipe' do
-    @field.to_recipe['category_items'].should_not be_empty
+    @field.to_recipe['select_options'].should_not be_empty
   end
 
   it 'sets a value' do
@@ -34,8 +34,8 @@ describe CustomFields::Types::Category do
 
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      @field = blog.posts_custom_fields.build :label => 'Main category', :type => 'category', :required => true
-      @field.category_items.build :name => 'Test'
+      @field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select', :required => true
+      @field.select_options.build :name => 'Test'
       @field.valid?
     end
   end
