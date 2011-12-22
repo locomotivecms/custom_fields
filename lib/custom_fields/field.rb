@@ -60,6 +60,13 @@ module CustomFields
       { 'name' => self.name, 'type' => self.type, 'required' => self.required }.merge(custom_to_recipe)
     end
 
+    def as_json(options = {})
+      method_name     = :"#{self.type}_as_json"
+      custom_as_json  = self.send(method_name) rescue {}
+
+      super(options).merge(custom_as_json)
+    end
+
     protected
 
     def uniqueness_of_label_and_name

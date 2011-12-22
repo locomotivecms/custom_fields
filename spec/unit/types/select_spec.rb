@@ -11,6 +11,10 @@ describe CustomFields::Types::Select do
     @field.respond_to?(:select_options).should be_true
   end
 
+  it 'includes the categories in the as_json method' do
+    @field.as_json['select_options'].should_not be_empty
+  end
+
   it 'adds the categories when calling to_recipe' do
     @field.to_recipe['select_options'].should_not be_empty
   end

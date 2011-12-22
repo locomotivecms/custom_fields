@@ -15,8 +15,8 @@ module CustomFields
 
         validates_presence_of :name
 
-        def as_json
-          super :methods => %w(_id name position new_record? errors)
+        def as_json(options = nil)
+          super :methods => %w(_id name position)
         end
 
       end
@@ -38,7 +38,7 @@ module CustomFields
         module InstanceMethods
 
           def ordered_select_options
-            self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }
+            self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
           end
 
           def select_to_recipe
@@ -47,6 +47,10 @@ module CustomFields
                 { '_id' => option._id, 'name' => option.name }
               end
             }
+          end
+
+          def select_as_json(options = {})
+            { 'select_options' => self.ordered_select_options.map(&:as_json) }
           end
 
         end
