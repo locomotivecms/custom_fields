@@ -38,7 +38,7 @@ module CustomFields
       # @return [ Class] the anonymous custom klass
       #
       def build_klass_with_custom_fields(recipe)
-        # puts "CREATING new '#{name}' klass (#{self.klass_version_with_custom_fields(name, parent)})" # DEBUG
+        # puts "CREATING new '#{name}' / #{recipe.inspect}" # DEBUG
         Class.new(self).tap do |klass|
           klass.cattr_accessor :version
 

@@ -88,6 +88,25 @@ module CustomFields
         self.send(:"#{name}_custom_fields_version=", version)
       end
 
+      # Change the metadata of a relation enhanced by the custom fields.
+      # In Mongoid, all the instances of a same document share the same metadata objects.
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def refresh_metadata_with_custom_fields(name)
+        return if !self.persisted? || self.send(:"#{name}_custom_fields").blank? # do not generate a klass without all the information
+
+        old_metadata = self.send(name).metadata
+
+        # puts "old_metadata = #{old_metadata.klass.inspect} / #{old_metadata.object_id.inspect}" # DEBUG
+
+        self.send(name).metadata = old_metadata.clone.tap do |metadata|
+          metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
+        end
+
+        # puts "new_metadata = #{self.send(name).metadata.klass.inspect} / #{self.send(name).metadata.object_id.inspect}" # DEBUG
+      end
+
       # Initializes the object tracking the modifications
       # of the custom fields
       #
@@ -194,9 +213,10 @@ module CustomFields
         end
 
         class_eval <<-EOV
-          before_update :bump_#{name}_custom_fields_version
-          before_update :collect_#{name}_custom_fields_diff
-          after_update  :apply_#{name}_custom_fields_diff
+          after_initialize  :refresh_#{name}_metadata
+          before_update     :bump_#{name}_custom_fields_version
+          before_update     :collect_#{name}_custom_fields_diff
+          after_update      :apply_#{name}_custom_fields_diff
 
           def ordered_#{name}_custom_fields
             self.ordered_custom_fields('#{name}')
@@ -204,8 +224,11 @@ module CustomFields
 
           protected
 
+          def refresh_#{name}_metadata
+            self.refresh_metadata_with_custom_fields('#{name}')
+          end
+
           def bump_#{name}_custom_fields_version
-            # puts "--> BEFORE UPDATE (#{name})"
             self.bump_custom_fields_version('#{name}')
           end
 

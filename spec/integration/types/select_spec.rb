@@ -67,6 +67,8 @@ describe CustomFields::Types::Select do
       @blog.posts.create :title => 'Hello world (Design)', :body => 'Lorem ipsum...', :main_category => @design_cat._id
       @blog.posts.create :title => 'Hello world 2 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
       @blog.posts.create :title => 'Hello world 3 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
+      @blog.posts.create :title => 'Hello world (Unknow)', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
+      @blog.posts.create :title => 'Hello world (Unknow) 2', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
 
       klass = @blog.klass_with_custom_fields(:posts)
       @groups = klass.group_by_select_option(:main_category)
@@ -74,17 +76,23 @@ describe CustomFields::Types::Select do
 
     it 'is an non empty array' do
       @groups.class.should == Array
-      @groups.size.should == 3
+      @groups.size.should == 4
     end
 
     it 'is an array of hashes composed of a name' do
-      @groups.map { |g| g[:name] }.should == %w{Design Development Marketing}
+      @groups.map { |g| g[:name].to_s }.should == ["Design", "Development", "Marketing", ""]
     end
 
     it 'is an array of hashes composed of a list of documents' do
-      @groups[0][:items].size.should == 1
-      @groups[1][:items].size.should == 3
-      @groups[2][:items].size.should == 0
+      @groups[0][:entries].size.should == 1
+      @groups[1][:entries].size.should == 3
+      @groups[2][:entries].size.should == 0
+      @groups[3][:entries].size.should == 2
+    end
+
+    it 'can be accessed from the parent document' do
+      blog = Blog.find(@blog._id)
+      blog.posts.group_by_select_option(:main_category).class.should == Array
     end
 
   end

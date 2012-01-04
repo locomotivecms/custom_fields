@@ -90,18 +90,42 @@ module CustomFields
           # @param [ Class ] klass The class to modify
           # @return [ Array ] An array of hashes (keys: select option and related documents)
           #
-          def group_by_select_option(name)
+          def group_by_select_option(name, order_by = nil)
             groups = self.only(:"#{name}_id").group
 
             _select_options(name).map do |option|
               group = groups.detect { |g| g["#{name}_id"].to_s == option['_id'].to_s }
               list  = group ? group['group'] : []
-              { :name => option['name'], :items => list }.with_indifferent_access
+
+              groups.delete(group) if group
+
+              { :name => option['name'], :entries => self._order_select_entries(list, order_by) }.with_indifferent_access
+            end.tap do |array|
+              if not groups.empty? # orphan entries ?
+                empty = { :name => nil, :entries => [] }.with_indifferent_access
+                groups.each do |group|
+                  empty[:entries] += group['group']
+                end
+                empty[:entries] = self._order_select_entries(empty[:entries], order_by)
+                array << empty
+              end
             end
           end
 
           def _select_options(name)
             self.send(:"_#{name}_options")
+          end
+
+          def _order_select_entries(list, order_by = nil)
+            return list if order_by.nil?
+
+            column, direction = order_by.flatten
+
+            list = list.sort { |a, b| (a.send(column) && b.send(column)) ? (a.send(column) || 0) <=> (b.send(column) || 0) : 0 }
+
+            direction == 'asc' ? list : list.reverse
+
+            list
           end
 
         end
