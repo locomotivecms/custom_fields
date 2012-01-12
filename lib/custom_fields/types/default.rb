@@ -46,7 +46,7 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_custom_field(klass, rule)
-            klass.field rule['name']
+            klass.field rule['name'], :localize => rule['localized'] || false
 
             if rule['required']
               klass.validates_presence_of rule['name']

@@ -9,6 +9,7 @@ module CustomFields
       self._custom_fields_for = []
 
       attr_accessor :_custom_fields_diff
+      attr_accessor :_custom_field_localize_diff
     end
 
     module InstanceMethods
@@ -113,6 +114,8 @@ module CustomFields
       # @param [ String, Symbol ] name The name of the relation.
       #
       def initialize_custom_fields_diff(name)
+        self._custom_field_localize_diff ||= Hash.new([])
+
         self._custom_fields_diff ||= {}
         self._custom_fields_diff[name] = { '$set' => {}, '$unset' => {}, '$rename' => {} }
       end
@@ -130,6 +133,13 @@ module CustomFields
 
         fields.map do |field|
           field.collect_diff(memo)
+        end
+
+        # collect fields with a modified localized field
+        fields.each do |field|
+          if field.localized_changed? && field.persisted?
+            self._custom_field_localize_diff[name] << { :field => field.name, :localized => field.localized? }
+          end
         end
       end
 
@@ -149,6 +159,40 @@ module CustomFields
         # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
 
         collection.update selector, operations, :multi => true
+      end
+
+      # If the localized attribute has been changed in at least one of the custom fields,
+      # we have to upgrade all the records enhanced by custom_fields in order to make
+      # the values consistent with the mongoid localize option.
+      #
+      # Ex: post.attributes[:name] = 'Hello world' => post.attributes[:name] = { :en => 'Hello world' }
+      #
+      # @param [ String, Symbol ] name The name of the relation.
+      #
+      def apply_custom_fields_localize_diff(name)
+        return if self._custom_field_localize_diff[name].empty?
+
+        self.send(name).all.each do |record|
+          updates = {}
+
+          # puts "[apply_custom_fields_localize_diff] processing: record #{record._id} / #{self._custom_field_localize_diff[name].inspect}" # DEBUG
+          self._custom_field_localize_diff[name].each do |changes|
+            if changes[:localized]
+              value = record.read_attribute(changes[:field].to_sym)
+              updates[changes[:field]] = { I18n.locale.to_s => value }
+            else
+              # the other way around
+              value = record.read_attribute(changes[:field].to_sym)
+              next if value.nil?
+              updates[changes[:field]] = value[I18n.locale.to_s]
+            end
+          end
+
+          next if updates.empty?
+
+          collection = self.send(name).collection
+          collection.update record.atomic_selector, { '$set' => updates }
+        end
       end
 
     end
@@ -217,6 +261,7 @@ module CustomFields
           before_update     :bump_#{name}_custom_fields_version
           before_update     :collect_#{name}_custom_fields_diff
           after_update      :apply_#{name}_custom_fields_diff
+          after_update      :apply_#{name}_custom_fields_localize_diff
 
           def ordered_#{name}_custom_fields
             self.ordered_custom_fields('#{name}')
@@ -238,6 +283,10 @@ module CustomFields
 
           def apply_#{name}_custom_fields_diff
             self.apply_custom_fields_diff(:#{name})
+          end
+
+          def apply_#{name}_custom_fields_localize_diff
+            self.apply_custom_fields_localize_diff(:#{name})
           end
 
         EOV

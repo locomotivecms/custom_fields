@@ -10,3 +10,7 @@ fr:
     text_formatting:
       none: Aucun
       html: HTML
+
+  errors:
+    messages:
+      blank: "doit être rempli(e)"

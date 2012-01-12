@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CustomFields::Types::Date do
+describe CustomFields::Types::Boolean do
 
   before(:each) do
     @blog = build_blog
@@ -37,6 +37,28 @@ describe CustomFields::Types::Date do
 
       @post.visible = 'false'
       @post.visible.should == false
+    end
+
+  end
+
+  context '#localize' do
+
+    before(:each) do
+      field = @blog.posts_custom_fields.build :label => 'Published', :type => 'boolean', :localized => true
+      field.valid?
+      @blog.bump_custom_fields_version(:posts)
+    end
+
+    it 'serializes / deserializes' do
+      post = @blog.posts.build :published => true
+      post.published.should be_true
+    end
+
+    it 'serializes / deserializes in a different locale' do
+      post = @blog.posts.build :published => true
+      Mongoid::Fields::I18n.locale = :fr
+      post.published = false
+      post.published_translations['fr'].should == false
     end
 
   end

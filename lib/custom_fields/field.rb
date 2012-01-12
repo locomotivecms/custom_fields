@@ -15,8 +15,9 @@ module CustomFields
     field :name
     field :type
     field :hint
-    field :position, :type => Integer, :default => 0
-    field :required, :type => Boolean, :default => false
+    field :position,  :type => Integer, :default => 0
+    field :required,  :type => Boolean, :default => false
+    field :localized, :type => Boolean, :default => false
 
     ## validations ##
     validates_presence_of   :label, :type
@@ -57,7 +58,7 @@ module CustomFields
       method_name       = :"#{self.type}_to_recipe"
       custom_to_recipe  = self.send(method_name) rescue {}
 
-      { 'name' => self.name, 'type' => self.type, 'required' => self.required }.merge(custom_to_recipe)
+      { 'name' => self.name, 'type' => self.type, 'required' => self.required?, 'localized' => self.localized? }.merge(custom_to_recipe)
     end
 
     def as_json(options = {})
