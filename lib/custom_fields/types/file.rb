@@ -20,8 +20,6 @@ module CustomFields
           def apply_file_custom_field(klass, rule)
             name = rule['name']
 
-            # klass.field name, :type => Boolean
-
             klass.mount_uploader name, FileUploader
 
             if rule['required']

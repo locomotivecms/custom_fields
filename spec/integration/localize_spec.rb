@@ -85,37 +85,6 @@ describe 'CustomFields::Localize' do
 
   end
 
-  # describe 'dealing with other field types' do
-  #
-  #   before(:each) do
-  #     @blog.posts_custom_fields.build :label => 'Published', :type => 'boolean', :localized => true
-  #     @blog.save
-  #   end
-  #
-  #   describe '#boolean' do
-  #
-  #     it 'serializes' do
-  #       post = @blog.posts.build :title => 'Hello world', :body => 'Yeaaaah', :main_author => 'Mister Foo', :published => true
-  #       post.published.should be_true
-  #     end
-  #
-  #     it 'serializes in a different locale' do
-  #       post = @blog.posts.build :title => 'Hello world', :body => 'Yeaaaah', :main_author => 'Mister Foo', :published => true
-  #       Mongoid::Fields::I18n.locale = :fr
-  #       post.published = false
-  #       post.published_translations['fr'].should == false
-  #     end
-  #
-  #     it 'deserializes' do
-  #       post = @blog.posts.create :title => 'Hello world', :body => 'Yeaaaah', :main_author => 'Mister Foo', :published => true
-  #       post = Post.find(post._id)
-  #       post.published.should be_true
-  #     end
-  #
-  #   end
-  #
-  # end
-
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build :label => 'Main Author', :type => 'string'

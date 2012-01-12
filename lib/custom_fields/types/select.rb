@@ -8,8 +8,8 @@ module CustomFields
 
         include Mongoid::Document
 
-        field :name
-        field :position, :type => Integer, :default => 0
+        field :name,      :localize => true
+        field :position,  :type => Integer, :default => 0
 
         embedded_in :custom_field, :inverse_of => :select_options
 
@@ -44,7 +44,7 @@ module CustomFields
           def select_to_recipe
             {
               'select_options' => self.ordered_select_options.map do |option|
-                { '_id' => option._id, 'name' => option.name }
+                { '_id' => option._id, 'name' => option.name_translations }
               end
             }
           end
@@ -71,7 +71,7 @@ module CustomFields
           def apply_select_custom_field(klass, rule)
             name, collection_name = rule['name'], "_#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", :type => BSON::ObjectId
+            klass.field :"#{name}_id", :type => BSON::ObjectId, :localize => rule['localized'] || false
 
             klass.cattr_accessor collection_name
             klass.send :"#{collection_name}=", rule['select_options']
@@ -113,7 +113,10 @@ module CustomFields
           end
 
           def _select_options(name)
-            self.send(:"_#{name}_options")
+            self.send(:"_#{name}_options").map do |option|
+              name = option['name'][Mongoid::Fields::I18n.locale.to_s] rescue option['name']
+              { '_id' => option['_id'], 'name' => name }
+            end
           end
 
           def _order_select_entries(list, order_by = nil)

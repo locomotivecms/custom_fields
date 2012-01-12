@@ -97,6 +97,31 @@ describe CustomFields::Types::Select do
 
   end
 
+  describe '#localize' do
+
+    before(:each) do
+      Mongoid::Fields::I18n.locale = :en
+      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :author => 'Mister Foo'
+      @post = Post.find(@post._id)
+    end
+
+    it 'serializes / deserializes' do
+      @post.author.should == 'Mister Foo'
+    end
+
+    it 'serializes / deserializes with a different locale' do
+      Mongoid::Fields::I18n.locale = :fr
+      @post.author.should == 'Monsieur Foo'
+      @post.author = 'Monsieur Bar'
+      @post.save
+      @post = Post.find(@post._id)
+      @post.author.should == 'Monsieur Bar'
+      Mongoid::Fields::I18n.locale = :en
+      @post.author.should == 'Mister Foo'
+    end
+
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select'
@@ -104,6 +129,18 @@ describe CustomFields::Types::Select do
       @design_cat       = field.select_options.build :name => 'Design'
       @development_cat  = field.select_options.build :name => 'Development'
       @marketing_cat    = field.select_options.build :name => 'Marketing'
+
+      field = blog.posts_custom_fields.build :label => 'Author', :type => 'select', :localized => true
+
+      @option_1 = field.select_options.build :name => 'Mister Foo'
+      @option_2 = field.select_options.build :name => 'Mister Bar'
+
+      Mongoid::Fields::I18n.locale = :fr
+
+      @option_1.name = 'Monsieur Foo'
+      @option_2.name = 'Monsieur Bar'
+
+      Mongoid::Fields::I18n.locale = :en
 
       blog.save & blog.reload
     end
