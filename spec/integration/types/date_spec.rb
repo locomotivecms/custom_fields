@@ -50,9 +50,35 @@ describe CustomFields::Types::Date do
 
   end
 
+  describe '#localize' do
+
+    before(:each) do
+      Mongoid::Fields::I18n.locale = :en
+      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :visible_at => @date
+      @post = Post.find(@post._id)
+    end
+
+    it 'serializes / deserializes' do
+      @post.visible_at.should == @date
+    end
+
+    it 'serializes / deserializes with a different locale' do
+      Mongoid::Fields::I18n.locale = :fr
+      @post.visible_at.should == @date
+      @post.visible_at = '2009-09-10'
+      @post.save
+      @post = Post.find(@post._id)
+      @post.visible_at.should == Date.parse('2009-09-10')
+      Mongoid::Fields::I18n.locale = :en
+      @post.visible_at.should == @date
+    end
+
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'posted_at', :type => 'date'
+      blog.posts_custom_fields.build :label => 'posted_at',   :type => 'date'
+      blog.posts_custom_fields.build :label => 'visible_at',  :type => 'date', :localized => true
       blog.save & blog.reload
     end
   end

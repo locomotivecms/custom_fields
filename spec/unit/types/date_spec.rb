@@ -31,6 +31,28 @@ describe CustomFields::Types::Date do
     @post.posted_at.should be_nil
   end
 
+  context '#localize' do
+
+    before(:each) do
+      field = @blog.posts_custom_fields.build :label => 'Visible at', :type => 'date', :localized => true
+      field.valid?
+      @blog.bump_custom_fields_version(:posts)
+    end
+
+    it 'serializes / deserializes' do
+      post = @blog.posts.build :visible_at => @date
+      post.visible_at.should == @date
+    end
+
+    it 'serializes / deserializes in a different locale' do
+      post = @blog.posts.build :visible_at => @date
+      Mongoid::Fields::I18n.locale = :fr
+      post.visible_at = '16/09/2010'
+      post.visible_at_translations['fr'].should == Date.parse('2010/09/16')
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Posted at', :type => 'date'
