@@ -29,6 +29,16 @@ module Mongoid #:nodoc
         ::I18n.respond_to?(:fallbacks)
       end
 
+      def self.with_locale(new_locale = nil)
+        if tmp_locale
+          current_locale  = self.locale
+          self.locale     = new_locale
+        end
+        yield
+      ensure
+        self.locale = current_locale if new_locale
+      end
+
     end
 
   end

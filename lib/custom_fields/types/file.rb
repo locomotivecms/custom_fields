@@ -22,6 +22,12 @@ module CustomFields
 
             klass.mount_uploader name, FileUploader
 
+            if rule['localized'] == true
+              klass.replace_field name, ::String, true
+
+              # fields[#{name.inspect}].deserialize(read_attribute(#{name.inspect}))
+            end
+
             if rule['required']
               klass.validates_presence_of name
             end

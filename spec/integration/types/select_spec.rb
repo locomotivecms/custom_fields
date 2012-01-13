@@ -126,6 +126,8 @@ describe CustomFields::Types::Select do
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select'
 
+      Mongoid::Fields::I18n.locale = :en
+
       @design_cat       = field.select_options.build :name => 'Design'
       @development_cat  = field.select_options.build :name => 'Development'
       @marketing_cat    = field.select_options.build :name => 'Marketing'

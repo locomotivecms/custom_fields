@@ -44,7 +44,7 @@ module Mongoid #:nodoc:
         def deserialize(object)
           return nil if object.nil?
 
-          puts "deserializing...#{locale.inspect} / #{object.inspect}"
+          # puts "deserializing...#{locale.inspect} / #{object.inspect}" # DEBUG
 
           value = if I18n.fallbacks?
             object[I18n.fallbacks[locale.to_sym].map(&:to_s).find { |loc| !object[loc].nil? }]
@@ -66,7 +66,8 @@ module Mongoid #:nodoc:
         #
         # @since 2.3.0
         def serialize(object)
-          puts "serializing...#{locale} / #{object.inspect} / #{options.inspect}"
+          # puts "serializing...#{locale} / #{object.inspect} / #{options.inspect}" # DEBUG
+
           value = self.original_field_type.serialize(object)
           { locale.to_s => value }
         end

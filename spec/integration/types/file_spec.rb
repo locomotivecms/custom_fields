@@ -40,9 +40,33 @@ describe CustomFields::Types::File do
 
   end
 
+  describe '#localize' do
+
+    before(:each) do
+      Mongoid::Fields::I18n.locale = :en
+      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :banner => FixturedFile.open('doc.txt')
+      @post = Post.find(@post._id)
+    end
+
+    it 'serializes / deserializes' do
+      @post.banner.url.should == '/uploads/doc.txt'
+    end
+
+    it 'serializes / deserializes with a different locale' do
+      Mongoid::Fields::I18n.locale = :fr
+      @post.banner.url.should == '/uploads/doc.txt'
+      @post.banner = FixturedFile.open('another_doc.txt')
+      @post.save
+      @post = Post.find(@post._id)
+      @post.banner.url.should == '/uploads/another_doc.txt'
+    end
+
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'image', :type => 'file'
+      blog.posts_custom_fields.build :label => 'image',   :type => 'file'
+      blog.posts_custom_fields.build :label => 'banner',  :type => 'file', :localized => true
       blog.save & blog.reload
     end
   end
