@@ -61,6 +61,14 @@ describe CustomFields::Types::File do
       @post.banner.url.should == '/uploads/another_doc.txt'
     end
 
+    it 'validates the presence of a file not filled in a locale' do
+      Mongoid::Fields::I18n.locale = :de
+      @post = Post.find(@post._id)
+      @post.valid?.should be_true
+      @post.save.should be_true
+      @post.banner.url.should == '/uploads/doc.txt'
+    end
+
   end
 
   def create_blog

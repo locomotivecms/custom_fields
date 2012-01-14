@@ -69,16 +69,24 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_select_custom_field(klass, rule)
-            name, collection_name = rule['name'], "_#{rule['name']}_options".to_sym
+            name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
             klass.field :"#{name}_id", :type => BSON::ObjectId, :localize => rule['localized'] || false
 
-            klass.cattr_accessor collection_name
-            klass.send :"#{collection_name}=", rule['select_options']
+            klass.cattr_accessor "_raw_#{base_collection_name}"
+            klass.send :"_raw_#{base_collection_name}=", rule['select_options']
 
             # other methods
             klass.send(:define_method, name.to_sym) { _get_select_option(name) }
             klass.send(:define_method, :"#{name}=") { |value| _set_select_option(name, value) }
+
+            klass.class_eval <<-EOV
+
+              def self.#{base_collection_name}
+                self._select_options('#{name}')
+              end
+
+            EOV
 
             if rule['required']
               klass.validates_presence_of name
@@ -113,8 +121,18 @@ module CustomFields
           end
 
           def _select_options(name)
-            self.send(:"_#{name}_options").map do |option|
-              name = option['name'][Mongoid::Fields::I18n.locale.to_s] rescue option['name']
+            self.send(:"_raw_#{name}_options").map do |option|
+
+              locale = Mongoid::Fields::I18n.locale.to_s
+
+              name = if !option['name'].respond_to?(:merge)
+                option['name']
+              elsif Mongoid::Fields::I18n.fallbacks?
+                option['name'][Mongoid::Fields::I18n.fallbacks[locale.to_sym].map(&:to_s).find { |loc| !option['name'][loc].nil? }]
+              else
+                option['name'][locale.to_s]
+              end
+
               { '_id' => option['_id'], 'name' => name }
             end
           end

@@ -120,6 +120,14 @@ describe CustomFields::Types::Select do
       @post.author.should == 'Mister Foo'
     end
 
+    it 'displays all the categories' do
+      @post.class.author_options.first['name'] = 'Mister Foo'
+      Mongoid::Fields::I18n.locale = :fr
+      @post.class.author_options.first['name'] = 'Monsieur Foo'
+      Mongoid::Fields::I18n.locale = :en
+      @post.class.author_options.first['name'] = 'Mister Foo'
+    end
+
   end
 
   def create_blog

@@ -24,8 +24,6 @@ module CustomFields
 
             if rule['localized'] == true
               klass.replace_field name, ::String, true
-
-              # fields[#{name.inspect}].deserialize(read_attribute(#{name.inspect}))
             end
 
             if rule['required']
