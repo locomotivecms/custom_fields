@@ -35,24 +35,20 @@ module CustomFields
 
         end
 
-        module InstanceMethods
+        def ordered_select_options
+          self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
+        end
 
-          def ordered_select_options
-            self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
-          end
+        def select_to_recipe
+          {
+            'select_options' => self.ordered_select_options.map do |option|
+              { '_id' => option._id, 'name' => option.name_translations }
+            end
+          }
+        end
 
-          def select_to_recipe
-            {
-              'select_options' => self.ordered_select_options.map do |option|
-                { '_id' => option._id, 'name' => option.name_translations }
-              end
-            }
-          end
-
-          def select_as_json(options = {})
-            { 'select_options' => self.ordered_select_options.map(&:as_json) }
-          end
-
+        def select_as_json(options = {})
+          { 'select_options' => self.ordered_select_options.map(&:as_json) }
         end
 
       end
@@ -151,28 +147,24 @@ module CustomFields
 
         end
 
-        module InstanceMethods
+        def _select_option_id(name)
+          self.send(:"#{name}_id")
+        end
 
-          def _select_option_id(name)
-            self.send(:"#{name}_id")
+        def _find_select_option(name, id_or_name)
+          self.class._select_options(name).detect do |option|
+            option['name'] == id_or_name || option['_id'].to_s == id_or_name.to_s
           end
+        end
 
-          def _find_select_option(name, id_or_name)
-            self.class._select_options(name).detect do |option|
-              option['name'] == id_or_name || option['_id'].to_s == id_or_name.to_s
-            end
-          end
+        def _get_select_option(name)
+          option = self._find_select_option(name, self._select_option_id(name))
+          option ? option['name'] : nil
+        end
 
-          def _get_select_option(name)
-            option = self._find_select_option(name, self._select_option_id(name))
-            option ? option['name'] : nil
-          end
-
-          def _set_select_option(name, value)
-            option = self._find_select_option(name, value)
-            self.send(:"#{name}_id=", option ? option['_id'] : nil)
-          end
-
+        def _set_select_option(name, value)
+          option = self._find_select_option(name, value)
+          self.send(:"#{name}_id=", option ? option['_id'] : nil)
         end
 
       end
