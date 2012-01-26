@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = 'nowarning'
 
   s.add_dependency 'mongoid', '~> 2.4.2'
-  s.add_dependency 'activesupport', '~> 3.2.0'
+  s.add_dependency 'activesupport', '~> 3.1.3'
   s.add_dependency 'carrierwave-mongoid', '~> 0.1.3'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])

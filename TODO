@@ -40,3 +40,6 @@ x target custom fields
   - has_many / belongs_to
   - tags: https://github.com/wilkerlucio/mongoid_taggable
 
+- upgrade to rails 3.2
+  - carrierwave: https://github.com/jnicklas/carrierwave/pull/536
+

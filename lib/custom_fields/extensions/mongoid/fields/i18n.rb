@@ -37,7 +37,7 @@ module Mongoid #:nodoc
       end
 
       def self.with_locale(new_locale = nil)
-        if tmp_locale
+        if new_locale
           current_locale  = self.locale
           self.locale     = new_locale
         end

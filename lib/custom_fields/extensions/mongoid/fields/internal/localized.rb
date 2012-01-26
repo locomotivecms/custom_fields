@@ -45,8 +45,9 @@ module Mongoid #:nodoc:
           return nil if object.nil?
 
           # puts "deserializing...#{locale.inspect} / #{object.inspect}" # DEBUG
-
-          value = if I18n.fallbacks?
+          value = if !object.respond_to?(:keys) # if no translation hash is given, we return the object itself
+            object
+          elsif I18n.fallbacks?
             object[I18n.fallbacks[locale.to_sym].map(&:to_s).find { |loc| !object[loc].nil? }]
           else
             object[locale.to_s]
@@ -69,6 +70,7 @@ module Mongoid #:nodoc:
           # puts "serializing...#{locale} / #{object.inspect} / #{options.inspect}" # DEBUG
 
           value = self.original_field_type.serialize(object)
+
           { locale.to_s => value }
         end
 
