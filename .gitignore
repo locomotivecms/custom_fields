@@ -5,3 +5,4 @@ rdoc/
 doc/
 .yardoc/
 lib/custom_fields/types_old/
+tmp/
