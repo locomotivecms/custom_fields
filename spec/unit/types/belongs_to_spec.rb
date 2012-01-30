@@ -4,12 +4,12 @@ describe CustomFields::Types::BelongsTo do
 
   before(:each) do
     @blog   = build_blog
-    @person = Person.create :name => 'John Doe'
+    @author = Person.new :name => 'John Doe'
     @post   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
   end
 
   it 'sets a value' do
-    @post.author = @person
+    @post.author = @author
     @post.author.name.should == 'John Doe'
   end
 

@@ -5,8 +5,10 @@ class Blog
 
   field :name
 
+  has_many :people
   has_many :posts
 
+  custom_fields_for :people
   custom_fields_for :posts
 
 end
