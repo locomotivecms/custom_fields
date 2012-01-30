@@ -6,7 +6,7 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     ## types ##
-    %w(default string text date boolean file select).each do |type|
+    %w(default string text date boolean file select belongs_to).each do |type|
       include "CustomFields::Types::#{type.classify}::Field".constantize
     end
 

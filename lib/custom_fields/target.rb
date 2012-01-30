@@ -7,7 +7,7 @@ module CustomFields
     included do
 
       ## types ##
-      %w(default string text date boolean file select).each do |type|
+      %w(default string text date boolean file select belongs_to).each do |type|
         include "CustomFields::Types::#{type.classify}::Target".constantize
       end
 
@@ -34,8 +34,11 @@ module CustomFields
       # @return [ Class] the anonymous custom klass
       #
       def build_klass_with_custom_fields(recipe)
-        # puts "CREATING new '#{name}' / #{recipe.inspect}" # DEBUG
-        Class.new(self).tap do |klass|
+        name = recipe['name']
+
+        # puts "CREATING #{name}, #{recipe.inspect}" # DEBUG
+
+        parent.const_set(name, Class.new(self)).tap do |klass|
           klass.cattr_accessor :version
 
           klass.version = recipe['version']
@@ -71,8 +74,6 @@ module CustomFields
           parent.send(:remove_const, name) if klass
 
           klass = build_klass_with_custom_fields(recipe)
-
-          parent.const_set(name, klass)
         end
 
         klass
