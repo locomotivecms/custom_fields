@@ -15,9 +15,13 @@ describe CustomFields::Types::BelongsTo do
     end
 
     it 'sets the author' do
-      @post.author = @author
-      @post.save
+      save_post @post, @author
       @post.author.name.should == 'John Doe'
+    end
+
+    it 'increments the position' do
+      save_post @post, @author
+      @post.position_in_author.should == 1
     end
 
   end
@@ -34,8 +38,7 @@ describe CustomFields::Types::BelongsTo do
     end
 
     it 'sets a new author' do
-      @post.author = @another_author
-      @post.save
+      save_post @post, @another_author
       @post = Post.find(@post._id)
       @post.author.name.should == 'Jane Doe'
     end
@@ -47,5 +50,10 @@ describe CustomFields::Types::BelongsTo do
       blog.posts_custom_fields.build :label => 'Author', :type => 'belongs_to', :class_name => 'Person'
       blog.save & blog.reload
     end
+  end
+
+  def save_post(post, author)
+    post.author = author
+    post.save
   end
 end

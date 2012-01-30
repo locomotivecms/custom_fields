@@ -8,6 +8,10 @@ describe CustomFields::Types::BelongsTo do
     @post   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
   end
 
+  it 'has a field storing the position' do
+    @post.respond_to?(:position_in_author).should be_true
+  end
+
   it 'sets a value' do
     @post.author = @author
     @post.author.name.should == 'John Doe'

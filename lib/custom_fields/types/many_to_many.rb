@@ -2,7 +2,7 @@ module CustomFields
 
   module Types
 
-    module HasMany
+    module ManyToMany
 
       module Field
 
@@ -13,9 +13,9 @@ module CustomFields
           field :class_name
           field :inverse_of
 
-          validates_presence_of :class_name, :inverse_of, :if => Proc.new { |f| f.type == 'has_many' }
+          validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'many_to_many' }
 
-          def has_many_to_recipe
+          def many_to_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
           end
 
@@ -29,17 +29,15 @@ module CustomFields
 
         module ClassMethods
 
-          # Adds a has_many relationship between 2 mongoid models
+          # Adds a many_to_many relationship between 2 mongoid models
           #
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the relation and if it is required or not
           #
-          def apply_has_many_custom_field(klass, rule)
-            # puts "#{klass.inspect}.has_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}, :inverse_of => #{rule['inverse_of']}" # DEBUG
+          def apply_many_to_many_custom_field(klass, rule)
+            puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}" # DEBUG
 
-            position_name = "position_in_#{rule['inverse_of']}"
-
-            klass.has_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => position_name.to_sym.asc
+            klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name']
 
             if rule['required']
               klass.validates_length_of rule['name'], :minimum => 1
