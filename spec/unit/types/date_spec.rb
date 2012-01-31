@@ -8,6 +8,10 @@ describe CustomFields::Types::Date do
     @date = Date.parse('2010-06-29')
   end
 
+  it 'is not considered as a relationship field type' do
+    @blog.posts_custom_fields.first.is_relationship?.should be_false
+  end
+
   it 'sets value (in French format) from a string' do
     I18n.stubs(:t).returns('%d/%m/%Y')
     @post.posted_at = '29/06/2010'

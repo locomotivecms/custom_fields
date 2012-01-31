@@ -10,13 +10,17 @@ module CustomFields
 
         included do
 
-          field :class_name
-          field :inverse_of
-
-          validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'many_to_many' }
+          # field :class_name
+          # field :inverse_of
+          #
+          # validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'many_to_many' }
 
           def many_to_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
+          end
+
+          def many_to_many_is_relationship?
+            self.type == 'many_to_many'
           end
 
         end
@@ -35,7 +39,7 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the relation and if it is required or not
           #
           def apply_many_to_many_custom_field(klass, rule)
-            puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}" # DEBUG
+            # puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}" # DEBUG
 
             klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name']
 

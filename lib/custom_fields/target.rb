@@ -41,7 +41,7 @@ module CustomFields
         parent.const_set(name, Class.new(self)).tap do |klass|
           klass.cattr_accessor :version
 
-          klass.version     = recipe['version']
+          klass.version = recipe['version']
 
           # copy scopes from the parent class (scopes does not inherit automatically from the parents in mongoid)
           # klass.write_inheritable_attribute(:scopes, self.scopes) # not needed it

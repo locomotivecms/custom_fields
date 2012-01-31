@@ -7,6 +7,10 @@ describe CustomFields::Types::String do
     @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
   end
 
+  it 'is not considered as a relationship field type' do
+    @blog.posts_custom_fields.first.is_relationship?.should be_false
+  end
+
   it 'sets a value' do
     @post.author = 'John Doe'
     @post.author.should == 'John Doe'

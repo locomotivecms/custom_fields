@@ -10,13 +10,17 @@ module CustomFields
 
         included do
 
-          field :class_name
-          field :inverse_of
-
-          validates_presence_of :class_name, :inverse_of, :if => Proc.new { |f| f.type == 'has_many' }
+          # field :class_name
+          # field :inverse_of
+          #
+          # validates_presence_of :class_name, :inverse_of, :if => Proc.new { |f| f.type == 'has_many' }
 
           def has_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
+          end
+
+          def has_many_to_is_relationship?
+            self.type == 'has_many'
           end
 
         end

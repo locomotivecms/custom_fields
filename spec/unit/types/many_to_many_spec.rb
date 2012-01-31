@@ -9,6 +9,10 @@ describe CustomFields::Types::HasMany do
     @author_2 = @blog.people.build :name => 'Jane Doe'
   end
 
+  it 'is considered as a relationship field type' do
+    @blog.posts_custom_fields.first.is_relationship?.should be_true
+  end
+
   it 'sets a value' do
     @post.authors = [@author_1, @author_2]
     @post.authors.map(&:name).should == ['John Doe', 'Jane Doe']

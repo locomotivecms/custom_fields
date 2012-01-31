@@ -8,6 +8,10 @@ describe CustomFields::Types::BelongsTo do
     @post   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
   end
 
+  it 'is considered as a relationship field type' do
+    @blog.posts_custom_fields.first.is_relationship?.should be_true
+  end
+
   it 'has a field storing the position' do
     @post.respond_to?(:position_in_author).should be_true
   end

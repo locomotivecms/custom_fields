@@ -10,12 +10,16 @@ module CustomFields
 
         included do
 
-          field :class_name
-
-          validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'belongs_to' }
+          # field :class_name
+          #
+          # validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'belongs_to' }
 
           def belongs_to_to_recipe
             { 'class_name' => self.class_name }
+          end
+
+          def belongs_to_is_relationship?
+            self.type == 'belongs_to'
           end
 
         end
