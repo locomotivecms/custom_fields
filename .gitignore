@@ -1,8 +1,9 @@
-pkg/
-spec/tmp
-rdoc/
 .DS_Store
-doc/
+.rvmrc
 .yardoc/
+doc/
 lib/custom_fields/types_old/
+pkg/
+rdoc/
+spec/tmp
 tmp/
