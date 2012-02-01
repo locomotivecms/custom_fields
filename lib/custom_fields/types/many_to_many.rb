@@ -10,11 +10,6 @@ module CustomFields
 
         included do
 
-          # field :class_name
-          # field :inverse_of
-          #
-          # validates_presence_of :class_name, :if => Proc.new { |f| f.type == 'many_to_many' }
-
           def many_to_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
           end

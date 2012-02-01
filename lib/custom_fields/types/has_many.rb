@@ -10,11 +10,6 @@ module CustomFields
 
         included do
 
-          # field :class_name
-          # field :inverse_of
-          #
-          # validates_presence_of :class_name, :inverse_of, :if => Proc.new { |f| f.type == 'has_many' }
-
           def has_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
           end
@@ -44,6 +39,8 @@ module CustomFields
             position_name = "position_in_#{rule['inverse_of']}"
 
             klass.has_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => position_name.to_sym.asc
+
+            klass.accepts_nested_attributes_for rule['name'], :allow_destroy => true
 
             if rule['required']
               klass.validates_length_of rule['name'], :minimum => 1
