@@ -12,7 +12,7 @@ The main goals:
 
 h2. Requirements
 
-ActiveSupport 3.1.3, MongoDB 2.0 and Mongoid 2.3.4
+ActiveSupport 3.2.1, MongoDB 2.0 and Mongoid 2.4.3
 
 h2. Examples
 
@@ -67,4 +67,4 @@ h2. Contact
 
 Feel free to contact me at didier at nocoffee dot fr.
 
-Copyright (c) 2011 NoCoffee, released under the MIT license
+Copyright (c) 2012 NoCoffee, released under the MIT license
