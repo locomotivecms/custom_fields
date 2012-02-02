@@ -6,6 +6,8 @@ source :rubygems
 gemspec # Include gemspec dependencies
 
 group :development do
+  gem 'carrierwave', :git => 'git://github.com/jnicklas/carrierwave.git' # Until new version gets release which fix deprecation warnings
+  
   unless ENV['CI']
     gem 'ruby-debug', :platforms => :mri_18
     
