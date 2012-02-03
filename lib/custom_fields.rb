@@ -40,6 +40,7 @@ require 'custom_fields/types/has_many'
 require 'custom_fields/types/many_to_many'
 require 'custom_fields/field'
 require 'custom_fields/source'
+require 'custom_fields/target_helpers'
 require 'custom_fields/target'
 
 # Load all the translation files
