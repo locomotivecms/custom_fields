@@ -22,8 +22,9 @@ Gem::Specification.new do |s|
   # ------------
 
   s.add_dependency 'mongoid',             '~> 2.4.3'
+  # s.add_dependency 'carrierwave',         '~> 0.6.0'
   s.add_dependency 'carrierwave-mongoid', '~> 0.1.3'
-  
+
   s.add_dependency 'activesupport',       '~> 3.2.1'
 
   s.add_dependency 'SystemTimer',         '~> 1.2.3' if RUBY_VERSION =~ /1.8/
@@ -39,10 +40,10 @@ Gem::Specification.new do |s|
   
   s.add_development_dependency 'rspec',            '~> 2.8'
   s.add_development_dependency 'mocha',            '~> 0.9.12'
-  
+
   s.add_development_dependency 'database_cleaner', '~> 0.6.7'
-  
-  s.add_development_dependency 'yard',             '~> 0.7.4'
+
+  s.add_development_dependency 'yard',             '~> 0.7.5'
   s.add_development_dependency 'RedCloth',         '~> 4.2.9'
 
   s.files = Dir[ 'init.rb',

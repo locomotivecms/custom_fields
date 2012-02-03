@@ -25,12 +25,6 @@ task :release => :gem do
   sh "gem push pkg/custom_fields-#{gemspec.version}.gem"
 end
 
-desc 'Generate documentation for the custom_fields plugin.'
-YARD::Rake::YardocTask.new do |t|
-  t.files   = ['lib/**/*.rb'] # Optional
-  t.options = ['--title', "CustomFields #{CustomFields::VERSION}", '--file', 'README.textile']
-end
-
 RSpec::Core::RakeTask.new('spec:unit') do |spec|
   spec.pattern = 'spec/unit/**/*_spec.rb'
 end
@@ -40,3 +34,9 @@ RSpec::Core::RakeTask.new('spec:integration') do |spec|
 end
 
 task :spec => ['spec:unit', 'spec:integration']
+
+desc 'Generate documentation for the custom_fields plugin.'
+YARD::Rake::YardocTask.new do |t|
+  t.files   = ['lib/**/*.rb'] # Optional
+  t.options = ['--title', "CustomFields #{CustomFields::VERSION}", '--file', 'README.textile']
+end
