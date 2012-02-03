@@ -36,7 +36,7 @@ module CustomFields
           def apply_many_to_many_custom_field(klass, rule)
             # puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}" # DEBUG
 
-            klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name']
+            klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of']
 
             if rule['required']
               klass.validates_length_of rule['name'], :minimum => 1
