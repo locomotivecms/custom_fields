@@ -11,6 +11,8 @@ module CustomFields
         include "CustomFields::Types::#{type.classify}::Target".constantize
       end
 
+      include ::CustomFields::TargetHelpers
+
       ## fields ##
       field :custom_fields_recipe, :type => Hash
 
@@ -44,7 +46,8 @@ module CustomFields
           klass.version = recipe['version']
 
           # copy scopes from the parent class (scopes does not inherit automatically from the parents in mongoid)
-          # klass.write_inheritable_attribute(:scopes, self.scopes) # not needed it
+          # FIXME (Did): not needed anymore ?
+          # klass.write_inheritable_attribute(:scopes, self.scopes)
 
           recipe['rules'].each do |rule|
             self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
