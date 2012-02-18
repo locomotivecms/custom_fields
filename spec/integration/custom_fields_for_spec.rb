@@ -48,11 +48,19 @@ describe 'CustomFieldsFor' do
       post.respond_to?(:location).should be_true
     end
 
-    it 'renames field' do
+    it 'renames a field' do
       @blog.posts_custom_fields.first.name = 'author'
       @blog.save & @blog.reload
       post = @blog.posts.first
       post.respond_to?(:author).should be_true
+      post.respond_to?(:main_author).should be_false
+    end
+
+    it 'destroys a field' do
+      @blog.posts_custom_fields.delete_all(:conditions => { :name => 'main_author' })
+      @blog.save & @blog.reload
+      post = @blog.posts.first
+      post.respond_to?(:location).should be_true
       post.respond_to?(:main_author).should be_false
     end
 
