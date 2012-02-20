@@ -1,9 +1,9 @@
 fr:
   custom_fields:
-    kind:
+    type:
       string: Texte
       text: Zone de texte
-      category: Liste déroulante
+      select: Liste déroulante
       boolean: Case à cocher
       date: Date
       file: Fichier
