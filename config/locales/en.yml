@@ -1,9 +1,9 @@
 en:
   custom_fields:
-    kind:
+    type:
       string: Simple Input
       text: Text
-      category: Select
+      select: Select
       boolean: Checkbox
       date: Date
       file: File

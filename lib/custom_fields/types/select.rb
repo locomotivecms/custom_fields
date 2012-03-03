@@ -70,7 +70,7 @@ module CustomFields
             klass.field :"#{name}_id", :type => BSON::ObjectId, :localize => rule['localized'] || false
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
-            klass.send :"_raw_#{base_collection_name}=", rule['select_options']
+            klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
 
             # other methods
             klass.send(:define_method, name.to_sym) { _get_select_option(name) }

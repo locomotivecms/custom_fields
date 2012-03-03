@@ -12,6 +12,8 @@ module Mongoid #:nodoc:
             # all the information about how to build the custom class are stored here
             recipe = base.custom_fields_recipe_for(metadata.name)
 
+            attributes ||= {}
+
             attributes.merge!(:custom_fields_recipe => recipe)
 
             # build the class with custom_fields for the first time

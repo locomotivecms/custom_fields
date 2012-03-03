@@ -14,6 +14,7 @@ module CustomFields
         # @return [ Hash ] The memo object upgraded
         #
         def collect_default_diff(memo)
+          # puts "collect_default_diff #{self.name}: #{self.persisted?} / #{self.destroyed?}" # DEBUG
           if self.persisted?
             if self.destroyed?
               memo['$unset'][self.name] = 1
