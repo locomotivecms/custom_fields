@@ -12,6 +12,13 @@ describe CustomFields::Types::File do
       @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
     end
 
+    it 'does not have 2 image fields' do
+      @post.image = FixturedFile.open('doc.txt')
+      @post.save
+      puts @post.class.fields.keys.inspect
+      (@post.attributes.key?('source') && @post.attributes.key?(:source)).should be_false
+    end
+
     it 'attaches the file' do
       @post.image = FixturedFile.open('doc.txt')
       @post.save
