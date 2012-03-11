@@ -15,7 +15,6 @@ describe CustomFields::Types::File do
     it 'does not have 2 image fields' do
       @post.image = FixturedFile.open('doc.txt')
       @post.save
-      puts @post.class.fields.keys.inspect
       (@post.attributes.key?('source') && @post.attributes.key?(:source)).should be_false
     end
 

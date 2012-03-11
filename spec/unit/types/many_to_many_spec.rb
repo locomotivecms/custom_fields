@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CustomFields::Types::HasMany do
+describe CustomFields::Types::ManyToMany do
 
   before(:each) do
     @blog     = build_blog

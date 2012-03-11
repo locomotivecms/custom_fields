@@ -18,6 +18,11 @@ describe CustomFields::Types::HasMany do
     @author.posts.map(&:title).should == ['Hello world', 'Keep writing']
   end
 
+  it 'includes a scope named ordered' do
+    @author.posts.respond_to?(:ordered).should be_true
+    puts @author.posts.ordered.send(:options)[:sort].should == [[:position_in_author, :asc]]
+  end
+
   describe 'validation' do
 
     [nil, []].each do |value|
