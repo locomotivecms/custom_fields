@@ -184,12 +184,12 @@ module CustomFields
         self._custom_field_localize_diff[name].each do |changes|
           if changes[:localized]
             value = record.read_attribute(changes[:field].to_sym)
-            updates[changes[:field]] = { I18n.locale.to_s => value }
+            updates[changes[:field]] = { Mongoid::Fields::I18n.locale.to_s => value }
           else
             # the other way around
             value = record.read_attribute(changes[:field].to_sym)
             next if value.nil?
-            updates[changes[:field]] = value[I18n.locale.to_s]
+            updates[changes[:field]] = value[Mongoid::Fields::I18n.locale.to_s]
           end
         end
 
