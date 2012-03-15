@@ -36,7 +36,6 @@ describe 'CustomFieldsFor' do
       @blog.posts.create :title => 'Hello world',   :body => 'Lorem ipsum...'
       @blog.posts.create :title => 'Welcome home',  :body => 'Lorem ipsum...'
       @blog.reload
-
       @blog.posts_custom_fields.build :label => 'Main Author',  :type => 'string'
       @blog.posts_custom_fields.build :label => 'Location',     :type => 'string'
       @blog.save & @blog.reload

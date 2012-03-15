@@ -2,11 +2,13 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'active_support'
 require 'carrierwave/mongoid'
+require 'money'
 
 module CustomFields
 
   @@options = {
-    :reserved_names => Mongoid.destructive_fields + %w(id _id send class)
+    :reserved_names => Mongoid.destructive_fields + %w(id _id send class),
+    :default_currency => "EUR"
   }
 
   def self.options=(options)
@@ -29,9 +31,11 @@ require 'custom_fields/extensions/mongoid/fields/i18n.rb'
 require 'custom_fields/extensions/mongoid/fields/internal/localized.rb'
 require 'custom_fields/types/default'
 require 'custom_fields/types/string'
+require 'custom_fields/types/integer'
 require 'custom_fields/types/text'
 require 'custom_fields/types/date'
 require 'custom_fields/types/boolean'
+require 'custom_fields/types/money'
 require 'custom_fields/types/file'
 require 'custom_fields/types/select'
 require 'custom_fields/types/relationship_default'

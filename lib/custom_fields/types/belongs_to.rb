@@ -40,7 +40,7 @@ module CustomFields
 
             # puts "#{klass.inspect}.field :#{position_name}" # DEBUG
 
-            klass.field position_name, :type => Integer, :default => 0
+            klass.field position_name, :type => ::Integer, :default => 0
 
             klass.belongs_to rule['name'].to_sym, :class_name => rule['class_name']
 

@@ -44,6 +44,14 @@ describe CustomFields::TargetHelpers do
       @safe_attributes.include?('author_name').should be_true
     end
 
+    it 'includes attributes for integer' do
+      @safe_attributes.include?('author_age').should be_true
+    end
+
+    it 'includes attributes for money' do
+      @safe_attributes.include?('formatted_donation').should be_true
+     end
+
     it 'includes attributes for boolean' do
       @safe_attributes.include?('visible').should be_true
     end
@@ -81,8 +89,8 @@ describe CustomFields::TargetHelpers do
       @methods = @post.custom_fields_methods
     end
 
-    it 'includes the default method name for string, select, boolean, has_many and many_to_many fields' do
-      %w(author_name category visible projects illustrations contributors).each do |name|
+    it 'includes the default method name for string, integer, select, boolean, has_many and many_to_many fields' do
+      %w(author_name author_age category visible projects illustrations contributors).each do |name|
         @methods.include?(name).should be_true
       end
     end
@@ -103,6 +111,10 @@ describe CustomFields::TargetHelpers do
       @methods.include?('posted_at').should be_false
     end
 
+    it 'includes the method name for money' do
+      @methods.include?('formatted_donation').should be_true
+    end
+
     it 'includes the method name for belongs_to relationships' do
       @methods.include?('formatted_posted_at').should be_true
       @methods.include?('posted_at').should be_false
@@ -116,8 +128,8 @@ describe CustomFields::TargetHelpers do
 
     it 'filters the list by passing a block' do
       @post.custom_fields_methods do |rules|
-        %w(string boolean).include?(rules['type'])
-      end.should == %w(visible author_name)
+        %w(string boolean integer money).include?(rules['type'])
+      end.should == %w(visible author_name author_age formatted_donation)
     end
 
   end
@@ -132,6 +144,8 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'ghost_writer',     'type' => 'belongs_to', :class_name => 'Person', 'required' => false, 'localized' => false },
           { 'name' => 'illustration',     'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'author_name',      'type' => 'string', 'required' => false, 'localized' => false },
+          { 'name' => 'author_age',       'type' => 'integer', 'required' => false, 'localized' => false },
+          { 'name' => 'donation',         'type' => 'money', 'required' => false, 'localized' => false },
           { 'name' => 'author_picture',   'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'contributors',     'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts', 'required' => false, 'localized' => false },
           { 'name' => 'projects',         'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
