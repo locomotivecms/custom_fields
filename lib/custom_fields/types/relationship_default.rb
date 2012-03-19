@@ -12,6 +12,7 @@ module CustomFields
 
           field :class_name
           field :inverse_of
+          field :order_by
 
           validates_presence_of :class_name,                  :if => :is_relationship?
           validate              :ensure_class_name_security,  :if => :is_relationship?
