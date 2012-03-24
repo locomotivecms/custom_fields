@@ -1,18 +1,16 @@
-source 'http://rubygems.org'
+#!/usr/bin/env bundle
+# encoding: utf-8
 
-gemspec
+source :rubygems
 
-gem 'rake'
+gemspec # Include gemspec dependencies
 
-platforms :mri_18 do
+group :development do
+  gem 'carrierwave', :git => 'git://github.com/jnicklas/carrierwave.git' # Until version 0.6.0 gets released
+  
   unless ENV['CI']
-    gem 'ruby-debug'
-  end
-  gem 'SystemTimer'
-end
+    gem 'ruby-debug', :platforms => :mri_18
 
-platforms :mri_19 do
-  unless ENV['CI']
-    gem 'ruby-debug19', :require => 'ruby-debug' if RUBY_VERSION < '1.9.3'
+    gem 'ruby-debug19', :require => 'ruby-debug', :platforms => :mri_19 if RUBY_VERSION < '1.9.3'
   end
 end
