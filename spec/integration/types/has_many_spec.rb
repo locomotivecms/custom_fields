@@ -56,6 +56,30 @@ describe CustomFields::Types::HasMany do
 
   end
 
+  describe 'ordering posts' do
+
+    before(:each) do
+      @author = @blog.people.create :name => 'John Doe'
+      save_author @author, [@post_1, @post_2, @post_3]
+      @author = Person.find(@author._id)
+    end
+
+    it 'returns the list based on the position' do
+      @post_1.update_attributes :position_in_author => 3
+      @post_3.update_attributes :position_in_author => 1
+      @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+      @author.posts.ordered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+    end
+
+    it 'returns the list based on the title' do
+      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+      @author.posts.ordered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+    end
+
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build :label => 'Author', :type => 'belongs_to', :class_name => 'Person'

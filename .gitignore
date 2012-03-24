@@ -1,9 +1,9 @@
 .DS_Store
 .rvmrc
-.yardoc/
-doc/
-lib/custom_fields/types_old/
-pkg/
-rdoc/
+.yardoc
+coverage
+doc
+pkg
+rdoc
 spec/tmp
-tmp/
+tmp

@@ -34,8 +34,10 @@ module CustomFields
     # @return [ Class ] The modified class.
     #
     def klass_with_custom_fields(name)
-      recipe = self.custom_fields_recipe_for(name)
-      target = self.send(name).metadata.klass
+      # Rails.logger.debug "[CustomFields] klass_with_custom_fields #{self.send(name).metadata.klass} / #{self.send(name).metadata[:old_klass]}" if defined?(Rails) # DEBUG
+      recipe    = self.custom_fields_recipe_for(name)
+      _metadata = self.send(name).metadata
+      target    = _metadata[:original_klass] || _metadata.klass # avoid to use an already enhanced klass
       target.klass_with_custom_fields(recipe)
     end
 
@@ -100,6 +102,11 @@ module CustomFields
       # puts "old_metadata = #{old_metadata.klass.inspect} / #{old_metadata.object_id.inspect}" # DEBUG
 
       self.send(name).metadata = old_metadata.clone.tap do |metadata|
+        # Rails.logger.debug "[CustomFields] refresh_metadata_with_custom_fields #{metadata.klass}" if defined?(Rails) # DEBUG
+
+        # backup the current klass
+        metadata[:original_klass] ||= metadata.klass
+
         metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
       end
 
@@ -177,12 +184,12 @@ module CustomFields
         self._custom_field_localize_diff[name].each do |changes|
           if changes[:localized]
             value = record.read_attribute(changes[:field].to_sym)
-            updates[changes[:field]] = { I18n.locale.to_s => value }
+            updates[changes[:field]] = { Mongoid::Fields::I18n.locale.to_s => value }
           else
             # the other way around
             value = record.read_attribute(changes[:field].to_sym)
             next if value.nil?
-            updates[changes[:field]] = value[I18n.locale.to_s]
+            updates[changes[:field]] = value[Mongoid::Fields::I18n.locale.to_s]
           end
         end
 
