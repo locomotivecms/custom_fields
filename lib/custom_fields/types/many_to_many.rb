@@ -36,7 +36,14 @@ module CustomFields
           def apply_many_to_many_custom_field(klass, rule)
             # puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect} / #{rule['order_by']}" # DEBUG
 
-            klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => rule['order_by']
+            klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => rule['order_by'] do
+              def ordered
+                # use the natural order given by the initial array (ex: project_ids).
+                # Warning: it returns an array and not a criteria object.
+                ids = base.send(metadata.key.to_sym)
+                entries.sort { |a, b| ids.index(a.id) <=> ids.index(b.id) }
+              end
+            end
 
             if rule['required']
               klass.validates_length_of rule['name'], :minimum => 1

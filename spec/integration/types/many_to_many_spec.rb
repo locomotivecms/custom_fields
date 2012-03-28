@@ -31,6 +31,13 @@ describe CustomFields::Types::ManyToMany do
     @post_3.authors.map(&:name).should == ['John Doe', 'Jane Doe']
   end
 
+  it 'returns the posts based on the order in the post_ids field' do
+    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+    author = Person.find(@author_1._id)
+    author.posts.ordered.map(&:title).should == ['Hello world', 'Nude', 'High and Dry']
+    author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       blog.people_custom_fields.build :label => 'Posts',    :type => 'many_to_many', :class_name => "Post#{blog._id}", :inverse_of => :authors, :order_by => ['title', 'desc']
