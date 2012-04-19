@@ -37,12 +37,22 @@ module CustomFields
             # puts "#{klass.inspect}.many_to_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect} / #{rule['order_by']}" # DEBUG
 
             klass.has_and_belongs_to_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => rule['order_by'] do
-              def ordered
-                # use the natural order given by the initial array (ex: project_ids).
-                # Warning: it returns an array and not a criteria object.
-                ids = base.send(metadata.key.to_sym)
-                entries.sort { |a, b| ids.index(a.id) <=> ids.index(b.id) }
+
+              def filtered(conditions = {}, order_by = nil)
+                list = conditions.empty? ? self : self.where(conditions)
+
+                if order_by
+                  list.order_by(order_by)
+                else
+                  # use the natural order given by the initial array (ex: project_ids).
+                  # Warning: it returns an array and not a criteria object meaning it breaks the chain
+                  ids = base.send(metadata.key.to_sym)
+                  list.entries.sort { |a, b| ids.index(a.id) <=> ids.index(b.id) }
+                end
               end
+
+              alias :ordered :filtered # backward compatibility + semantic purpose
+
             end
 
             if rule['required']

@@ -41,10 +41,20 @@ module CustomFields
             _order_by = rule['order_by'] || position_name.to_sym.asc
 
             klass.has_many rule['name'], :class_name => rule['class_name'], :inverse_of => rule['inverse_of'], :order => _order_by do
-              def ordered
-                # calling all on a has_many relationship makes us lose the default order_by (mongoid bug ?)
-                order(metadata.order)
+
+              def filtered(conditions = {}, order_by = nil)
+                list = conditions.empty? ? self : self.where(conditions)
+
+                if order_by
+                  list.order_by(order_by)
+                else
+                  # calling all on a has_many relationship makes us lose the default order_by (mongoid bug ?)
+                  list.order(metadata.order)
+                end
               end
+
+              alias :ordered :filtered # backward compatibility + semantic purpose
+
             end
 
             klass.accepts_nested_attributes_for rule['name'], :allow_destroy => true
