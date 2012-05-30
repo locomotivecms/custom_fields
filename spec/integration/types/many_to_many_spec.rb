@@ -4,9 +4,9 @@ describe CustomFields::Types::ManyToMany do
 
   before(:each) do
     @blog     = create_blog
-    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...'
-    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...'
-    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...'
+    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :published => true
+    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...', :published => false
+    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...', :published => true
 
     @author_1 = @blog.people.create :name => 'John Doe'
     @author_2 = @blog.people.create :name => 'Jane Doe'
@@ -31,10 +31,30 @@ describe CustomFields::Types::ManyToMany do
     @post_3.authors.map(&:name).should == ['John Doe', 'Jane Doe']
   end
 
+  it 'returns the posts based on the order in the post_ids field' do
+    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+    author = Person.find(@author_1._id)
+    author.posts.filtered.map(&:title).should == ['Hello world', 'Nude', 'High and Dry']
+    author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+  end
+
+  it 'filters the posts' do
+    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+    author = Person.find(@author_1._id)
+    author.posts.filtered({ :published => true }).map(&:title).should == ['Hello world', 'Nude']
+  end
+
+  it 'filters and orders the posts' do
+    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+    author = Person.find(@author_1._id)
+    author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.people_custom_fields.build :label => 'Posts',    :type => 'many_to_many', :class_name => "Post#{blog._id}", :inverse_of => :authors, :order_by => ['title', 'desc']
-      blog.posts_custom_fields.build  :label => 'Authors',  :type => 'many_to_many', :class_name => "Person#{blog._id}", :inverse_of => :posts
+      blog.people_custom_fields.build :label => 'Posts',      :type => 'many_to_many', :class_name => "Post#{blog._id}", :inverse_of => :authors, :order_by => ['title', 'desc']
+      blog.posts_custom_fields.build  :label => 'Authors',    :type => 'many_to_many', :class_name => "Person#{blog._id}", :inverse_of => :posts
+      blog.posts_custom_fields.build  :label => 'Published',  :type => 'boolean'
       blog.save & blog.reload
     end
   end

@@ -4,9 +4,9 @@ describe CustomFields::Types::HasMany do
 
   before(:each) do
     @blog     = create_blog
-    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...'
-    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...'
-    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...'
+    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :published => true
+    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...', :published => false
+    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...', :published => true
   end
 
   describe 'a new author' do
@@ -56,7 +56,7 @@ describe CustomFields::Types::HasMany do
 
   end
 
-  describe 'ordering posts' do
+  describe 'filtering/ordering posts' do
 
     before(:each) do
       @author = @blog.people.create :name => 'John Doe'
@@ -75,15 +75,27 @@ describe CustomFields::Types::HasMany do
       @blog.people_custom_fields.first.order_by = ['title', 'desc']
       @blog.save & @author = Person.find(@author._id)
       @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
-      @author.posts.ordered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+      @author.posts.filtered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+    end
+
+    it 'filters the list' do
+      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.filtered({ :published => true }).map(&:title).should == ['Nude', 'Hello world']
+    end
+
+    it 'filters and sorts the list' do
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
     end
 
   end
 
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'Author', :type => 'belongs_to', :class_name => 'Person'
-      blog.people_custom_fields.build :label => 'Posts', :type => 'has_many', :class_name => "Post#{blog._id}", :inverse_of => 'author'
+      blog.posts_custom_fields.build  :label => 'Author', :type => 'belongs_to',  :class_name => 'Person'
+      blog.posts_custom_fields.build  :label => 'Published',  :type => 'boolean'
+      blog.people_custom_fields.build :label => 'Posts',  :type => 'has_many',    :class_name => "Post#{blog._id}", :inverse_of => 'author'
       blog.save & blog.reload
     end
   end

@@ -20,7 +20,7 @@ describe CustomFields::Types::HasMany do
 
   it 'includes a scope named ordered' do
     @author.posts.respond_to?(:ordered).should be_true
-    puts @author.posts.ordered.send(:options)[:sort].should == [[:position_in_author, :asc]]
+    @author.posts.ordered.send(:options)[:sort].should == [[:position_in_author, :asc]]
   end
 
   describe 'validation' do

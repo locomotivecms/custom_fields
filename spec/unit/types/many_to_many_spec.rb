@@ -18,6 +18,10 @@ describe CustomFields::Types::ManyToMany do
     @post.authors.map(&:name).should == ['John Doe', 'Jane Doe']
   end
 
+  it 'includes a scope named ordered' do
+    @post.authors.respond_to?(:ordered).should be_true
+  end
+
   describe 'validation' do
 
     [nil, []].each do |value|
