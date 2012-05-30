@@ -1,6 +1,9 @@
-source 'http://rubygems.org'
+#!/usr/bin/env bundle
+# encoding: utf-8
 
-gemspec
+source :rubygems
+
+gemspec # Include gemspec dependencies
 
 gem 'rake'
 
@@ -13,6 +16,6 @@ end
 
 platforms :mri_19 do
   unless ENV['CI']
-    gem 'ruby-debug19', :require => 'ruby-debug' if RUBY_VERSION < '1.9.3'
+    gem 'ruby-debug19', :require => 'ruby-debug', :platforms => :mri_19 if RUBY_VERSION < '1.9.3'
   end
 end
