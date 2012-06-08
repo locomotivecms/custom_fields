@@ -30,6 +30,11 @@ describe CustomFields::Types::Boolean do
 
   context '#false' do
 
+    it 'is false by default' do
+      @post.visible.should == false
+      @post.visible?.should == false
+    end
+
     it 'sets value from an integer' do
       @post.visible = 0
       @post.visible.should == false
