@@ -7,6 +7,7 @@ describe 'CustomFields::Localize' do
   before(:each) do
     @blog = create_blog
     @blog = Blog.find(@blog._id)
+    Mongoid::Fields::I18n.locale = 'en'
   end
 
   it 'mimics the original I18n class' do
