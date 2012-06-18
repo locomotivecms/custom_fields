@@ -47,7 +47,11 @@ describe CustomFields::Types::TagSet do
       @post.topics = 'LocomOtive'
       @post.attributes['topics_ids'].should include(@locomotive_tag._id)
     end
-
+    
+    it 'can have a tag field that is not named topics' do
+      @post.stuff = 'hello, world'
+      @post.stuff.length.should ==  2
+    end
 
 
   end
@@ -73,15 +77,18 @@ describe CustomFields::Types::TagSet do
     end
 
     it 'create a new tag and assigns it' do
-      tag = @blog.posts_custom_fields.first.tags_used.build :name => 'new_tag'
+      tag = @blog.posts_custom_fields.detect {|f| f[:label] == "Topics"}.tags_used.build :name => 'new_tag'
       @blog.save
       @post = Post.find(@post._id)
+      debugger
       @post.topics = 'new_tag'
       @post.attributes['topics_ids'].should include(tag._id)
       @post.save
       @post = Post.find(@post._id)
       @post.topics.should include( 'new_tag')
     end
+
+
 
   end
 
@@ -122,6 +129,9 @@ describe CustomFields::Types::TagSet do
       blog.posts.group_by_tag(:topics).class.should == Array
     end
     
+    
+  
+    
   end
 
 
@@ -129,6 +139,7 @@ describe CustomFields::Types::TagSet do
 
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build :label => 'stuff', :type => 'tag_set'
       field = blog.posts_custom_fields.build :label => 'Topics', :type => 'tag_set'
      
       Mongoid::Fields::I18n.locale = :en

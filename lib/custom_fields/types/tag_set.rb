@@ -175,14 +175,12 @@ module CustomFields
             if auto_build and found.blank?
               locale = Mongoid::Fields::I18n.locale.to_s
               tag_hash = { '_id' => BSON::ObjectId.new, 'name' => {locale => id_or_name} }
-              self._raw_topics_tags_used.append(tag_hash)     
+              self.send(:"_raw_#{name}_tags_used").append(tag_hash)     
               localized_tag = { '_id' =>tag_hash['_id'], 'name' => id_or_name }
               found_array.append(localized_tag)         
             elsif !found.nil?
               
               found_array.append(found)
-            else
-              debugger
             end
           end
           found_array
