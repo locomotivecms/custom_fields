@@ -7,3 +7,4 @@ de:
       boolean: Checkbox
       date: Datum
       file: Datei
+      tag_set: Tags
