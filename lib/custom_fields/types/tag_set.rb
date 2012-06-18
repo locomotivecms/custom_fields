@@ -167,10 +167,13 @@ module CustomFields
         def _find_tags(name, id_array_or_name_array, auto_build = false)
           found_array = []
           id_array_or_name_array.each do |id_or_name|
-            found = self.class._tags_used(name).detect{|tag| tag['_id'] == id_or_name || tag['name'] == id_or_name}
+            if(id_or_name.respond_to?('downcase')) #it is a string?
+              found = self.class._tags_used(name).detect{|tag| tag['_id'] == id_or_name || tag['name'].downcase == id_or_name.downcase}
+            else
+              found = self.class._tags_used(name).detect{|tag| tag['_id'] == id_or_name || tag['name'] == id_or_name}
+            end
             if auto_build and found.blank?
               locale = Mongoid::Fields::I18n.locale.to_s
-          
               tag_hash = { '_id' => BSON::ObjectId.new, 'name' => {locale => id_or_name} }
               self._raw_topics_tags_used.append(tag_hash)     
               localized_tag = { '_id' =>tag_hash['_id'], 'name' => id_or_name }
@@ -194,8 +197,12 @@ module CustomFields
 
         #sets the tags (and makes new ones!) based on the value given.. ?
         def _set_tags(name, value)
-          tag_array = value.split(",")
-          tag_array.map!(&:strip).map!(&:downcase)
+          if(value.nil?)
+            tag_array = []
+          else
+            tag_array = value.kind_of?(Array) ? value : value.split(",")
+            tag_array.map!(&:strip)
+          end
           tags = self._find_tags(name, tag_array, true)
           self.send(:"#{name}_ids=", tags ? tags.collect{|tag| tag['_id']} : [])
         end

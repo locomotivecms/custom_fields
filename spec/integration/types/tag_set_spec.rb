@@ -32,11 +32,23 @@ describe CustomFields::Types::TagSet do
       @post.topics.should == ""
     end
 
+    it 'can be set via an array' do
+      @post.topics = ['hello', ' world', 'carpe diem']
+      @post.topics.should include("hello", "carpe diem", "world")
+    end
+
     it 'returns the name of the tag' do
       @post.topics = ""
       @post.topics_ids.append(@locomotive_tag._id)
       @post.topics.should include('locomotive')
     end
+
+    it 'ignores the case of tags' do
+      @post.topics = 'LocomOtive'
+      @post.attributes['topics_ids'].should include(@locomotive_tag._id)
+    end
+
+
 
   end
   
