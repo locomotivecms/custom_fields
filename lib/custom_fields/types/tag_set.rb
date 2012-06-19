@@ -199,7 +199,7 @@ module CustomFields
             tag_array = []
           else
             tag_array = value.kind_of?(Array) ? value : value.split(",")
-            tag_array.map!(&:strip)
+            tag_array.map!(&:strip).reject!(&:blank?)
           end
           tags = self._find_tags(name, tag_array, true)
           self.send(:"#{name}_ids=", tags ? tags.collect{|tag| tag['_id']} : [])

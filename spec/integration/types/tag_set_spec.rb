@@ -53,6 +53,10 @@ describe CustomFields::Types::TagSet do
       @post.stuff.length.should ==  2
     end
 
+    it 'ignores empty tags' do
+      @post.topics = 'this,is,,not,blank'
+      @post.attributes['topics_ids'].length.should == 4
+    end
 
   end
   
@@ -80,7 +84,6 @@ describe CustomFields::Types::TagSet do
       tag = @blog.posts_custom_fields.detect {|f| f[:label] == "Topics"}.tags_used.build :name => 'new_tag'
       @blog.save
       @post = Post.find(@post._id)
-      debugger
       @post.topics = 'new_tag'
       @post.attributes['topics_ids'].should include(tag._id)
       @post.save
