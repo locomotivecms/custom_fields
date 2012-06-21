@@ -9,14 +9,22 @@ module CustomFields
         include Mongoid::Document
 
         field :name,      :localize => true
+        field :_id,       :type => BSON::ObjectId, :localize => false
         
-        embedded_in :custom_field, :inverse_of => :tags_used
-
+       
         validates_presence_of :name
+        validates_uniqueness_of :name
 
         def as_json(options = nil)
           super :methods => %w(_id name)
         end
+        
+        
+        def self.available_tags
+          Tag.all().asc(:name).to_ary
+        end
+        
+        
         
 
       end
@@ -27,28 +35,31 @@ module CustomFields
 
         included do
 
-          embeds_many :tags_used, :class_name => 'CustomFields::Types::TagSet::Tag'
-
-          validates_associated :tags_used
-
-          accepts_nested_attributes_for :tags_used, :allow_destroy => true
-
+       
+        end
+        
+        def tag_class
+          Tag
         end
 
-        def ordered_tags_used
-          self.tags_used.sort { |a, b| (a.name) <=> (b.name) }.to_a
+        def ordered_available_tags
+           Tag.available_tags
+        end
+        
+        def available_tags
+          ordered_available_tags
         end
 
         def tag_set_to_recipe
           {
-            'tags_used' => self.ordered_tags_used.map do |tag|
+            'available_tags' => self.ordered_available_tags.map do |tag|
               { '_id' => tag._id, 'name' => tag.name_translations }
             end
           }
         end
 
         def tag_set_as_json(options = {})
-          { 'tags_used' => self.ordered_tags_used.map(&:as_json) }
+          { 'available_tags' => self.ordered_available_tags.map(&:as_json) }
         end
 
       end
@@ -81,14 +92,13 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_tag_set_custom_field(klass, rule)
-            name, base_collection_name = rule['name'], "#{rule['name']}_tags_used".to_sym
+            name, base_collection_name = rule['name'], "#{rule['name']}_available_tags".to_sym
 
-            klass.field :"#{name}_ids", :type => Array, :localize => rule['localized'], default: [] || false
+          
+            klass.field :"#{name}_ids", :type => Array, :localize => false, :default=>[] || false
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
-            
-            klass.send :"_raw_#{base_collection_name}=", rule['tags_used'].sort  {|a, b| klass.get_localized_name(a) <=> klass.get_localized_name(b) }
-              
+            klass.send :"_raw_#{base_collection_name}=", rule['available_tags']
             
             # other methods
             klass.send(:define_method, name.to_sym) { _get_tags(name) }
@@ -97,7 +107,7 @@ module CustomFields
             klass.class_eval <<-EOV
 
               def self.#{base_collection_name}
-                self._tags_used('#{name}')
+                self._available_tags('#{name}')
               end
 
             EOV
@@ -115,7 +125,8 @@ module CustomFields
           def group_by_tag(name, order_by = nil)
             groups = self.only(:"#{name}_ids").group
 
-            _tags_used(name).map do |tag|
+            groups_array = _available_tags(name).map do |tag|
+              
               group = groups.select { |g| g["#{name}_ids"].include?(tag['_id']) }
               
               list  = group ? group.collect{|g| g['group'][0]} : []
@@ -135,14 +146,11 @@ module CustomFields
             end
           end
 
-          def _tags_used(name)
-            self.send(:"_raw_#{name}_tags_used").map do |tag|
-
-        
-              name = get_localized_name(tag)
-      
-              { '_id' => tag['_id'], 'name' => name }
-            end
+          def _available_tags(name)
+            Tag.available_tags.map do |tag|
+              tag_name = get_localized_name(tag)
+              { '_id' => tag['_id'], 'name' => tag_name }
+            end.sort_by{ |x| x['name']}
           end
 
           def _order_tagged_entries(list, order_by = nil)
@@ -166,21 +174,21 @@ module CustomFields
         #finds tags based on their ids or names
         def _find_tags(name, id_array_or_name_array, auto_build = false)
           found_array = []
+          locale = Mongoid::Fields::I18n.locale.to_s
+          
           id_array_or_name_array.each do |id_or_name|
-            if(id_or_name.respond_to?('downcase')) #it is a string?
-              found = self.class._tags_used(name).detect{|tag| tag['_id'] == id_or_name || tag['name'].downcase == id_or_name.downcase}
-            else
-              found = self.class._tags_used(name).detect{|tag| tag['_id'] == id_or_name || tag['name'] == id_or_name}
-            end
+            found = Tag.where({ "name.#{locale}" => /^#{id_or_name}$/i }).first
+            if(found.blank?)
+              found = Tag.where( _id: id_or_name).first
+            end            
+
             if auto_build and found.blank?
-              locale = Mongoid::Fields::I18n.locale.to_s
-              tag_hash = { '_id' => BSON::ObjectId.new, 'name' => {locale => id_or_name} }
-              self.send(:"_raw_#{name}_tags_used").append(tag_hash)     
-              localized_tag = { '_id' =>tag_hash['_id'], 'name' => id_or_name }
+              new_tag = Tag.create!(name: id_or_name)#, _id: BSON::ObjectId.new)
+              localized_tag = { '_id' =>new_tag._id, 'name' => id_or_name }
               found_array.append(localized_tag)         
             elsif !found.nil?
-              
-              found_array.append(found)
+              localized_tag = { '_id' =>found._id, 'name' => found.name }
+              found_array.append(localized_tag)
             end
           end
           found_array
@@ -202,13 +210,11 @@ module CustomFields
             tag_array.map!(&:strip).reject!(&:blank?)
           end
           tags = self._find_tags(name, tag_array, true)
+          
           self.send(:"#{name}_ids=", tags ? tags.collect{|tag| tag['_id']} : [])
         end
         
         
-        
-       
- 
       end
 
     end

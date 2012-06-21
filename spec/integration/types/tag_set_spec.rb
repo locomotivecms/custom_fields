@@ -5,7 +5,9 @@ describe CustomFields::Types::TagSet do
   before(:each) do
     @blog = create_blog
   end
-
+  
+  
+ 
   describe 'a new post' do
 
     before(:each) do
@@ -59,7 +61,7 @@ describe CustomFields::Types::TagSet do
     end
 
   end
-  
+
   
   
   describe 'an existing post' do
@@ -81,7 +83,7 @@ describe CustomFields::Types::TagSet do
     end
 
     it 'create a new tag and assigns it' do
-      tag = @blog.posts_custom_fields.detect {|f| f[:label] == "Topics"}.tags_used.build :name => 'new_tag'
+      tag = @blog.posts_custom_fields.detect {|f| f[:label] == "Topics"}.tag_class.create :name => 'new_tag'
       @blog.save
       @post = Post.find(@post._id)
       @post.topics = 'new_tag'
@@ -91,9 +93,28 @@ describe CustomFields::Types::TagSet do
       @post.topics.should include( 'new_tag')
     end
 
+  end
 
+  describe 'an saved post' do
+
+    before(:each) do
+      post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...'
+      post.topics = "topic1, topic2"
+      post.save
+      @post = Post.find(post._id)
+    end
+
+    it 'has the correct tags' do
+      @post.topics.should include("topic2", "topic1")
+      @post.topics.length.should == 2
+      @post.class.topics_available_tags.find_all{|x| x['name'] == 'topic1' || x['name'] == 'topic2'}.length.should == 2 
+      
+    end
 
   end
+
+
+
 
  describe 'group_by' do
 
@@ -139,32 +160,19 @@ describe CustomFields::Types::TagSet do
 
 
 
-
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build :label => 'stuff', :type => 'tag_set'
       field = blog.posts_custom_fields.build :label => 'Topics', :type => 'tag_set'
      
       Mongoid::Fields::I18n.locale = :en
-      @sun_tag          = field.tags_used.build :name => 'sun' 
-      @beach_tag        = field.tags_used.build :name => 'beach'
-      @lego_tag         = field.tags_used.build :name => 'lego'
-      @locomotive_tag   = field.tags_used.build :name => 'locomotive'
-      @castle_tag       = field.tags_used.build :name => 'castle'
-     
-=begin
-      field = blog.posts_custom_fields.build :label => 'Author', :type => 'select', :localized => true
+      
+      @sun_tag          = field.tag_class.create(name: 'sun') 
+      @beach_tag        = field.tag_class.create(name: 'beach')
+      @lego_tag         = field.tag_class.create(name: 'lego')
+      @locomotive_tag   = field.tag_class.create(name: 'locomotive' )
+      @castle_tag       = field.tag_class.create(name: 'castle')
 
-      @option_1 = field.select_options.build :name => 'Mister Foo'
-      @option_2 = field.select_options.build :name => 'Mister Bar'
-
-      Mongoid::Fields::I18n.locale = :fr
-
-      @option_1.name = 'Monsieur Foo'
-      @option_2.name = 'Monsieur Bar'
-
-      Mongoid::Fields::I18n.locale = :en
-=end
       blog.save & blog.reload
     end
   end

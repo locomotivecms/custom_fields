@@ -11,16 +11,16 @@ describe CustomFields::Types::TagSet do
     @blog.posts_custom_fields.first.is_relationship?.should be_false
   end
 
-  it 'stores the list of categories' do
-    @field.respond_to?(:tags_used).should be_true
+  it 'stores the list of tags' do
+    @field.respond_to?(:available_tags).should be_true
   end
 
   it 'includes the tags in the as_json method' do
-    @field.as_json['tags_used'].should_not be_empty
+    @field.as_json['available_tags'].should_not be_empty
   end
 
   it 'adds the tags when calling to_recipe' do
-    @field.to_recipe['tags_used'].should_not be_empty
+    @field.to_recipe['available_tags'].should_not be_empty
   end
 
   it 'sets a value' do
@@ -40,16 +40,20 @@ describe CustomFields::Types::TagSet do
 
   end
 
+
   context '#localize' do
 
     before(:each) do
       field = @blog.posts_custom_fields.build :label => 'Taxonomy', :type => 'tag_set', :localized => true
       Mongoid::Fields::I18n.locale = :en
-      @option_1 = field.tags_used.build :name => 'Item #1 in English'
-      @option_2 = field.tags_used.build :name => 'Item #2 in English'
+      @option_1 = field.tag_class.create :name => 'Item #1 in English'
+      @option_2 = field.tag_class.create :name => 'Item #2 in English'
       Mongoid::Fields::I18n.locale = :fr
       @option_1.name = 'Item #1 in French'
       @option_2.name = 'Item #2 in French'
+      @option_1.save
+      @option_2.save
+      
       field.valid?
       Mongoid::Fields::I18n.locale = :en
       @blog.bump_custom_fields_version(:posts)
@@ -64,7 +68,9 @@ describe CustomFields::Types::TagSet do
       post = @blog.posts.build :taxonomy => 'Item #1 in English'
       Mongoid::Fields::I18n.locale = :fr
       post.taxonomy = 'Item #2 in French'
-      post.taxonomy_ids_translations['fr'].should == [@option_2._id]
+      post.taxonomy_ids.should include(@option_2._id)
+      post.taxonomy_ids.length.should == 1
+      post.taxonomy.should == [@option_2.name]
     end
 
   end
@@ -72,7 +78,7 @@ describe CustomFields::Types::TagSet do
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       @field = blog.posts_custom_fields.build :label => 'Topics', :type => 'tag_set', :required => true
-      @field.tags_used.build :name => 'Test'
+      @field.tag_class.create :name => 'Test'
       @field.valid?
     end
   end
