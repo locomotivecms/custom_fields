@@ -27,6 +27,10 @@ describe CustomFields::TargetHelpers do
       @post.many_to_many_custom_fields.should == [%w(contributors contributor_ids)]
     end
 
+    it 'groups tag_set fields ' do
+      @post.tag_set_custom_fields.should == %w(tags)
+    end
+
   end
 
   context '#returning safe attributes' do
@@ -130,7 +134,8 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'author_picture',   'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'contributors',     'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts', 'required' => false, 'localized' => false },
           { 'name' => 'projects',         'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
-          { 'name' => 'illustrations',    'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false }
+          { 'name' => 'illustrations',    'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
+          { 'name' => 'tags',             'type' => 'tag_set', 'required' => false, 'localized' => false }
         ]})
     end
   end
