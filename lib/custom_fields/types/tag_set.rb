@@ -24,6 +24,10 @@ module CustomFields
           
           Tag.all().asc("name.#{locale}".to_sym).to_ary
         end
+        
+        def self.find_tag_by_name(tag_name, locale = Mongoid::Fields::I18n.locale.to_s)
+          Tag.where("name.#{locale}" => /^#{tag_name.strip}$/i ).first
+        end
       end
 
       module Field
@@ -47,13 +51,7 @@ module CustomFields
            Tag.available_tags
         end
 
-        def tag_set_to_recipe
-          {}
-        end
-
-        def tag_set_as_json(options = {})
-          {}
-        end
+       
 
       end
 
@@ -85,14 +83,13 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_tag_set_custom_field(klass, rule)
+             name, base_collection_name = rule['name'], "#{rule['name']}_available_tags".to_sym
             
-            name, base_collection_name = rule['name'], "#{rule['name']}_available_tags".to_sym
-            
-            inverse_name ="#{self.to_s}_#{name}"
+            inverse_name ="#{klass.to_s.sub('::', '_')}_#{name}"
             raw_name = "raw_#{name}"
             
             
-            Tag.has_and_belongs_to_many inverse_name, :class_name => self.to_s, :inverse_of => raw_name
+            Tag.has_and_belongs_to_many inverse_name, :class_name => klass.to_s, :inverse_of => raw_name
             
             klass.has_and_belongs_to_many raw_name, :class_name => "CustomFields::Types::TagSet::Tag", :inverse_of =>  inverse_name
             
@@ -110,7 +107,7 @@ module CustomFields
               end
               
               def self.tag_inverse_relation_#{name}
-                "#{self.to_s}_#{name}"
+                "#{inverse_name}"
               end
 
             EOV
@@ -196,7 +193,7 @@ module CustomFields
           locale = Mongoid::Fields::I18n.locale.to_s
           
           tag_name_array.each do |tag_name|
-            tag = Tag.where("name.#{locale}" => /^#{tag_name}$/i ).first
+            tag = Tag.find_tag_by_name(tag_name, locale)
             self.send(:"raw_#{field_name}") << (tag.nil? ? Tag.create(:name => tag_name) : tag)
           end
         end
