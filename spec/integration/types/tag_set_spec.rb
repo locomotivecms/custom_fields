@@ -16,7 +16,8 @@ describe CustomFields::Types::TagSet do
 
     it 'sets the tags' do
       @post.topics = 'locomotive'
-      @post.attributes['topics_ids'].should include(@locomotive_tag._id)
+      @post.save
+      @post.topic_ids.should include(@locomotive_tag._id)
     end
 
     it 'adds a new tag to the list of used tags' do
@@ -31,7 +32,7 @@ describe CustomFields::Types::TagSet do
 
     it 'can have no tags' do
       @post.topics = ""
-      @post.topics.should == ""
+      @post.topics.should == []
     end
 
     it 'can be set via an array' do
@@ -41,13 +42,14 @@ describe CustomFields::Types::TagSet do
 
     it 'returns the name of the tag' do
       @post.topics = ""
-      @post.topics_ids.append(@locomotive_tag._id)
+      @post.topic_ids.append(@locomotive_tag._id)
+      @post.save
       @post.topics.should include('locomotive')
     end
 
     it 'ignores the case of tags' do
       @post.topics = 'LocomOtive'
-      @post.attributes['topics_ids'].should include(@locomotive_tag._id)
+      @post.topic_ids.should include(@locomotive_tag._id)
     end
     
     it 'can have a tag field that is not named topics' do
@@ -57,7 +59,7 @@ describe CustomFields::Types::TagSet do
 
     it 'ignores empty tags' do
       @post.topics = 'this,is,,not,blank'
-      @post.attributes['topics_ids'].length.should == 4
+      @post.topic_ids.length.should == 4
     end
 
   end
@@ -67,7 +69,7 @@ describe CustomFields::Types::TagSet do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :topics_ids => [@beach_tag._id, @castle_tag._id]
+      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :raw_topic_ids => [@beach_tag._id, @castle_tag._id]
       @post = Post.find(@post._id)
     end
 
@@ -76,7 +78,7 @@ describe CustomFields::Types::TagSet do
     end
 
     it 'assigns a new tag' do
-      @post.topics_ids.append(@lego_tag._id)
+      @post.topic_ids.append(@lego_tag._id)
       @post.save
       @post = Post.find(@post._id)
       @post.topics.should include("lego")
@@ -87,7 +89,7 @@ describe CustomFields::Types::TagSet do
       @blog.save
       @post = Post.find(@post._id)
       @post.topics = 'new_tag'
-      @post.attributes['topics_ids'].should include(tag._id)
+      @post.attributes['raw_topic_ids'].should include(tag._id)
       @post.save
       @post = Post.find(@post._id)
       @post.topics.should include( 'new_tag')
@@ -119,13 +121,30 @@ describe CustomFields::Types::TagSet do
  describe 'group_by' do
 
     before(:each) do
-      @blog.posts.create :title => 'Hello world 1(sun, beach)', :body => 'Lorem ipsum...', :topics_ids => [@sun_tag._id, @beach_tag._id]
-      @blog.posts.create :title => 'Hello world 2(castle, lego)', :body => 'Lorem ipsum...', :topics_ids => [@castle_tag._id, @lego_tag._id]
-      @blog.posts.create :title => 'Hello world 3 (locomotive)', :body => 'Lorem ipsum...', :topics_ids => [@locomotive_tag._id]
-      @blog.posts.create :title => 'Hello world 4 (beach, castle, locomotive)', :body => 'Lorem ipsum...', :topics_ids => [@locomotive_tag._id, @beach_tag._id, @castle_tag._id]
-      @blog.posts.create :title => 'Hello world 5 (castle)', :body => 'Lorem ipsum...',  :topics_ids => [@castle_tag._id]
-      @blog.posts.create :title => 'Hello world (_none_)', :body => 'Lorem ipsum...'
-
+      p1 = @blog.posts.create :title => 'Hello world 1(sun, beach)', :body => 'Lorem ipsum...'
+      p2 = @blog.posts.create :title => 'Hello world 2(castle, lego)', :body => 'Lorem ipsum...' 
+      p3 = @blog.posts.create :title => 'Hello world 3 (locomotive)', :body => 'Lorem ipsum...'
+      p4 = @blog.posts.create :title => 'Hello world 4 (beach, castle, locomotive)', :body => 'Lorem ipsum...'
+      p5 = @blog.posts.create :title => 'Hello world 5 (castle)', :body => 'Lorem ipsum...'
+      p6 = @blog.posts.create :title => 'Hello world (_none_)', :body => 'Lorem ipsum...'
+      
+      p1.raw_topics.concat([@sun_tag, @beach_tag])
+      p1.save
+      
+      p2.raw_topics.concat([@castle_tag, @lego_tag])
+      p2.save
+      
+      p3.raw_topics << @locomotive_tag
+      p3.save
+      
+      p4.raw_topics.concat([@locomotive_tag, @beach_tag, @castle_tag])
+      p4.save
+      
+      p5.raw_topics.concat([@castle_tag])
+      p5.save
+      
+      
+      
       klass = @blog.klass_with_custom_fields(:posts)
       @groups = klass.group_by_tag(:topics)
     end

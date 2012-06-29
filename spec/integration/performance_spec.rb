@@ -125,15 +125,13 @@ describe 'Performance' do
     number_available_tags = available_tags.length;
     
     n.times do |i|
-       p = blog.posts.create :title => "Hello world #{i}", :body => 'Lorem ipsum...'
        number_of_tags_to_use = rand(number_available_tags)
        instance_tag_list = []
        
        for i in 0..number_of_tags_to_use
          instance_tag_list << available_tags[rand(number_available_tags)]
        end
-       p.topics = instance_tag_list
-       p.save
+       blog.posts.create :title => "Hello world #{i}", :body => 'Lorem ipsum...', :topics => instance_tag_list
     end
   end
 

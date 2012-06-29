@@ -15,14 +15,6 @@ describe CustomFields::Types::TagSet do
     @field.respond_to?(:available_tags).should be_true
   end
 
-  it 'includes the tags in the as_json method' do
-    @field.as_json['available_tags'].should_not be_empty
-  end
-
-  it 'adds the tags when calling to_recipe' do
-    @field.to_recipe['available_tags'].should_not be_empty
-  end
-
   it 'sets a value' do
     @post.topics = 'Test'
     @post.topics.should == ['Test']
@@ -31,7 +23,7 @@ describe CustomFields::Types::TagSet do
   describe 'validation' do
 
     [nil, ''].each do |value|
-      it "should not valid if the value is #{value.inspect}" do
+      it "should not be valid if the value is #{value.inspect}" do
         @post.topics = value
         @post.valid?.should be_false
         @post.errors[:topics].should_not be_blank
