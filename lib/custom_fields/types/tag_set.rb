@@ -48,17 +48,11 @@ module CustomFields
         end
 
         def tag_set_to_recipe
-          # {
-            # 'available_tags' => self.ordered_available_tags.map do |tag|
-              # { '_id' => tag._id, 'name' => tag.name_translations }
-            # end
-          # }
           {}
         end
 
         def tag_set_as_json(options = {})
-         # { 'available_tags' => self.ordered_available_tags.map(&:as_json) }
-         {}
+          {}
         end
 
       end
@@ -143,26 +137,14 @@ module CustomFields
  
                { :name => get_localized_name(tag), :entries => self._order_tagged_entries(list, order_by) }.with_indifferent_access
             end.tap do |array|
-                empty_group = groups.select { |g| g[ids_field].empty? }
+              empty_group = groups.select { |g| g[ids_field].empty? }
                  
-               if not empty_group.empty? # orphan entries ?
-                 empty = { :name => nil, :entries => [] }.with_indifferent_access
+              if not empty_group.empty? # orphan entries ?
+                empty = { :name => nil, :entries => [] }.with_indifferent_access
                  list  = empty_group.collect{|g| g['group'][0]}
                  empty[:entries] = self._order_tagged_entries(list, order_by)
                  array << empty
                end
- 
- 
-            # inverse_name =self.send("tag_inverse_relation_#{name.to_s}")
-            # Tag.available_tags.map do |tag|
-              # { :name => get_localized_name(tag), :entries => self._order_tagged_entries(tag.send("#{inverse_name}"), order_by) }.with_indifferent_access
-            # end.tap do |array|
-              # entries_without_tags =  self.where(ids_field => []).to_ary
-#                 
-              # if not entries_without_tags.empty? # orphan entries ?
-                # empty = { :name => nil, :entries => self._order_tagged_entries(entries_without_tags, order_by) }.with_indifferent_access
-                # array << empty
-              # end
             end
           end
 
@@ -193,38 +175,13 @@ module CustomFields
 
         #finds tags based on their names, or create it if it doesn't exist
         def _find_tags(names)
-          
           names.collect{|tag_name| Tag.find_or_create_by(name: tag_name)}
-          
-          
-          # found_array = []
-          # locale = Mongoid::Fields::I18n.locale.to_s
-#           
-          # id_array_or_name_array.each do |id_or_name|
-            # found = Tag.where({ "name.#{locale}" => /^#{id_or_name}$/i }).first
-            # if(found.blank?)
-              # found = Tag.where( _id: id_or_name).first
-            # end            
-# 
-            # if auto_build and found.blank?
-              # new_tag = Tag.create!(name: id_or_name)#, _id: BSON::ObjectId.new)
-              # localized_tag = { '_id' =>new_tag._id, 'name' => id_or_name }
-              # found_array.append(localized_tag)         
-            # elsif !found.nil?
-              # localized_tag = { '_id' =>found._id, 'name' => found.name }
-              # found_array.append(localized_tag)
-            # end
-          # end
-          # found_array
         end
 
         #gets an array of tag names based on the how the object is tagged
         def _get_tags(field_name)
           _tags_ids(field_name).collect { |id| Tag.where(:_id => id).first.name}
           
-          #tag_list = self._find_tags(name, self._tags_ids(name))
-          
-          #!tag_list.empty? ? tag_list.collect{|tag| tag['name']} : ""
         end
 
         #sets the tags (and makes new ones!) based on the value given.. ?
@@ -242,10 +199,6 @@ module CustomFields
             tag = Tag.where("name.#{locale}" => /^#{tag_name}$/i ).first
             self.send(:"raw_#{field_name}") << (tag.nil? ? Tag.create(:name => tag_name) : tag)
           end
-          
-          #self._find_tags(tag_name_array) 
-          
-          #self.send(:"#{name.singularize}_ids=", tags )#? tags.collect{|tag| tag['_id']} : [])
         end
         
         
