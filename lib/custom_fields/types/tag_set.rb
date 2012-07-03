@@ -9,13 +9,15 @@ module CustomFields
         include Mongoid::Document
 
         field :name,      :localize => true
-        field :_id,       :type => BSON::ObjectId, :localize => false
+        field :_slug,     :localize => false 
         
+        before_validation :set_slug
+    
         validates_presence_of :name
-        validates_uniqueness_of :name, :_id
+        validates_uniqueness_of :name, :_slug
 
         def as_json(options = nil)
-          super :methods => %w(_id name)
+          super :methods => %w(_id name _slug)
         end
         
         
@@ -28,6 +30,56 @@ module CustomFields
         def self.find_tag_by_name(tag_name, locale = Mongoid::Fields::I18n.locale.to_s)
           Tag.where("name.#{locale}" => /^#{tag_name.strip}$/i ).first
         end
+        
+        def self.find_tag_by_slug(slug)
+          Tag.where("_slug" => slug ).first
+        end
+        
+        
+        def self.class_str_to_field_name(klass)
+          klass.to_s.gsub("::", "-")
+        end
+        
+        def self.make_inverse_field(klass, name)
+          class_str_to_field_name(klass)+"__#{name}"
+        end
+        
+        def self.field_name_to_class_str(field_name)
+          field_name.split("__")[0].to_s.gsub("-","::")
+        end
+        
+        def self.slugify_name(tag_name)
+          tag_name.parameterize('-')
+        
+        end
+        
+        
+      protected
+        
+        # Sets the slug of the instance by using the value of the highlighted field
+        # (if available). If a sibling content instance has the same permalink then a
+        # unique one will be generated
+        def set_slug
+          self._slug = Tag.slugify_name(self.name) if self._slug.blank?
+    
+          if self._slug.present?
+            self._slug = self.next_unique_slug if self.slug_already_taken?
+          end
+        end
+    
+        # Return the next available unique slug as a string
+        def next_unique_slug
+          slug        = self._slug.gsub(/-\d*$/, '')
+          last_slug   = self.class.where(:_id.ne => self._id, :_slug => /^#{slug}-?\d*?$/i).order_by(:_slug).last._slug
+          next_number = last_slug.scan(/-(\d)$/).flatten.first.to_i + 1
+          [slug, next_number].join('-')
+        end
+        
+        def slug_already_taken?
+          self.class.where(:_id.ne => self._id, :_slug => self._slug).any?
+        end
+        
+        
       end
 
       module Field
@@ -83,9 +135,8 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_tag_set_custom_field(klass, rule)
-             name, base_collection_name = rule['name'], "#{rule['name']}_available_tags".to_sym
-            
-            inverse_name ="#{klass.to_s.sub('::', '_')}_#{name}"
+            name, base_collection_name = rule['name'], "#{rule['name']}_available_tags".to_sym
+            inverse_name =Tag.make_inverse_field(klass,name)
             raw_name = "raw_#{name}"
             
             
