@@ -37,7 +37,7 @@ module CustomFields
         
         
         def self.class_str_to_field_name(klass)
-          klass.to_s.gsub("::", "-")
+          klass.to_s.gsub("::", "_")
         end
         
         def self.make_inverse_field(klass, name)
@@ -45,7 +45,7 @@ module CustomFields
         end
         
         def self.field_name_to_class_str(field_name)
-          field_name.split("__")[0].to_s.gsub("-","::")
+          field_name.split("__")[0].to_s.gsub("_","::")
         end
         
         def self.slugify_name(tag_name)
