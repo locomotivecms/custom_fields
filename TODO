@@ -29,3 +29,21 @@ content_type_hashes.each do |content_type_hash|
 end
 
 
+
+=== EXPERIMENTAL ===
+
+x posts.build => doit rajouter le custom_fields_recipe automatiquement
+x target custom fields
+  x ajoute des methods a la classe target => Recipe ?
+x types:
+  x picker
+  x has_many / belongs_to
+  - tags: https://github.com/wilkerlucio/mongoid_taggable
+- cases not handled-
+  - when we modify the name of a belongs_to field, we also need to check if there are has_many relationships out of there
+  - localized field -> non localized
+  - non localized field -> localized
+
+- upgrade to rails 3.2
+  - carrierwave: https://github.com/jnicklas/carrierwave/pull/536
+

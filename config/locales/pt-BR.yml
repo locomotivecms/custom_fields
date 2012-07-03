@@ -7,3 +7,4 @@ pt-BR:
       boolean: Checkbox
       date: Data
       file: Arquivo
+      tag_set: Tags

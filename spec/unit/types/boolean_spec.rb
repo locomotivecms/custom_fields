@@ -2,82 +2,80 @@ require 'spec_helper'
 
 describe CustomFields::Types::Boolean do
 
-  context 'on field class' do
+  before(:each) do
+    @blog = build_blog
+    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+  end
 
-    before(:each) do
-      @field = CustomFields::Field.new
+  it 'is not considered as a relationship field type' do
+    @blog.posts_custom_fields.first.is_relationship?.should be_false
+  end
+
+  context '#true' do
+
+    it 'sets value from an integer' do
+      @post.visible = 1
+      @post.visible.should == true
     end
 
-    it 'returns true if it is a Boolean' do
-      @field.kind = 'boolean'
-      @field.boolean?.should be_true
-    end
+    it 'sets value from a string' do
+      @post.visible = '1'
+      @post.visible.should == true
 
-    it 'returns false if it is not a Boolean' do
-      @field.kind = 'string'
-      @field.boolean?.should be_false
+      @post.visible = 'true'
+      @post.visible.should == true
     end
 
   end
 
-  context 'on target class' do
+  context '#false' do
 
-    before(:each) do
-      @project = build_project
+    it 'is false by default' do
+      @post.visible.should == false
+      @post.visible?.should == false
     end
 
-    context '#setting' do
+    it 'sets value from an integer' do
+      @post.visible = 0
+      @post.visible.should == false
+    end
 
-      context '#true' do
+    it 'sets value from a string' do
+      @post.visible = '0'
+      @post.visible.should == false
 
-        it 'sets value from an integer' do
-          @project.self_metadata.active = 1
-          @project.self_metadata.active.should == true
-          @project.self_metadata.field_1.should == true
-        end
-
-        it 'sets value from a string' do
-          @project.self_metadata.active = '1'
-          @project.self_metadata.active.should == true
-          @project.self_metadata.field_1.should == true
-
-          @project.self_metadata.active = 'true'
-          @project.self_metadata.active.should == true
-          @project.self_metadata.field_1.should == true
-        end
-
-      end
-
-      context '#false' do
-
-        it 'sets value from an integer' do
-          @project.self_metadata.active = 0
-          @project.self_metadata.active.should == false
-          @project.self_metadata.field_1.should == false
-        end
-
-        it 'sets value from a string' do
-          @project.self_metadata.active = '0'
-          @project.self_metadata.active.should == false
-          @project.self_metadata.field_1.should == false
-
-          @project.self_metadata.active = 'false'
-          @project.self_metadata.active.should == false
-          @project.self_metadata.field_1.should == false
-        end
-
-      end
-
+      @post.visible = 'false'
+      @post.visible.should == false
     end
 
   end
 
-  def build_project
-    Project.new.tap do |project|
-      project.self_metadata_custom_fields.build(:label => 'Active', :kind => 'Boolean', :_name => 'field_1').tap do |field|
-        field.stubs(:persisted?).returns(true)
-      end
-      project.rebuild_custom_fields_relation :self_metadata
+  context '#localize' do
+
+    before(:each) do
+      field = @blog.posts_custom_fields.build :label => 'Published', :type => 'boolean', :localized => true
+      field.valid?
+      @blog.bump_custom_fields_version(:posts)
+    end
+
+    it 'serializes / deserializes' do
+      post = @blog.posts.build :published => true
+      post.published.should be_true
+    end
+
+    it 'serializes / deserializes in a different locale' do
+      post = @blog.posts.build :published => true
+      Mongoid::Fields::I18n.locale = :fr
+      post.published = false
+      post.published_translations['fr'].should == false
+    end
+
+  end
+
+  def build_blog
+    Blog.new(:name => 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build :label => 'Visible', :type => 'boolean'
+      field.valid?
     end
   end
 

@@ -1,11 +1,10 @@
 class Person
 
   include Mongoid::Document
-  include Mongoid::Timestamps
-  include Mongoid::TargetCustomFields
+  include CustomFields::Target
 
-  field :full_name
+  field :name
 
-  referenced_in :project, :inverse_of => :people
+  belongs_to :blog
 
 end

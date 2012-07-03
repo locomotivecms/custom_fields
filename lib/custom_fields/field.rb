@@ -1,226 +1,95 @@
 module CustomFields
 
   class Field
+
     include ::Mongoid::Document
     include ::Mongoid::Timestamps
 
-    # types ##
-    include Types::Default
-    include Types::String
-    include Types::Text
-    include Types::Category
-    include Types::Boolean
-    include Types::Date
-    include Types::File
-    include Types::HasOne
-    include Types::HasMany
+    ## types ##
+    %w(default string text date boolean file select relationship_default belongs_to has_many many_to_many tag_set).each do |type|
+      include "CustomFields::Types::#{type.classify}::Field".constantize
+    end
 
     ## fields ##
     field :label
-    field :_alias
-    field :_name
-    field :kind
+    field :name
+    field :type
     field :hint
-    field :position, :type => Integer, :default => 0
-    field :required, :type => Boolean, :default => false
+    field :position,  :type => Integer, :default => 0
+    field :required,  :type => Boolean, :default => false
+    field :localized, :type => Boolean, :default => false
 
     ## validations ##
-    validates_presence_of   :label, :kind
-    validates_exclusion_of  :_alias, :in => lambda { |f| CustomFields.options[:reserved_aliases].map(&:to_s) }
-    validates_format_of     :_alias, :with => /^[a-z]([A-Za-z0-9_]+)?$/
-    validate                :uniqueness_of_label_and_alias
-
-    ## other accessors ##
-    attr_accessor :parentized_done # for performance purpose
+    validates_presence_of   :label, :type
+    validates_exclusion_of  :name, :in => lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
+    validates_format_of     :name, :with => /^[a-z]([A-Za-z0-9_]+)?$/
+    validate                :uniqueness_of_label_and_name
 
     ## callbacks ##
-    before_validation :set_alias
-    before_save       :invalidate_proxy_klass
+    before_validation :set_name
 
     ## methods ##
 
-    # Returns the type class related to this field
+    # Builds the mongodb updates based on
+    # the new state of the field.
+    # Call a different method if the field has a different behaviour.
     #
-    # @return [ Class ] The class defining the field type
+    # @param [ Hash ] memo Store the updates
     #
-    def field_type
-      self.class.field_types[self.safe_kind.to_sym]
-    end
+    # @return [ Hash ] The memo object upgraded
+    #
+    def collect_diff(memo)
+      method_name = :"collect_#{self.type}_diff"
 
-    # Enhance a document class by applying to it the information stored
-    # in the type related to this field
-    #
-    # @param [ Class ] klass The document class
-    #
-    def apply(klass)
-      klass.field self._name, :type => self.field_type if self.field_type
-
-      apply_method_name = :"apply_#{self.safe_kind}_type"
-
-      if self.respond_to?(apply_method_name)
-        self.send(apply_method_name, klass)
+      if self.respond_to?(method_name)
+        self.send(method_name, memo)
       else
-        apply_default_type(klass)
-      end
-
-      validation_method_name = :"add_#{self.safe_kind}_validation"
-
-      if self.respond_to?(validation_method_name)
-        self.send(validation_method_name, klass)
-      else
-        add_default_validation(klass)
+        collect_default_diff(memo)
       end
     end
 
-    # Make sure it returns a valid alias
+    # Returns the information (name, type, required, ...etc) needed to build
+    # the custom class.
+    # That will be stored into the target instance.
     #
-    # @return [ String ] the alias
+    # @return [ Hash ] The hash
     #
-    def safe_alias
-      self.set_alias
-      self._alias
+    def to_recipe
+      method_name       = :"#{self.type}_to_recipe"
+      custom_to_recipe  = self.send(method_name) rescue {}
+
+      { 'name' => self.name, 'type' => self.type, 'required' => self.required?, 'localized' => self.localized? }.merge(custom_to_recipe)
     end
 
-    # Returns the kind (or type) of the current field.
-    # Because of compatibility purpose, prior version of CustomFields used to have the value of kind in uppercase.
-    #
-    # @return [ String ] the kind
-    #
-    def safe_kind
-      self.kind.downcase
-    end
+    def as_json(options = {})
+      method_name     = :"#{self.type}_as_json"
+      custom_as_json  = self.send(method_name) rescue {}
 
-    # Returns the name of the relation binding this field and the custom_fields in the parent class
-    #
-    # @example:
-    #   class Company
-    #     embeds_many :employees
-    #     custom_fields_for :employees
-    #   end
-    #
-    #   field = company.employees_custom_fields.build :label => 'His/her position', :_alias => 'position', :kind => 'string'
-    #   field.custom_fields_relation_name == 'employees'
-    #
-    # @return [ String ] the relation's name
-    #
-    def custom_fields_relation_name
-      self.metadata.name.to_s.gsub('_custom_fields', '')
-    end
-
-    # Checks if the field is valid without running the callback which marks
-    # the proxy class as invalidated
-    #
-    # @return [ Boolean ] true if the field has no errors, false otherwise
-    def quick_valid?
-      # true
-      # CustomFields::Field.without_callback(:validation, :after, :invalidate_proxy_klass) do
-      CustomFields::Field.without_callback(:save, :before, :invalidate_proxy_klass) do
-        self.valid?
-      end
-    end
-
-    # Destroys a field and saves the parent too in order to keep track of the changes
-    # for the parent (for instance, the version has to be bumped).
-    #
-    # @param [ Hash ] options Options to pass to destroy.
-    #
-    # @return [ true, false ] True if successful, false if not.
-    #
-    def destroy(options = {})
-      super.tap do
-        self.mark_proxy_klass_flag_as_invalidated
-        self._parent.save
-      end
-    end
-
-    # Collects all the important attributes of this field.
-    # It also accepts an extra hash which will be merged with
-    # the one built by this method (by default, this is an empty hash)
-    #
-    # @param [ Hash ] more The extra hash
-    #
-    # @return [ Hash ] the hash
-    #
-    def to_hash(more = {})
-      self.fields.keys.inject({}) do |memo, meth|
-        memo[meth] = self.send(meth.to_sym); memo
-      end.tap do |hash|
-        self.class.field_types.keys.each do |type|
-          if self.respond_to?(:"#{type}_to_hash")
-            hash.merge!(self.send(:"#{type}_to_hash"))
-          end
-        end
-      end.merge({
-        'id'          => self._id,
-        'new_record'  => self.new_record?,
-        'errors'      => self.errors,
-        'kind_name'   => I18n.t("custom_fields.kind.#{self.safe_kind}")
-      }).merge(more)
-    end
-
-    # Overides the default behaviour of the to_json method by using the to_hash method
-    #
-    # @return [ String ] the json object
-    #
-    def to_json
-      ActiveSupport::JSON.encode(self.to_hash)
+      super(options).merge(custom_as_json)
     end
 
     protected
 
-    def uniqueness_of_label_and_alias
+    def uniqueness_of_label_and_name
       if self.siblings.any? { |f| f.label == self.label && f._id != self._id }
         self.errors.add(:label, :taken)
       end
 
-      if self.siblings.any? { |f| f._alias == self._alias && f._id != self._id }
-        self.errors.add(:_alias, :taken)
+      if self.siblings.any? { |f| f.name == self.name && f._id != self._id }
+        self.errors.add(:name, :taken)
       end
     end
 
-    def set_unique_name!
-      self._name ||= "custom_field_#{self.increment_counter!}"
-    end
+    def set_name
+      return if self.label.blank? && self.name.blank?
 
-    def set_alias
-      return if self.label.blank? && self._alias.blank?
-
-      if self._alias.blank?
-        self._alias = self.label.parameterize('_').gsub('-', '_').downcase
+      if self.name.blank?
+        self.name = self.label.parameterize('_').gsub('-', '_').downcase
       end
-    end
-
-    def increment_counter!
-      name = self.custom_fields_relation_name
-      self._parent.bump_custom_fields_counter(name)
     end
 
     def siblings
       self._parent.send(self.metadata.name)
-    end
-
-    def parentize_with_custom_fields(object)
-      return if self.parentized_done
-
-      parentize_without_custom_fields(object)
-
-      self.send(:set_unique_name!)
-
-      self.parentized_done = true
-    end
-    alias_method_chain :parentize, :custom_fields
-
-    def invalidate_proxy_klass
-      # puts "#{self._name} / #{self._alias} _ invalidate_proxy_klass !!! #{self.flagged_for_destroy?} / #{self.destroyed?}"
-      if self.changed? || self.flagged_for_destroy?
-        self.mark_proxy_klass_flag_as_invalidated
-      end
-    end
-
-    def mark_proxy_klass_flag_as_invalidated
-      # puts "\t*** [mark_proxy_klass_flag_as_invalidated] called for '#{self._name}'"
-      name = self.custom_fields_relation_name
-      self._parent.mark_klass_with_custom_fields_as_invalidated(name)
     end
 
   end

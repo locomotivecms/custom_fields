@@ -1,49 +1,57 @@
 module CustomFields
+
   module Types
+
     module Date
 
-      extend ActiveSupport::Concern
+      module Field; end
 
-      included do
-        register_type :date, ::Date
-      end
+      module Target
 
-      module InstanceMethods
+        extend ActiveSupport::Concern
 
-        def apply_date_type(klass)
+        module ClassMethods
 
-          klass.class_eval <<-EOF
+          # Adds a date field
+          #
+          # @param [ Class ] klass The class to modify
+          # @param [ Hash ] rule It contains the name of the field and if it is required or not
+          #
+          def apply_date_custom_field(klass, rule)
+            name = rule['name']
 
-            def #{self.safe_alias}
-              self.#{self._name}
-            end
+            klass.field name, :type => ::Date, :localize => rule['localized'] || false
 
-            def #{self.safe_alias}=(value)
-              if value.is_a?(::String) && !value.blank?
-                date = ::Date._strptime(value, I18n.t('date.formats.default'))
-                value = ::Date.new(date[:year], date[:mon], date[:mday])
-              end
+            # other methods
+            klass.send(:define_method, :"formatted_#{name}") { _get_formatted_date(name) }
+            klass.send(:define_method, :"formatted_#{name}=") { |value| _set_formatted_date(name, value) }
 
-              self.#{self._name} = value
-            end
-
-            def formatted_#{self.safe_alias}
-              self.#{self._name}.strftime(I18n.t('date.formats.default')) rescue nil
-            end
-
-            alias formatted_#{self.safe_alias}= #{self.safe_alias}=
-          EOF
-
-          def add_date_validation(klass)
-            if self.required?
-              klass.validates_presence_of self.safe_alias.to_sym, :"formatted_#{self.safe_alias}"
+            if rule['required']
+              klass.validates_presence_of name, :"formatted_#{name}"
             end
           end
 
         end
 
+        protected
+
+        def _set_formatted_date(name, value)
+          if value.is_a?(::String) && !value.blank?
+            date  = ::Date._strptime(value, I18n.t('date.formats.default'))
+            value = ::Date.new(date[:year], date[:mon], date[:mday])
+          end
+
+          self.send(:"#{name}=", value)
+        end
+
+        def _get_formatted_date(name)
+          self.send(name.to_sym).strftime(I18n.t('date.formats.default')) rescue nil
+        end
+
       end
 
     end
+
   end
+
 end

@@ -3,273 +3,106 @@ require 'spec_helper'
 describe CustomFields::Types::HasMany do
 
   before(:each) do
-    create_client
-    create_company
-    create_project
-    build_company_custom_field
-    add_project_reverse_has_many_field
-    create_tasks
-    create_employees
-
-    @task = @project.tasks.build :title => 'Managing team'
+    @blog     = create_blog
+    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :published => true
+    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...', :published => false
+    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...', :published => true
   end
 
-  describe 'simple' do
+  describe 'a new author' do
 
-    it 'attaches many different locations to a task' do
-      attach_locations_to_task_and_save
-
-      @task.locations.should_not be_empty
-      @task.locations.collect(&:_id).should == [@location_1._id, @location_2._id]
+    before(:each) do
+      @author = @blog.people.build :name => 'John Doe'
     end
 
-    it 'changes the order of the locations' do
-      attach_locations_to_task_and_save
-
-      @task.locations = [@location_2._id, @location_1._id]
-
-      @task.save && @task = Mongoid.reload_document(@task)
-
-      @task.locations.first.name.should == 'dev lab'
+    it 'sets the posts' do
+      save_author @author, [@post_1, @post_2]
+      @author.posts.map(&:title).should == ['Hello world', 'High and Dry']
     end
 
-    it 'resets the locations by passing a blank value' do
-      attach_locations_to_task_and_save
-
-      @task.locations = ''
-
-      @task.save && @task = Mongoid.reload_document(@task)
-
-      @task.locations.should be_empty
+    it 'increments position thanks the belongs_to relationship' do
+      save_author @author, [@post_1, @post_2]
+      @post_1.reload.position_in_author.should == 1
+      @post_2.reload.position_in_author.should == 2
     end
 
-    it 'does not include elements which have been removed' do
-      attach_locations_to_task_and_save
-
-      @task.locations = [@location_2._id, @location_1._id]
-
-      @task.save
-
-      @location_1.destroy
-
-      @task = Mongoid.reload_document(@task)
-
-      @task.locations.size.should == 1
-    end
-
-    it 'returns an empty array if the target class does not exist anymore' do
-      attach_locations_to_task_and_save
-
-      @client.destroy
-
-      @task = Mongoid.reload_document(@task)
-
-      @task.locations.should be_empty
+    it 'retrieves posts based on their position' do
+      save_author @author, [@post_1.reload, @post_2.reload]
+      @post_1.reload.update_attributes :position_in_author => 4
+      @author = Person.find(@author._id)
+      @author.posts.map(&:title).should == ['High and Dry', 'Hello world']
     end
 
   end
 
-  describe 'reverse' do
+  describe 'an existing author' do
 
-    it 'specifies whether it is a reverse has_many field' do
-      developers_field = @task_1.class.custom_fields.detect { |f| f._alias == 'developers' }
-      locations_field = @task_1.class.custom_fields.detect { |f| f._alias == 'locations' }
-
-      developers_field.reverse_has_many?.should be_true
-      locations_field.reverse_has_many?.should be_false
+    before(:each) do
+      @author = @blog.people.create :name => 'John Doe'
+      save_author @author, [@post_1, @post_2]
+      @author = Person.find(@author._id)
     end
 
-    it 'returns all owned items in the target model' do
-      @task_1.developers.reload
-
-      @task_1.developers.ids.should include(@employee_1._id)
-      @task_1.developers.values.select { |empl|
-        empl._id == @employee_1._id
-      }.should_not be_empty
-
-      @task_1.developers.ids.should include (@employee_2._id)
-      @task_1.developers.values.select { |empl|
-        empl._id == @employee_2._id
-      }.should_not be_empty
-
-      @task_2.developers.reload
-
-      @task_2.developers.ids.should include(@employee_3._id)
-      @task_2.developers.values.select { |empl|
-        empl._id == @employee_3._id
-      }.should_not be_empty
+    it 'returns the titles of the posts' do
+      @author.posts.map(&:title).should == ['Hello world', 'High and Dry']
     end
 
-    it 'returns an empty array if there are no owned items' do
-      @task_3.developers.values.should be_empty
-      @task_3.developers.ids.should be_empty
-    end
-
-    it 'does not include elements with a different owner' do
-      @task_1.developers.ids.should_not include(@employee_3._id)
-      @task_1.developers.values.select { |empl|
-        empl._id == @employee_3._id
-      }.should be_empty
-
-      @task_2.developers.ids.should_not include(@employee_1._id)
-      @task_2.developers.values.select { |empl|
-        empl._id == @employee_1._id
-      }.should be_empty
-
-      @task_2.developers.ids.should_not include(@employee_2._id)
-      @task_2.developers.values.select { |empl|
-        empl._id == @employee_2._id
-      }.should be_empty
-    end
-
-    it 'does not include elements with no owner' do
-      @task_1.developers.ids.should_not include(@employee_4)
-      @task_1.developers.values.select { |empl|
-        empl._id == @employee_4._id
-      }.should be_empty
-
-      @task_2.developers.ids.should_not include(@employee_4)
-      @task_2.developers.values.select { |empl|
-        empl._id == @employee_4._id
-      }.should be_empty
-    end
-
-    it 'allows adding objects with no owner or correct owner' do
-      employee_5 = @company.employees.build :full_name => 'Bob'
-      @task_1.developers << employee_5
-      employee_5.task.should be_nil
-
-      employee_7 = @company.employees.build :full_name => 'George', :task => @task_2
-      lambda{@task_1.developers << employee_7}.should raise_error
-    end
-
-    it 'allows updating owned objects' do
-      @task_1.developers.reload
-
-      @task_1.developers.update([@employee_2, @employee_4])
-
-      @task_1.save!
-
-      reload_employees
-
-      @employee_1.task.should be_nil
-      @employee_2.task._id.should == @task_1._id
-      @employee_3.task._id.should_not == @task_1._id
-      @employee_4.task._id.should == @task_1._id
-
-      @task_1.developers.ids.should_not include(@employee_1._id)
-      @task_1.developers.ids.should include(@employee_2._id)
-      @task_1.developers.ids.should_not include(@employee_3._id)
-      @task_1.developers.ids.should include(@employee_4._id)
-    end
-
-    it 'changes the order' do
-      @task_1.developers.reload
-
-      @task_1.developers.update([@employee_4, @employee_3, @employee_2, @employee_1])
-
-      @task_1.save!
-
-      @task_1.developers.ids.should == [@employee_4, @employee_3, @employee_2, @employee_1].collect(&:_id)
-      @task_1.developers.first.custom_field_1_position.should == 0
-      @task_1.developers.last.custom_field_1_position.should == 3
-
-      @task_1 = @task_1._parent.reload.tasks.find(@task_1._id) # reload task
-
-      @task_1.developers.first.custom_field_1_position.should == 0
-      @task_1.developers.last.custom_field_1_position.should == 3
-    end
-
-    it 'allows assignment to custom field' do
-      @task_1.developers.reload
-
-      @task_1.developers = [@employee_2, @employee_4]
-
-      @task_1.save!
-
-      reload_employees
-
-      @employee_1.task.should be_nil
-      @employee_2.task._id.should == @task_1._id
-      @employee_3.task._id.should_not == @task_1._id
-      @employee_4.task._id.should == @task_1._id
-
-      @task_1.developers.ids.should_not include(@employee_1._id)
-      @task_1.developers.ids.should include(@employee_2._id)
-      @task_1.developers.ids.should_not include(@employee_3._id)
-      @task_1.developers.ids.should include(@employee_4._id)
+    it 'sets new posts instead' do
+      @author.posts.clear
+      save_author @author, [@post_3]
+      @author = Person.find(@author._id)
+      @author.posts.map(&:title).should == ['Nude']
     end
 
   end
 
-  # ___ helpers ___
+  describe 'filtering/ordering posts' do
 
-  def attach_locations_to_task_and_save
-    @task.locations << @location_1
-    @task.locations << @location_2
+    before(:each) do
+      @author = @blog.people.create :name => 'John Doe'
+      save_author @author, [@post_1, @post_2, @post_3]
+      @author = Person.find(@author._id)
+    end
 
-    @task.save && @task = Mongoid.reload_document(@task)
+    it 'returns the list based on the position' do
+      @post_1.update_attributes :position_in_author => 3
+      @post_3.update_attributes :position_in_author => 1
+      @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+      @author.posts.ordered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+    end
+
+    it 'returns the list based on the title' do
+      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+      @author.posts.filtered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
+    end
+
+    it 'filters the list' do
+      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.filtered({ :published => true }).map(&:title).should == ['Nude', 'Hello world']
+    end
+
+    it 'filters and sorts the list' do
+      @blog.save & @author = Person.find(@author._id)
+      @author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
+    end
+
   end
 
-  def create_client
-    @client = Client.new(:name => 'NoCoffee')
-    @client.locations_custom_fields.build :label => 'Country', :_alias => 'country', :kind => 'String'
-
-    @client.save!
-
-    @location_1 = @client.locations.build :name => 'office', :country => 'US'
-    @location_2 = @client.locations.build :name => 'dev lab', :country => 'FR'
-
-    @client.save!
+  def create_blog
+    Blog.new(:name => 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build  :label => 'Author', :type => 'belongs_to',  :class_name => 'Person'
+      blog.posts_custom_fields.build  :label => 'Published',  :type => 'boolean'
+      blog.people_custom_fields.build :label => 'Posts',  :type => 'has_many',    :class_name => "Post#{blog._id}", :inverse_of => 'author'
+      blog.save & blog.reload
+    end
   end
 
-  def create_company
-    @company = Company.new(:name => 'Colibri Software')
-    @company.save!
+  def save_author(author, posts)
+    posts.each { |post| post.author = author; post.save }
+    # author.posts.concat(posts) # does not work
+    author.save
   end
-
-  def create_project
-    @project = Project.new(:name => 'Locomotive')
-    @project.tasks_custom_fields.build :label => 'Task Locations', :_alias => 'locations', :kind => 'has_many', :target => @client.locations_klass.to_s
-
-    @project.save!
-  end
-
-  def build_company_custom_field
-    @company.employees_custom_fields.build :label => 'Task', :_alias => 'task', :kind => 'has_one', :target => @project.tasks_klass.to_s
-    @company.save!
-  end
-
-  def add_project_reverse_has_many_field
-    @project.tasks_custom_fields.build :label => 'Developers', :_alias => 'developers', :kind => 'has_many', :target => @company.employees_klass.to_s, :reverse_lookup => 'task'
-    @project.save! && @project = Mongoid.reload_document(@project)
-  end
-
-  def create_tasks
-    @task_1 = @project.tasks.build :title => 'Write unit test'
-    @task_2 = @project.tasks.build :title => 'Write code'
-    @task_3 = @project.tasks.build :title => 'Write UI'
-
-    @project.save!
-  end
-
-  def create_employees
-    @employee_1 = @company.employees.build :full_name => 'John Doe', :task => @task_1
-    @employee_2 = @company.employees.build :full_name => 'Jane Doe', :task => @task_1
-    @employee_3 = @company.employees.build :full_name => 'John Smith', :task => @task_2
-    @employee_4 = @company.employees.build :full_name => 'John Smith'
-
-    @company.save!
-
-    @company = Mongoid.reload_document(@company)
-  end
-
-  def reload_employees
-    @company = Mongoid.reload_document(@company)
-    @employee_1 = @company.employees.find(@employee_1._id)
-    @employee_2 = @company.employees.find(@employee_2._id)
-    @employee_3 = @company.employees.find(@employee_3._id)
-    @employee_4 = @company.employees.find(@employee_4._id)
-  end
-
 end
