@@ -84,6 +84,15 @@ module CustomFields
       group_custom_fields('many_to_many') { |rule| [rule['name'], "#{rule['name'].singularize}_ids"] }
     end
 
+    # Returns the names of all the tag_set custom_fields of this object.
+    #
+    # @returns [ Array ] List of names
+    #
+    def tag_set_custom_fields
+      group_custom_fields('tag_set')
+    end
+
+
     protected
 
     # Gets the names of the getter methods for a field.
