@@ -48,6 +48,12 @@ describe CustomFields::Types::Date do
       @project.self_metadata.field_1.should == @date
     end
 
+    it 'sets nil from an invalid string' do
+      @project.self_metadata.started_at = '12345'
+      @project.self_metadata.started_at.should be_nil
+      @project.self_metadata.field_1.should be_nil
+    end
+
     it 'sets value (in French format) from a string' do
       I18n.stubs(:t).returns('%d/%m/%Y')
       @project.self_metadata.started_at = '29/06/2010'
