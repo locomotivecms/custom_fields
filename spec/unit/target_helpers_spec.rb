@@ -10,9 +10,14 @@ describe CustomFields::TargetHelpers do
 
     it 'returns empty arrays if no rules' do
       @post.stubs(:custom_fields_recipe).returns({ 'rules' => [] })
+      @post.select_custom_fields.should be_empty
       @post.file_custom_fields.should be_empty
       @post.has_many_custom_fields.should be_empty
       @post.many_to_many_custom_fields.should be_empty
+    end
+
+    it 'groups select fields' do
+      @post.select_custom_fields.should == %w(category)
     end
 
     it 'groups file fields' do
