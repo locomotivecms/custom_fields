@@ -38,7 +38,7 @@ module CustomFields
         def _set_formatted_date(name, value)
           if value.is_a?(::String) && !value.blank?
             date  = ::Date._strptime(value, I18n.t('date.formats.default'))
-            value = ::Date.new(date[:year], date[:mon], date[:mday])
+            value = date ? ::Date.new(date[:year], date[:mon], date[:mday]) : nil
           end
 
           self.send(:"#{name}=", value)
