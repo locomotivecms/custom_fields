@@ -139,6 +139,11 @@ describe CustomFields::Types::TagSet do
       namespaced_class_str = "HelloWorld::This:Is:A::NamespacedModule"
       CustomFields::Types::TagSet::Tag.field_name_to_class_str(CustomFields::Types::TagSet::Tag.class_str_to_field_name(namespaced_class_str)).should == namespaced_class_str
     end
+    
+    it 'can give a collection based on klass id' do
+      my_tag = CustomFields::Types::TagSet::Tag.find_tag_by_slug('hello-world')
+      my_tag.get_relation_collection(@blog.id).size.should == 1
+    end
 
   end
 

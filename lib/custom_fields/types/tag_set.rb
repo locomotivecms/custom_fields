@@ -35,7 +35,6 @@ module CustomFields
           Tag.where("_slug" => slug ).first
         end
         
-        
         def self.class_str_to_field_name(klass)
           klass.to_s.gsub("::", "_")
         end
@@ -50,9 +49,16 @@ module CustomFields
         
         def self.slugify_name(tag_name)
           tag_name.parameterize('-')
-        
         end
         
+        def get_relation_collection(klass_id)
+          klass_methods = self.methods.grep(/#{klass_id.to_s}/)
+          return [] if klass_methods.empty?
+          klass_methods.select! {|x| !( x.to_s.match(/_ids/) || x.to_s.match(/=/) ) }
+          collection = Array.new
+          klass_methods.each {|meth| collection << self.send(meth)}
+          collection.flatten.uniq    
+        end
         
       protected
         
