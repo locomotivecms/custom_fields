@@ -59,6 +59,11 @@ module CustomFields
       end
     end
 
+    # Returns the names of all the select fields of this object
+    def select_custom_fields
+      group_custom_fields 'select'
+    end
+
     # Returns the names of all the file custom_fields of this object
     #
     # @returns [ Array ] List of names
