@@ -25,6 +25,12 @@ describe CustomFields::Types::Date do
     @post.posted_at.should == @date
   end
 
+  it 'sets nil from an invalid string' do
+    I18n.stubs(:t).returns('%d/%m/%Y')
+    @post.formatted_posted_at = '12345'
+    @post.posted_at.should be_nil
+  end
+
   it 'sets nil value' do
     @post.posted_at = nil
     @post.posted_at.should be_nil
