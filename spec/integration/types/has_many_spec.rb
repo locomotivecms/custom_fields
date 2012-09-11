@@ -93,9 +93,9 @@ describe CustomFields::Types::HasMany do
 
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build  :label => 'Author', :type => 'belongs_to',  :class_name => 'Person'
+      blog.posts_custom_fields.build  :label => 'Author',     :type => 'belongs_to',  :class_name => 'Person'
       blog.posts_custom_fields.build  :label => 'Published',  :type => 'boolean'
-      blog.people_custom_fields.build :label => 'Posts',  :type => 'has_many',    :class_name => "Post#{blog._id}", :inverse_of => 'author'
+      blog.people_custom_fields.build :label => 'Posts',      :type => 'has_many',    :class_name => "Post#{blog._id}", :inverse_of => 'author'
       blog.save & blog.reload
     end
   end

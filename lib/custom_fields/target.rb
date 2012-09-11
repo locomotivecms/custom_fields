@@ -84,7 +84,6 @@ module CustomFields
 
     end
 
-
   end
 
 end
