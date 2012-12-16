@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.0.0.rc13)
+    custom_fields (2.0.1.rc)
       activesupport (~> 3.2.9)
       carrierwave-mongoid (~> 0.2.1)
       mongoid (~> 2.4.12)
