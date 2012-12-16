@@ -31,6 +31,37 @@ module CustomFields
             end
           end
 
+          # Build a hash storing the formatted value for
+          # a date custom field of an instance.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the date custom field
+          #
+          # @return [ Hash ] field name => formatted date
+          #
+          def date_attribute_get(instance, name)
+            if value = instance.send(:"formatted_#{name}")
+              { name => value, "formatted_#{name}" => value }
+            else
+              {}
+            end
+          end
+
+          # Set the value for the instance and the date field specified by
+          # the 2 params.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the date custom field
+          # @param [ Hash ] attributes The attributes used to fetch the values
+          #
+          def date_attribute_set(instance, name, attributes)
+            return unless attributes.key?(name) || attributes.key?("formatted_#{name}")
+
+            value = attributes[name] || attributes["formatted_#{name}"]
+
+            instance.send(:"formatted_#{name}=", value)
+          end
+
         end
 
         protected

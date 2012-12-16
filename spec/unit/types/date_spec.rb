@@ -62,6 +62,35 @@ describe CustomFields::Types::Date do
 
   end
 
+
+  describe 'getter and setter' do
+
+    it 'returns an empty hash if no value has been set' do
+      @post.class.date_attribute_get(@post, 'posted_at').should == {}
+    end
+
+    it 'returns the value' do
+      @post.posted_at = Date.parse('2010-06-29')
+      @post.class.date_attribute_get(@post, 'posted_at').should == {
+        'posted_at'           => '2010-06-29',
+        'formatted_posted_at' => '2010-06-29'
+      }
+    end
+
+    it 'sets a nil value' do
+      @post.class.date_attribute_set(@post, 'posted_at', {}).should be_nil
+    end
+
+    it 'sets a value' do
+      @post.class.date_attribute_set(@post, 'posted_at', { 'posted_at' => '2010-06-28' })
+      @post.posted_at.should == Date.parse('2010-06-28')
+
+      @post.class.date_attribute_set(@post, 'posted_at', { 'formatted_posted_at' => '2010-06-29' })
+      @post.posted_at.should == Date.parse('2010-06-29')
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Posted at', :type => 'date'

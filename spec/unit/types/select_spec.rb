@@ -69,6 +69,39 @@ describe CustomFields::Types::Select do
 
   end
 
+  describe 'getter and setter' do
+
+    it 'returns an empty hash if no value has been set' do
+      @post.class.select_attribute_get(@post, 'main_category').should == {}
+    end
+
+    it 'returns the value' do
+      @post.main_category = 'Test'
+      @post.class.select_attribute_get(@post, 'main_category').should == {
+        'main_category'     => 'Test',
+        'main_category_id'  => @field.select_options.first._id
+      }
+    end
+
+    it 'sets a nil value' do
+      @post.class.select_attribute_set(@post, 'main_category', {}).should be_nil
+    end
+
+    it 'sets a value from a name' do
+      @post.class.select_attribute_set(@post, 'main_category', { 'main_category' => 'Test' })
+      @post.main_category.should == 'Test'
+    end
+
+    it 'sets a value from an id' do
+      @post.class.select_attribute_set(@post, 'main_category', { 'main_category' => @field.select_options.first._id })
+      @post.main_category.should == 'Test'
+
+      @post.class.select_attribute_set(@post, 'main_category', { 'main_category_id' => @field.select_options.first._id })
+      @post.main_category.should == 'Test'
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       @field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select', :required => true

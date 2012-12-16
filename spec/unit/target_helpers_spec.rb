@@ -34,43 +34,131 @@ describe CustomFields::TargetHelpers do
 
   end
 
-  context '#returning safe attributes' do
+  context '#returning safe setters' do
 
     before(:each) do
-      @safe_attributes = @post.custom_fields_safe_attributes
+      @names = @post.custom_fields_safe_setters
     end
 
-    it 'includes attributes for string' do
-      @safe_attributes.include?('author_name').should be_true
+    it 'includes setters for string' do
+      @names.include?('author_name').should be_true
     end
 
-    it 'includes attributes for boolean' do
-      @safe_attributes.include?('visible').should be_true
+    it 'includes setters for boolean' do
+      @names.include?('visible').should be_true
     end
 
-    it 'includes attributes for date' do
-      @safe_attributes.include?('formatted_posted_at').should be_true
+    it 'includes setters for date' do
+      @names.include?('formatted_posted_at').should be_true
     end
 
-    it 'includes attributes for file' do
-      @safe_attributes.include?('illustration').should be_true
-      @safe_attributes.include?('remove_illustration').should be_true
+    it 'includes setters for file' do
+      @names.include?('illustration').should be_true
+      @names.include?('remove_illustration').should be_true
     end
 
-    it 'includes attributes for select' do
-      @safe_attributes.include?('category_id').should be_true
-      @safe_attributes.include?('category').should be_false
+    it 'includes setters for select' do
+      @names.include?('category_id').should be_true
+      @names.include?('category').should be_false
     end
 
-    it 'includes attributes for belongs_to' do
-      @safe_attributes.include?('ghost_writer_id').should be_true
-      @safe_attributes.include?('position_in_ghost_writer').should be_true
-      @safe_attributes.include?('ghost_writer').should be_false
+    it 'includes setters for belongs_to' do
+      @names.include?('ghost_writer_id').should be_true
+      @names.include?('position_in_ghost_writer').should be_true
+      @names.include?('ghost_writer').should be_false
     end
 
-    it 'does not include attributes for has_many and many_to_many' do
-      @safe_attributes.include?('contributors').should be_false
-      @safe_attributes.include?('projects').should be_false
+    it 'does not include setters for has_many and many_to_many' do
+      @names.include?('contributors').should be_false
+      @names.include?('projects').should be_false
+    end
+
+  end
+
+
+  context '#returning basic attributes' do
+
+    before(:each) do
+      %w(category formatted_posted_at visible author_name illustration? author_picture?).each do |meth|
+        @post.stubs(meth.to_sym).returns(nil)
+      end
+    end
+
+    it 'calls the getter for string' do
+      @post.class.expects(:string_attribute_get).with(@post, 'author_name').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for boolean' do
+      @post.class.expects(:boolean_attribute_get).with(@post, 'visible').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for date' do
+      @post.class.expects(:date_attribute_get).with(@post, 'posted_at').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for file' do
+      @post.class.expects(:file_attribute_get).once.with(@post, 'illustration').returns({})
+      @post.class.expects(:file_attribute_get).once.with(@post, 'author_picture').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for select' do
+      @post.class.expects(:select_attribute_get).with(@post, 'category').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'does not call the getter for belongs_to, has_many and many_to_many' do
+      @post.class.expects(:belongs_to_attribute_get).never
+      @post.class.expects(:has_many_attribute_get).never
+      @post.class.expects(:many_to_many_attribute_get).never
+      @post.custom_fields_basic_attributes
+
+    end
+
+  end
+
+  context '#setting basic attributes' do
+
+    before(:each) do
+      %w(category= formatted_posted_at= visible= author_name=).each do |meth|
+        @post.stubs(meth.to_sym).returns(nil)
+      end
+    end
+
+    it 'calls the setter for string' do
+      @post.class.expects(:string_attribute_set).with(@post, 'author_name', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for boolean' do
+      @post.class.expects(:boolean_attribute_set).with(@post, 'visible', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for date' do
+      @post.class.expects(:date_attribute_set).with(@post, 'posted_at', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for file' do
+      @post.class.expects(:file_attribute_set).once.with(@post, 'illustration', {}).returns({})
+      @post.class.expects(:file_attribute_set).once.with(@post, 'author_picture', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for select' do
+      @post.class.expects(:select_attribute_set).with(@post, 'category', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'does not call the setter for belongs_to, has_many and many_to_many' do
+      @post.class.expects(:belongs_to_attribute_set).never
+      @post.class.expects(:has_many_attribute_set).never
+      @post.class.expects(:many_to_many_attribute_set).never
+      @post.custom_fields_basic_attributes = {}
     end
 
   end

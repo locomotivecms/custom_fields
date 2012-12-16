@@ -54,6 +54,45 @@ module CustomFields
             end
           end
 
+          # Build a hash storing the formatted (or not) values
+          # for a custom field of an instance.
+          # Since aliases are accepted, we return a hash. Beside,
+          # it is more convenient to use (ex: API).
+          # By default, it only returns hash with only one entry
+          # whose key is the second parameter and the value the
+          # value of the field in the instance given in first parameter.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the custom field
+          #
+          # @return [ Hash ] field name => formatted value or empty hash if no value
+          #
+          def default_attribute_get(instance, name)
+            unless (value = instance.send(name.to_sym)).nil?
+              { name => instance.send(name.to_sym) }
+            else
+              {}
+            end
+          end
+
+          # Set the value for the instance and the field specified by
+          # the 2 params.
+          # Since the value can come from different attributes and other
+          # params can modify the instance too, we need to pass a hash
+          # instead of a single value.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the custom field
+          # @param [ Hash ] attributes The attributes used to fetch the values
+          #
+          def default_attribute_set(instance, name, attributes)
+            # do not go further if the name is not one of the attributes keys.
+            return unless attributes.key?(name)
+
+            # simple assign
+            instance.send(:"#{name}=", attributes[name])
+          end
+
         end
 
       end

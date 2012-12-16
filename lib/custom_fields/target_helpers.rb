@@ -2,7 +2,7 @@ module CustomFields
 
   module TargetHelpers
 
-    # Returns the list of the getters dynamically based on the
+    # Return the list of the getters dynamically based on the
     # custom_fields recipe in order to get the formatted values
     # of the custom fields.
     # If a block is passed, then the list will be filtered accordingly with
@@ -15,7 +15,7 @@ module CustomFields
     #     rule['name] != 'foo'
     #   end
     #
-    # @returns [ List ] a list of method names (string)
+    # @return [ List ] a list of method names (string)
     #
     def custom_fields_methods(&filter)
       self.custom_fields_recipe['rules'].map do |rule|
@@ -28,12 +28,12 @@ module CustomFields
       end.compact.flatten
     end
 
-    # Lists all the attributes that are used by the custom_fields
+    # List all the setters that are used by the custom_fields
     # in order to get updated thru a html form for instance.
     #
-    # @returns [ List ] a list of attributes (string)
+    # @return [ List ] a list of method names (string)
     #
-    def custom_fields_safe_attributes
+    def custom_fields_safe_setters
       self.custom_fields_recipe['rules'].map do |rule|
         case rule['type'].to_sym
         when :date                    then "formatted_#{rule['name']}"
@@ -46,12 +46,47 @@ module CustomFields
       end.compact.flatten
     end
 
-    # Determines if the rule defined by the name is a "many" relationship kind.
+    # Build a hash for all the non-relationship fields
+    # meaning string, text, date, boolean, select, file types.
+    # This hash stores their name and their value.
+    #
+    # @return [ Hash ] Field name / formatted value
+    #
+    def custom_fields_basic_attributes
+      {}.tap do |hash|
+        self.non_relationship_custom_fields.each do |rule|
+          name, type = rule['name'], rule['type'].to_sym
+
+          # method of the custom getter
+          method_name = "#{type}_attribute_get"
+
+          hash.merge!(self.class.send(method_name, self, name))
+        end
+      end
+    end
+
+    # Set the values (and their related fields) for all the non-relationship fields
+    # meaning string, text, date, boolean, select, file types.
+    #
+    # @param [ Hash ] The attributes for the custom fields and their related fields.
+    #
+    def custom_fields_basic_attributes=(attributes)
+      self.non_relationship_custom_fields.each do |rule|
+        name, type = rule['name'], rule['type'].to_sym
+
+        # method of the custom getter
+        method_name = "#{type}_attribute_set"
+
+        self.class.send(method_name, self, name, attributes)
+      end
+    end
+
+    # Check if the rule defined by the name is a "many" relationship kind.
     # A "many" relationship includes "has_many" and "many_to_many"
     #
-    # @params [ String ] name The name of the rule
+    # @param [ String ] name The name of the rule
     #
-    # @returns [ Boolean ] True if the rule is a "many" relationship kind.
+    # @return [ Boolean ] True if the rule is a "many" relationship kind.
     #
     def is_a_custom_field_many_relationship?(name)
       rule = self.custom_fields_recipe['rules'].detect do |rule|
@@ -59,31 +94,59 @@ module CustomFields
       end
     end
 
-    # Returns the names of all the select fields of this object
+    # Return the rules of the custom fields which do not describe a relationship.
+    #
+    # @return [ Array ] List of rules (Hash)
+    #
+    def non_relationship_custom_fields
+      self.custom_fields_recipe['rules'].find_all do |rule|
+        !%w(belongs_to has_many many_to_many).include?(rule['type'])
+      end
+    end
+
+    # Return the rules of the custom fields which describe a relationship.
+    #
+    # @return [ Array ] List of rules (Hash)
+    #
+    def relationship_custom_fields
+      self.custom_fields_recipe['rules'].find_all do |rule|
+        %w(belongs_to has_many many_to_many).include?(rule['type'])
+      end
+    end
+
+    # Return the names of all the select fields of this object
     def select_custom_fields
       group_custom_fields 'select'
     end
 
-    # Returns the names of all the file custom_fields of this object
+    # Return the names of all the file custom_fields of this object
     #
-    # @returns [ Array ] List of names
+    # @return [ Array ] List of names
     #
     def file_custom_fields
       group_custom_fields 'file'
     end
 
-    # Returns the names of all the has_many custom_fields of this object
+    # Return the names of all the belongs_to custom_fields of this object
     #
-    # @returns [ Array ] Array of array [name, inverse_of]
+    # @return [ Array ] List of names
+    #
+    def belongs_to_custom_fields
+      group_custom_fields 'belongs_to'
+    end
+
+    # Return the names of all the has_many custom_fields of this object
+    #
+    # @return [ Array ] Array of array [name, inverse_of]
     #
     def has_many_custom_fields
       group_custom_fields('has_many') { |rule| [rule['name'], rule['inverse_of']] }
     end
 
-    # Returns the names of all the many_to_many custom_fields of this object.
+    # Return the names of all the many_to_many custom_fields of this object.
     # It also adds the property used to set/get the target ids.
     #
-    # @returns [ Array ] Array of array [name, <name in singular>_ids]
+    # @return [ Array ] Array of array [name, <name in singular>_ids]
     #
     def many_to_many_custom_fields
       group_custom_fields('many_to_many') { |rule| [rule['name'], "#{rule['name'].singularize}_ids"] }
@@ -91,13 +154,13 @@ module CustomFields
 
     protected
 
-    # Gets the names of the getter methods for a field.
+    # Get the names of the getter methods for a field.
     # The names depend on the field type.
     #
-    # @params [ String ] name Name of the field
-    # @params [ String ] type Type of the field
+    # @param [ String ] name Name of the field
+    # @param [ String ] type Type of the field
     #
-    # @returns [ Object ] A string or an array of names
+    # @return [ Object ] A string or an array of names
     #
     def custom_fields_getters_for(name, type)
       case type.to_sym

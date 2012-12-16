@@ -28,6 +28,28 @@ describe CustomFields::Types::String do
 
   end
 
+  describe 'getter and setter' do
+
+    it 'returns an empty hash if no value has been set' do
+      @post.class.string_attribute_get(@post, 'author').should == {}
+    end
+
+    it 'returns the value' do
+      @post.author = 'John Doe'
+      @post.class.string_attribute_get(@post, 'author').should == { 'author' => 'John Doe' }
+    end
+
+    it 'sets a nil value' do
+      @post.class.string_attribute_set(@post, 'author', {}).should be_nil
+    end
+
+    it 'sets a value' do
+      @post.class.string_attribute_set(@post, 'author', { 'author' => 'John' })
+      @post.author.should == 'John'
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Author', :type => 'string', :required => true

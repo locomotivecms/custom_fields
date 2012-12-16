@@ -89,6 +89,44 @@ module CustomFields
             end
           end
 
+          # Build a hash storing the values (id and option name) for
+          # a select custom field of an instance.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the select custom field
+          #
+          # @return [ Hash ] fields: <name>: option name, <name>_id: id of the option
+          #
+          def select_attribute_get(instance, name)
+            if value = instance.send(name.to_sym)
+              {
+                name          => value,
+                "#{name}_id"  => instance.send(:"#{name}_id")
+              }
+            else
+              {}
+            end
+          end
+
+          # Set the value for the instance and the select field specified by
+          # the 2 params.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the select custom field
+          # @param [ Hash ] attributes The attributes used to fetch the values
+          #
+          def select_attribute_set(instance, name, attributes)
+            id_or_name  = attributes[name] || attributes["#{name}_id"]
+
+            return if id_or_name.nil?
+
+            option = _select_options(name).detect do |option|
+              [option['_id'], option['name']].include?(id_or_name)
+            end
+
+            instance.send(:"#{name}_id=", option['_id'])
+          end
+
           # Returns a list of documents groupes by select values defined in the custom fields recipe
           #
           # @param [ Class ] klass The class to modify

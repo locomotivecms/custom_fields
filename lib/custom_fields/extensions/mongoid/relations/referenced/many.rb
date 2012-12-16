@@ -24,6 +24,9 @@ module Mongoid #:nodoc:
         end
 
         alias_method_chain :build, :custom_fields
+
+        # new should point to the new build method
+        alias :new :build_with_custom_fields
       end
 
     end

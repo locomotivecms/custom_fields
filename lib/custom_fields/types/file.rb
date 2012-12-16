@@ -31,6 +31,35 @@ module CustomFields
             end
           end
 
+          # Build a hash storing the url for a file custom field of an instance.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the file custom field
+          #
+          # @return [ Hash ] field name => url or empty hash if no file
+          #
+          def file_attribute_get(instance, name)
+            if instance.send(:"#{name}?")
+              value = instance.send(name.to_sym).url
+              { name => value, "#{name}_url" => value }
+            else
+              {}
+            end
+          end
+
+          # Set the value for the instance and the file field specified by
+          # the 2 params.
+          #
+          # @param [ Object ] instance An instance of the class enhanced by the custom_fields
+          # @param [ String ] name The name of the file custom field
+          # @param [ Hash ] attributes The attributes used to fetch the values
+          #
+          def file_attribute_set(instance, name, attributes)
+            [name, "remote_#{name}_url", "remove_#{name}"].each do |_name|
+              self.default_attribute_set(instance, _name, attributes)
+            end.compact
+          end
+
         end
 
       end

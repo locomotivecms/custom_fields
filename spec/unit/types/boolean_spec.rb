@@ -72,6 +72,24 @@ describe CustomFields::Types::Boolean do
 
   end
 
+  describe 'getter and setter' do
+
+    it 'returns the value' do
+      @post.visible = true
+      @post.class.boolean_attribute_get(@post, 'visible').should == { 'visible' => true }
+    end
+
+    it 'sets a nil value' do
+      @post.class.boolean_attribute_set(@post, 'visible', {}).should be_nil
+    end
+
+    it 'sets a value' do
+      @post.class.boolean_attribute_set(@post, 'visible', { 'visible' => 'true' })
+      @post.visible.should be_true
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build :label => 'Visible', :type => 'boolean'
