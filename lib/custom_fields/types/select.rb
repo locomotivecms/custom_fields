@@ -124,7 +124,7 @@ module CustomFields
               [option['_id'], option['name']].include?(id_or_name)
             end
 
-            instance.send(:"#{name}_id=", option['_id'])
+            instance.send(:"#{name}_id=", option['_id']) if option
           end
 
           # Returns a list of documents groupes by select values defined in the custom fields recipe
