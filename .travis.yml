@@ -1,8 +1,9 @@
 rvm:
-  - 1.9.2
+  - 1.9.3
+services: mongodb
 notifications:
   email:
     - didier@nocoffee.fr
 branches:
-  only: 
+  only:
     - master
