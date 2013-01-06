@@ -31,6 +31,12 @@ describe CustomFields::Types::Date do
     @post.posted_at.should == @date
   end
 
+  it 'sets value from a ambiguous date format' do
+    I18n.stubs(:t).returns('%m/%d/%Y')
+    @post.formatted_posted_at = '01/04/2013'
+    @post.posted_at.should == Date.parse('2013-01-04')
+  end
+
   it 'sets nil from an invalid string' do
     I18n.stubs(:t).returns('%d/%m/%Y')
     @post.formatted_posted_at = '1234'

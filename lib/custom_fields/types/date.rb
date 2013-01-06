@@ -68,15 +68,12 @@ module CustomFields
 
         def _set_formatted_date(name, value)
           if value.is_a?(::String) && !value.blank?
-            # start by the Date.parse method
-            _value = ::Date.parse(value) rescue nil
+            date = ::Date._strptime(value, I18n.t('date.formats.default'))
 
-            # try now with the format defined in the current locale
-            if _value
-              value = _value
+            if date
+              value = ::Date.new(date[:year], date[:mon], date[:mday])
             else
-              date  = ::Date._strptime(value, I18n.t('date.formats.default'))
-              value = date ? ::Date.new(date[:year], date[:mon], date[:mday]) : nil
+              value = ::Date.parse(value) rescue nil
             end
           end
 
