@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('mocha', ['~> 0.9.12'])
   s.add_development_dependency('rspec', ['~> 2.6'])
   s.add_development_dependency('simplecov', ['~> 0.6.1'])
-  s.add_development_dependency('database_cleaner', ['~> 0.6.7'])
+  s.add_development_dependency('database_cleaner', ['~> 0.9.1'])
   s.add_development_dependency('RedCloth', ['~> 4.2.8'])
 
   s.files        = Dir[ 'init.rb',
