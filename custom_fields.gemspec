@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'mongoid', '>= 3.0.0'
   s.add_dependency 'activesupport', '~> 3.2.9'
-  s.add_dependency 'carrierwave-mongoid', '~> 0.4.0'
+  s.add_dependency 'carrierwave-mongoid', '>= 0.4.0'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
   s.add_development_dependency('bson', ['~> 1.3.1'])
