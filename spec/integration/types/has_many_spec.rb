@@ -86,7 +86,7 @@ describe CustomFields::Types::HasMany do
 
     it 'filters and sorts the list' do
       @blog.save & @author = Person.find(@author._id)
-      @author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
+      @author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should  include('Nude', 'Hello world')
     end
 
   end

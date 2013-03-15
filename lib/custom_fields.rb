@@ -1,6 +1,6 @@
 $:.unshift File.expand_path(File.dirname(__FILE__))
 
-require 'bson'
+#require 'bson'
 require 'active_support'
 require 'carrierwave/mongoid'
 

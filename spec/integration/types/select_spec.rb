@@ -67,8 +67,8 @@ describe CustomFields::Types::Select do
       @blog.posts.create :title => 'Hello world (Design)', :body => 'Lorem ipsum...', :main_category => @design_cat._id
       @blog.posts.create :title => 'Hello world 2 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
       @blog.posts.create :title => 'Hello world 3 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
-      @blog.posts.create :title => 'Hello world (Unknow)', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
-      @blog.posts.create :title => 'Hello world (Unknow) 2', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
+      @blog.posts.create :title => 'Hello world (Unknow)', :body => 'Lorem ipsum...', :main_category => Moped::BSON::ObjectId.new
+      @blog.posts.create :title => 'Hello world (Unknow) 2', :body => 'Lorem ipsum...', :main_category => Moped::BSON::ObjectId.new
 
       klass = @blog.klass_with_custom_fields(:posts)
       @groups = klass.group_by_select_option(:main_category)

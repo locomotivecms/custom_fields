@@ -67,7 +67,7 @@ module CustomFields
           def apply_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", :type => BSON::ObjectId, :localize => rule['localized'] || false
+            klass.field :"#{name}_id", :type => Moped::BSON::ObjectId, :localize => rule['localized'] || false
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
@@ -129,14 +129,17 @@ module CustomFields
 
           # Returns a list of documents groupes by select values defined in the custom fields recipe
           #
-          # @param [ Class ] klass The class to modify
+          # @param  [ Class ] klass The class to modify
           # @return [ Array ] An array of hashes (keys: select option and related documents)
           #
           def group_by_select_option(name, order_by = nil)
-            groups = self.only(:"#{name}_id").group
+            name_id = "#{name}_id"
+            groups = self.each.group_by{|x| x.send(name_id)}.map do |(k, v)|
+              {name_id => k, "group" => v}
+            end
 
             _select_options(name).map do |option|
-              group = groups.detect { |g| g["#{name}_id"].to_s == option['_id'].to_s }
+              group = groups.detect { |g| g[name_id].to_s == option['_id'].to_s }
               list  = group ? group['group'] : []
 
               groups.delete(group) if group
