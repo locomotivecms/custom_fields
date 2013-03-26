@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.1.0.rc1)
+    custom_fields (2.1.0)
       activesupport (~> 3.2.9)
       carrierwave-mongoid (~> 0.2.1)
       mongoid (~> 2.4.12)
@@ -11,11 +11,11 @@ GEM
   specs:
     RedCloth (4.2.9)
     SystemTimer (1.2.3)
-    activemodel (3.2.9)
-      activesupport (= 3.2.9)
+    activemodel (3.2.13)
+      activesupport (= 3.2.13)
       builder (~> 3.0.0)
-    activesupport (3.2.9)
-      i18n (~> 0.6)
+    activesupport (3.2.13)
+      i18n (= 0.6.1)
       multi_json (~> 1.0)
     bson (1.3.1)
     bson_ext (1.3.1)
@@ -23,7 +23,7 @@ GEM
     carrierwave (0.6.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
-    carrierwave-mongoid (0.2.1)
+    carrierwave-mongoid (0.2.2)
       carrierwave (~> 0.6.1)
       mongoid (~> 2.1)
     columnize (0.3.6)
@@ -59,7 +59,7 @@ GEM
       multi_json (~> 1.0)
       simplecov-html (~> 0.5.3)
     simplecov-html (0.5.3)
-    tzinfo (0.3.35)
+    tzinfo (0.3.37)
     yard (0.7.5)
 
 PLATFORMS
