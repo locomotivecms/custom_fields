@@ -49,8 +49,7 @@ module CustomFields
                 if order_by
                   list.order_by(order_by)
                 else
-                  # calling all on a has_many relationship makes us lose the default order_by (mongoid bug ?)
-                  list.order(metadata.order)
+                  list.order_by(metadata.order)
                 end
               end
 

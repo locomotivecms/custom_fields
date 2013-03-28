@@ -1,5 +1,6 @@
 $:.unshift File.expand_path(File.dirname(__FILE__))
 
+require 'bson'
 require 'active_support'
 require 'carrierwave/mongoid'
 
@@ -28,7 +29,7 @@ require 'custom_fields/extensions/mongoid/relations/referenced/many'
 require 'custom_fields/extensions/mongoid/relations/referenced/in'
 require 'custom_fields/extensions/mongoid/fields.rb'
 require 'custom_fields/extensions/mongoid/fields/i18n.rb'
-require 'custom_fields/extensions/mongoid/fields/internal/localized.rb'
+require 'custom_fields/extensions/mongoid/fields/localized.rb'
 require 'custom_fields/types/default'
 require 'custom_fields/types/string'
 require 'custom_fields/types/text'

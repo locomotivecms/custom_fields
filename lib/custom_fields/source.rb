@@ -165,7 +165,7 @@ module CustomFields
 
       # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
 
-      collection.update selector, operations, :multi => true
+      collection.find(selector).update operations, :multi => true
     end
 
     # If the localized attribute has been changed in at least one of the custom fields,
@@ -198,7 +198,7 @@ module CustomFields
         next if updates.empty?
 
         collection = self.send(name).collection
-        collection.update record.atomic_selector, { '$set' => updates }
+        collection.find(record.atomic_selector).update({ '$set' => updates })
       end
     end
 
