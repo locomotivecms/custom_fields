@@ -35,6 +35,16 @@ describe CustomFields::Types::HasMany do
 
   end
 
+  describe 'mimic multi-thread env' do
+
+    it 're-builds the class even if it has not been loaded' do
+      Object.send(:remove_const, "Post#{@blog._id}".to_sym)
+      Blog.expects(:find).with(@blog._id.to_s).returns(@blog)
+      @author.posts.should == []
+    end
+
+  end
+
   def build_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build  :label => 'Author', :type => 'belongs_to', :class_name => 'Person', :required => true
