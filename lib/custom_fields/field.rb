@@ -16,9 +16,9 @@ module CustomFields
     field :name
     field :type
     field :hint
-    field :position,  :type => Integer, :default => 0
-    field :required,  :type => Boolean, :default => false
-    field :localized, :type => Boolean, :default => false
+    field :position,  :type => ::Integer, :default => 0
+    field :required,  :type => ::Boolean, :default => false
+    field :localized, :type => ::Boolean, :default => false
 
     ## validations ##
     validates_presence_of   :label, :type

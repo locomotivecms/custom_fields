@@ -5,5 +5,6 @@ de:
       text: Text
       select: Auswahlbox
       boolean: Checkbox
+      integer: Ganzzahl
       date: Datum
       file: Datei
