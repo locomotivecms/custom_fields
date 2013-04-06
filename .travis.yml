@@ -6,4 +6,4 @@ notifications:
     - didier@nocoffee.fr
 branches:
   only:
-    - master
+    - mongoid-3

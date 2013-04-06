@@ -17,37 +17,36 @@ module CustomFields
 
 end
 
-%w(
- version
- extensions/active_support
- extensions/carrierwave
- extensions/mongoid/document
- extensions/mongoid/factory
- extensions/mongoid/relations/referenced/many
- extensions/mongoid/relations/referenced/in
- extensions/mongoid/fields.rb
- extensions/mongoid/fields/i18n.rb
- extensions/mongoid/fields/localized.rb
- types/default
- types/string
- types/text
- types/date
- types/boolean
- types/file
- types/select
- types/integer
- types/float
- types/relationship_default
- types/belongs_to
- types/has_many
- types/many_to_many
- field
- source
- target_helpers
- target
-).each do |lib|
-  require_relative "./custom_fields/#{lib}"
-end
+%w(  version
+     extensions/active_support
+     extensions/carrierwave
+     extensions/mongoid/document
+     extensions/mongoid/factory
+     extensions/mongoid/relations/referenced/many
+     extensions/mongoid/relations/referenced/in
+     extensions/mongoid/fields.rb
+     extensions/mongoid/fields/i18n.rb
+     extensions/mongoid/fields/localized.rb
+     types/default
+     types/string
+     types/text
+     types/date
+     types/boolean
+     types/file
+     types/select
+     types/integer
+     types/float
+     types/relationship_default
+     types/belongs_to
+     types/has_many
+     types/many_to_many
+     field
+     source
+     target_helpers
+     target
+    ).each do |lib|
+      require_relative "./custom_fields/#{lib}"
+    end
 
 
 # Load all the translation files

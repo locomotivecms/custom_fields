@@ -19,7 +19,8 @@ module Mongoid #:nodoc
       # @since 2.1.0
       def replace_field(name, type, localize = false)
         # puts "fields[#{name}] = #{fields[name.to_s].inspect} / #{fields.keys.inspect}" # DEBUG
-        attribute_names.delete_one(name)
+        #attribute_names.delete_one(name)
+        remove_defaults(name)
         add_field(name, fields[name.to_s].options.merge(:type => type, :localize => localize))
       end
 
