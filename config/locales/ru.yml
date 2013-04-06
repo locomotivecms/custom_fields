@@ -7,6 +7,8 @@ ru:
       boolean: Чекбокс
       date: Дата
       file: Файл
+      integer: Целое число
+      float:  Число с дробной частью
       belongs_to: Относится к
       has_many: Имеет много
       many_to_many: Многие ко многим

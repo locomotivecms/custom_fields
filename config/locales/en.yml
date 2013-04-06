@@ -7,6 +7,8 @@ en:
       boolean: Checkbox
       date: Date
       file: File
+      integer: Integer
+      float: Float
       belongs_to: Belongs to
       has_many: Has many
       many_to_many: Many To Many
