@@ -8,7 +8,7 @@ module CustomFields
 
       ## types ##
       %w(default string text date boolean file select
-         belongs_to has_many many_to_many integer float).each do |type|
+         belongs_to has_many many_to_many float).each do |type| #  integer float TODO
         include "CustomFields::Types::#{type.classify}::Target".constantize
       end
 

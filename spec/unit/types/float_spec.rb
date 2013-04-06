@@ -31,20 +31,20 @@ describe CustomFields::Types::Float do
   describe 'getter and setter' do
 
     it 'returns an empty hash if no value has been set' do
-      @post.class.integer_attribute_get(@post, 'count').should == {}
+      @post.class.float_attribute_get(@post, 'count').should == {}
     end
 
     it 'returns the value' do
       @post.count = 42.12345
-      @post.class.integer_attribute_get(@post, 'count').should == { 'count' => 42.12345 }
+      @post.class.float_attribute_get(@post, 'count').should == { 'count' => 42.12345 }
     end
 
     it 'sets a nil value' do
-      @post.class.integer_attribute_set(@post, 'count', {}).should be_nil
+      @post.class.float_attribute_set(@post, 'count', {}).should be_nil
     end
 
     it 'sets a value' do
-      @post.class.integer_attribute_set(@post, 'count', { 'count' => 42.12345 })
+      @post.class.float_attribute_set(@post, 'count', { 'count' => 42.12345 })
       @post.count.should == 42.12345
     end
 
