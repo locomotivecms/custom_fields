@@ -19,8 +19,8 @@ module Mongoid #:nodoc:
             # build the class with custom_fields for the first time
             type = metadata.klass.klass_with_custom_fields(recipe)
           end
-
           build_without_custom_fields(attributes, options, type)
+
         end
 
         alias_method_chain :build, :custom_fields

@@ -48,6 +48,14 @@ describe CustomFields::TargetHelpers do
       @names.include?('visible').should be_true
     end
 
+    it 'includes setters for integer' do
+      @names.include?('int_count').should be_true
+    end
+
+    it 'includes setters for float' do
+      @names.include?('float_count').should be_true
+    end
+
     it 'includes setters for date' do
       @names.include?('formatted_posted_at').should be_true
     end
@@ -60,6 +68,16 @@ describe CustomFields::TargetHelpers do
     it 'includes setters for select' do
       @names.include?('category_id').should be_true
       @names.include?('category').should be_false
+    end
+
+    it 'includes setters for integer' do
+      @names.include?('int_count').should be_true
+      @names.include?('remove_int_count').should be_false
+    end
+
+    it 'includes setters for float' do
+      @names.include?('float_count').should be_true
+      @names.include?('remove_float_count').should be_false
     end
 
     it 'includes setters for belongs_to' do
@@ -79,13 +97,24 @@ describe CustomFields::TargetHelpers do
   context '#returning basic attributes' do
 
     before(:each) do
-      %w(category formatted_posted_at visible author_name illustration? author_picture?).each do |meth|
+      %w(category formatted_posted_at visible author_name illustration?
+         author_picture? int_count float_count).each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
 
     it 'calls the getter for string' do
       @post.class.expects(:string_attribute_get).with(@post, 'author_name').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for integer' do
+      @post.class.expects(:integer_attribute_get).with(@post, 'int_count').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for float' do
+      @post.class.expects(:float_attribute_get).with(@post, 'float_count').returns({})
       @post.custom_fields_basic_attributes
     end
 
@@ -123,7 +152,7 @@ describe CustomFields::TargetHelpers do
   context '#setting basic attributes' do
 
     before(:each) do
-      %w(category= formatted_posted_at= visible= author_name=).each do |meth|
+      %w(category= formatted_posted_at= visible= author_name= int_count= float_count=).each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -135,6 +164,16 @@ describe CustomFields::TargetHelpers do
 
     it 'calls the setter for boolean' do
       @post.class.expects(:boolean_attribute_set).with(@post, 'visible', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for integer' do
+      @post.class.expects(:integer_attribute_set).with(@post, 'int_count', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for float' do
+      @post.class.expects(:float_attribute_set).with(@post, 'float_count', {}).returns({})
       @post.custom_fields_basic_attributes = {}
     end
 
@@ -169,8 +208,8 @@ describe CustomFields::TargetHelpers do
       @methods = @post.custom_fields_methods
     end
 
-    it 'includes the default method name for string, select, boolean, has_many and many_to_many fields' do
-      %w(author_name category visible projects illustrations contributors).each do |name|
+    it 'includes the default method name for string, select, boolean, integer, float, has_many and many_to_many fields' do
+      %w(author_name category visible projects illustrations contributors int_count float_count).each do |name|
         @methods.include?(name).should be_true
       end
     end
@@ -204,8 +243,8 @@ describe CustomFields::TargetHelpers do
 
     it 'filters the list by passing a block' do
       @post.custom_fields_methods do |rules|
-        %w(string boolean).include?(rules['type'])
-      end.should == %w(visible author_name)
+        %w(string boolean integer float).include?(rules['type'])
+      end.should == %w(visible author_name int_count float_count)
     end
 
   end
@@ -223,7 +262,10 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'author_picture',   'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'contributors',     'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts', 'required' => false, 'localized' => false },
           { 'name' => 'projects',         'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
-          { 'name' => 'illustrations',    'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false }
+          { 'name' => 'illustrations',    'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
+          { 'name' => 'int_count',        'type' => 'integer', 'required' => false, 'localized' => false },
+          { 'name' => 'float_count',      'type' => 'float', 'required' => false, 'localized' => false },
+
         ]})
     end
   end

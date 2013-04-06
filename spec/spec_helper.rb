@@ -32,6 +32,14 @@ RSpec.configure do |config|
   require 'database_cleaner'
   require 'database_cleaner/mongoid/truncation'
 
+  config.backtrace_clean_patterns = [
+    /\/lib\d*\/ruby\//,
+    /bin\//,
+    /gems/,
+    /spec\/spec_helper\.rb/,
+    /lib\/rspec\/(core|expectations|matchers|mocks)/
+  ]
+
   config.before(:suite) do
     DatabaseCleaner['mongoid'].strategy = :truncation
   end
