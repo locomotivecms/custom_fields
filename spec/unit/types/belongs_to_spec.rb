@@ -5,6 +5,7 @@ describe CustomFields::Types::BelongsTo do
   before(:each) do
     @blog   = build_blog
     @author = Person.new :name => 'John Doe'
+    @blog.posts_custom_fields
     @post   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
   end
 
