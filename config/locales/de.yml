@@ -6,5 +6,7 @@ de:
       select: Auswahlbox
       boolean: Checkbox
       integer: Ganzzahl
+      float: Fließkommazahl
+      money: Währung
       date: Datum
       file: Datei

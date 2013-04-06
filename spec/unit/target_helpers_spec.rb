@@ -56,6 +56,10 @@ describe CustomFields::TargetHelpers do
       @names.include?('float_count').should be_true
     end
 
+    it 'includes setters for money' do
+      @names.include?('formatted_donation').should be_true
+    end
+
     it 'includes setters for date' do
       @names.include?('formatted_posted_at').should be_true
     end
@@ -98,7 +102,7 @@ describe CustomFields::TargetHelpers do
 
     before(:each) do
       %w(category formatted_posted_at visible author_name illustration?
-         author_picture? int_count float_count).each do |meth|
+         author_picture? int_count float_count formatted_donation).each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -115,6 +119,11 @@ describe CustomFields::TargetHelpers do
 
     it 'calls the getter for float' do
       @post.class.expects(:float_attribute_get).with(@post, 'float_count').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for money' do
+      @post.class.expects(:money_attribute_get).with(@post, 'donation').returns({})
       @post.custom_fields_basic_attributes
     end
 
@@ -152,7 +161,8 @@ describe CustomFields::TargetHelpers do
   context '#setting basic attributes' do
 
     before(:each) do
-      %w(category= formatted_posted_at= visible= author_name= int_count= float_count=).each do |meth|
+      %w(category= formatted_posted_at= visible=
+         author_name= int_count= float_count= money=).each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -174,6 +184,11 @@ describe CustomFields::TargetHelpers do
 
     it 'calls the setter for float' do
       @post.class.expects(:float_attribute_set).with(@post, 'float_count', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for money' do
+      @post.class.expects(:money_attribute_set).with(@post, 'donation', {}).returns({})
       @post.custom_fields_basic_attributes = {}
     end
 
@@ -209,7 +224,8 @@ describe CustomFields::TargetHelpers do
     end
 
     it 'includes the default method name for string, select, boolean, integer, float, has_many and many_to_many fields' do
-      %w(author_name category visible projects illustrations contributors int_count float_count).each do |name|
+      %w(author_name category visible projects illustrations
+         contributors int_count float_count).each do |name|
         @methods.include?(name).should be_true
       end
     end
@@ -228,6 +244,11 @@ describe CustomFields::TargetHelpers do
     it 'includes the method name for dates' do
       @methods.include?('formatted_posted_at').should be_true
       @methods.include?('posted_at').should be_false
+    end
+
+    it 'includes the method name for money' do
+      @methods.include?('formatted_donation').should be_true
+      @methods.include?('donation').should be_false
     end
 
     it 'includes the method name for belongs_to relationships' do
@@ -265,7 +286,7 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'illustrations',    'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
           { 'name' => 'int_count',        'type' => 'integer', 'required' => false, 'localized' => false },
           { 'name' => 'float_count',      'type' => 'float', 'required' => false, 'localized' => false },
-
+          { 'name' => 'donation',         'type' => 'money', 'required' => false, 'localized' => false },
         ]})
     end
   end

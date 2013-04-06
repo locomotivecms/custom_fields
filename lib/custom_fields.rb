@@ -2,10 +2,14 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'active_support'
 require 'carrierwave/mongoid'
+require 'money'
 
 module CustomFields
 
-  @@options = { reserved_names: Mongoid.destructive_fields + %w(id _id send class) }
+  @@options = {
+    reserved_names: Mongoid.destructive_fields + %w(id _id send class),
+    default_currency: "EUR"
+  }
 
   def self.options=(options)
     @@options.merge!(options)
@@ -36,6 +40,7 @@ end
      types/select
      types/integer
      types/float
+     types/money
      types/relationship_default
      types/belongs_to
      types/has_many

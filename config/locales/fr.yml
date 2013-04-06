@@ -7,6 +7,9 @@ fr:
       boolean: Case à cocher
       date: Date
       file: Fichier
+      integer: Entier
+      float: Flotter
+      money: Argent
       belongs_to: Appartient à
       has_many: A plusieurs
       many_to_many: A plusieurs et appartient à
