@@ -50,7 +50,8 @@ module CustomFields
           recipe['rules'].each do |rule|
             self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
           end
-          klass.send :define_method, :model_name, Proc.new{recipe['model_name']}
+          klass.send :define_method, :model_name, proc{recipe['model_name']}
+          klass.send :define_singleton_method, :model_name, proc{recipe['model_name']}
         end
       end
 
