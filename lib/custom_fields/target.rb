@@ -16,7 +16,6 @@ module CustomFields
 
       ## fields ##
       field :custom_fields_recipe, :type => Hash
-
     end
 
     module ClassMethods
@@ -38,9 +37,7 @@ module CustomFields
       #
       def build_klass_with_custom_fields(recipe)
         name = recipe['name']
-
         # puts "CREATING #{name}, #{recipe.inspect}" # DEBUG
-
         parent.const_set(name, Class.new(self)).tap do |klass|
           klass.cattr_accessor :version
 
@@ -53,6 +50,7 @@ module CustomFields
           recipe['rules'].each do |rule|
             self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
           end
+          klass.send :define_method, :model_name, Proc.new{recipe['model_name']}
         end
       end
 

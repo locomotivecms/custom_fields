@@ -59,7 +59,10 @@ module CustomFields
       method_name       = :"#{self.type}_to_recipe"
       custom_to_recipe  = self.send(method_name) rescue {}
 
-      { 'name' => self.name, 'type' => self.type, 'required' => self.required?, 'localized' => self.localized? }.merge(custom_to_recipe)
+      { 'name'      => self.name,
+        'type'      => self.type,
+        'required'  => self.required?,
+        'localized' => self.localized? }.merge(custom_to_recipe)
     end
 
     def as_json(options = {})

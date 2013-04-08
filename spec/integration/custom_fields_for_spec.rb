@@ -11,6 +11,11 @@ describe 'CustomFieldsFor' do
     @blog.posts_custom_fields.first.name.should == 'main_author'
   end
 
+  it 'set valid target model_name' do
+    post = @blog.posts.build :title => 'Hello world',   :body => 'Lorem ipsum...', :main_author => 'Jon Doe'
+    post.model_name.should == 'Post'
+  end
+
   context 'no posts' do
 
     describe 'recipe' do
