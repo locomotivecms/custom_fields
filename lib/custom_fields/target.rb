@@ -50,10 +50,13 @@ module CustomFields
           recipe['rules'].each do |rule|
             self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
           end
-          
+          recipe_model_name = recipe['model_name']
           model_name = Proc.new do
-            return recipe['model_name'] if recipe['model_name'].is_a?(ActiveModel::Name)
-            recipe['model_name'].constantize.model_name
+            if recipe_model_name.is_a?(ActiveModel::Name)
+              recipe_model_name
+            else
+              recipe_model_name.constantize.model_name
+            end
           end
           klass.send :define_method,           :model_name, model_name
           klass.send :define_singleton_method, :model_name, model_name

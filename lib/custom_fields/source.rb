@@ -112,8 +112,16 @@ module CustomFields
 
         metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
       end
-
+      set_attribute_localization(name)
       # puts "new_metadata = #{self.send(name).metadata.klass.inspect} / #{self.send(name).metadata.object_id.inspect}" # DEBUG
+    end
+
+    def set_attribute_localization(name)
+      klass_name = name.singularize.to_sym
+      self.send(:"#{name}_custom_fields").each do |cf|
+        I18n.backend.store_translations ::I18n.locale,
+                          {mongoid: { attributes: {klass_name => {cf.name.to_sym => cf.label}}}}
+      end
     end
 
     # Initializes the object tracking the modifications

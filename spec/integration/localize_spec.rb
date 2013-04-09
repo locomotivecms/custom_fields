@@ -85,6 +85,13 @@ describe 'CustomFields::Localize' do
 
   end
 
+  describe 'localize mongoid custom field' do
+    it 'set I18n key appropriate to field label' do
+      post = @blog.posts.build :title => 'Hello world', :body => 'Yeaaaah', :main_author => 'Bruce Lee'
+      post.class.human_attribute_name(:main_author).should == 'Main Author'
+    end
+  end
+
   def create_blog
     Blog.new(:name => 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build :label => 'Main Author', :type => 'string'
