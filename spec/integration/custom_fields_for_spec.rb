@@ -11,10 +11,24 @@ describe 'CustomFieldsFor' do
     @blog.posts_custom_fields.first.name.should == 'main_author'
   end
 
-  it 'set valid target model_name' do
-    post = @blog.posts.build :title => 'Hello world',   :body => 'Lorem ipsum...', :main_author => 'Jon Doe'
-    post.model_name.should == 'Post'
-    post.class.model_name.should == 'Post'
+  context 'keeps target model_name property' do
+    before(:each) do
+      @blog.save
+      @post = @blog.posts.build :title => 'Hello world',   :body => 'Lorem ipsum...', :main_author => 'Jon Doe'
+    end
+    
+    it 'set valid target model_name' do
+      @post.model_name.should == 'Post'
+      @post.class.model_name.should == 'Post'
+    end
+    
+    it 'restore valid target model_name object' do
+      @post.save
+      blog = Blog.find(@blog._id)
+      post = blog.posts.first
+      post.model_name.should be_kind_of(ActiveModel::Name)
+    end
+    
   end
 
   context 'no posts' do
