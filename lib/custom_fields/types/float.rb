@@ -16,7 +16,7 @@ module CustomFields
           def apply_float_custom_field(klass, rule)
             klass.field rule['name'], :type => ::Float, :localize => rule['localized'] || false
             klass.validates_presence_of rule['name'] if rule['required']
-            klass.validates rule['name'], numericality: true
+            klass.validates rule['name'], numericality: true, if: ->(x){ rule['required'] }
           end
 
           # Build a hash storing the raw value for

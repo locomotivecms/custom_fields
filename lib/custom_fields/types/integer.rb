@@ -16,7 +16,7 @@ module CustomFields
           def apply_integer_custom_field(klass, rule)
             klass.field rule['name'], :type => ::Integer, :localize => rule['localized'] || false
             klass.validates_presence_of rule['name'] if rule['required']
-            klass.validates rule['name'], numericality: { only_integer: true }
+            klass.validates rule['name'], numericality: { only_integer: true }, if: ->(x){ rule['required'] }
           end
 
           # Build a hash storing the raw value for
