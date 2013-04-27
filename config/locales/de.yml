@@ -1,9 +1,13 @@
 de:
   custom_fields:
     type:
-      string: Einfache Texteingabe
-      text: Text
-      select: Auswahlbox
-      boolean: Checkbox
+      string: Einfacher Text
+      text: Formatierter Text
+      select: Auswahl-Liste
+      boolean: Auswahl-Box
       date: Datum
+      integer: Ganzzahl
       file: Datei
+      belongs_to: gehört zu
+      has_many: Hat viele
+      many_to_many: Hat und gehört zu vielen

@@ -44,6 +44,10 @@ describe CustomFields::TargetHelpers do
       @names.include?('author_name').should be_true
     end
 
+    it 'includes setters for integer' do
+      @names.include?('author_age').should be_true
+    end
+
     it 'includes setters for boolean' do
       @names.include?('visible').should be_true
     end
@@ -79,7 +83,7 @@ describe CustomFields::TargetHelpers do
   context '#returning basic attributes' do
 
     before(:each) do
-      %w(category formatted_posted_at visible author_name illustration? author_picture?).each do |meth|
+      %w(category formatted_posted_at visible author_name author_age illustration? author_picture?).each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -96,6 +100,11 @@ describe CustomFields::TargetHelpers do
 
     it 'calls the getter for date' do
       @post.class.expects(:date_attribute_get).with(@post, 'posted_at').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
+    it 'calls the getter for integer' do
+      @post.class.expects(:integer_attribute_get).with(@post, 'author_age').returns({})
       @post.custom_fields_basic_attributes
     end
 
@@ -204,8 +213,8 @@ describe CustomFields::TargetHelpers do
 
     it 'filters the list by passing a block' do
       @post.custom_fields_methods do |rules|
-        %w(string boolean).include?(rules['type'])
-      end.should == %w(visible author_name)
+        %w(string boolean integer).include?(rules['type'])
+      end.should == %w(visible author_name author_age)
     end
 
   end
@@ -220,6 +229,7 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'ghost_writer',     'type' => 'belongs_to', :class_name => 'Person', 'required' => false, 'localized' => false },
           { 'name' => 'illustration',     'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'author_name',      'type' => 'string', 'required' => false, 'localized' => false },
+          { 'name' => 'author_age',       'type' => 'integer', 'required' => false, 'localized' => false },
           { 'name' => 'author_picture',   'type' => 'file', 'required' => false, 'localized' => false },
           { 'name' => 'contributors',     'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts', 'required' => false, 'localized' => false },
           { 'name' => 'projects',         'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project', 'required' => false, 'localized' => false },

@@ -6,7 +6,7 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     ## types ##
-    %w(default string text date boolean file select relationship_default belongs_to has_many many_to_many).each do |type|
+    %w(default string text date boolean file integer select relationship_default belongs_to has_many many_to_many).each do |type|
       include "CustomFields::Types::#{type.classify}::Field".constantize
     end
 
@@ -15,9 +15,9 @@ module CustomFields
     field :name
     field :type
     field :hint
-    field :position,  :type => Integer, :default => 0
-    field :required,  :type => Boolean, :default => false
-    field :localized, :type => Boolean, :default => false
+    field :position,  :type => ::Integer, :default => 0
+    field :required,  :type => ::Boolean, :default => false
+    field :localized, :type => ::Boolean, :default => false
 
     ## validations ##
     validates_presence_of   :label, :type

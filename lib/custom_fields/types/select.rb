@@ -9,7 +9,7 @@ module CustomFields
         include Mongoid::Document
 
         field :name,      :localize => true
-        field :position,  :type => Integer, :default => 0
+        field :position,  :type => ::Integer, :default => 0
 
         embedded_in :custom_field, :inverse_of => :select_options
 

@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.1.0)
+    custom_fields (2.2.0)
       activesupport (~> 3.2.9)
       carrierwave-mongoid (~> 0.2.1)
       mongoid (~> 2.4.12)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     RedCloth (4.2.9)
     SystemTimer (1.2.3)

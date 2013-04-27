@@ -1,7 +1,7 @@
 #!/usr/bin/env bundle
 # encoding: utf-8
 
-source :rubygems
+source 'https://rubygems.org'
 
 gemspec # Include gemspec dependencies
 

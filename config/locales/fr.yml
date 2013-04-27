@@ -6,6 +6,7 @@ fr:
       select: Liste déroulante
       boolean: Case à cocher
       date: Date
+      integer: Nombre
       file: Fichier
       belongs_to: Appartient à
       has_many: A plusieurs
