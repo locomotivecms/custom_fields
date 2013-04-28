@@ -4,7 +4,7 @@ describe CustomFields::Types::Boolean do
 
   before(:each) do
     @blog = build_blog
-    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+    @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is not considered as a relationship field type' do
@@ -53,18 +53,18 @@ describe CustomFields::Types::Boolean do
   context '#localize' do
 
     before(:each) do
-      field = @blog.posts_custom_fields.build :label => 'Published', :type => 'boolean', :localized => true
+      field = @blog.posts_custom_fields.build label: 'Published', type: 'boolean', localized: true
       field.valid?
       @blog.bump_custom_fields_version(:posts)
     end
 
     it 'serializes / deserializes' do
-      post = @blog.posts.build :published => true
+      post = @blog.posts.build published: true
       post.published.should be_true
     end
 
     it 'serializes / deserializes in a different locale' do
-      post = @blog.posts.build :published => true
+      post = @blog.posts.build published: true
       Mongoid::Fields::I18n.locale = :fr
       post.published = false
       post.published_translations['fr'].should == false
@@ -91,8 +91,8 @@ describe CustomFields::Types::Boolean do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Visible', :type => 'boolean'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Visible', type: 'boolean'
       field.valid?
     end
   end

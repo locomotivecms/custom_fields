@@ -65,7 +65,8 @@ module CustomFields
       {
         'name'     => "#{self.relations[name.to_s].class_name.demodulize}#{self._id}",
         'rules'    => self.ordered_custom_fields(name).map(&:to_recipe),
-        'version'  => self.custom_fields_version(name)
+        'version'  => self.custom_fields_version(name),
+        'model_name' => self.relations[name.to_s].class_name.constantize.model_name
       }
     end
 
@@ -111,8 +112,16 @@ module CustomFields
 
         metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
       end
-
+      set_attribute_localization(name)
       # puts "new_metadata = #{self.send(name).metadata.klass.inspect} / #{self.send(name).metadata.object_id.inspect}" # DEBUG
+    end
+
+    def set_attribute_localization(name)
+      klass_name = name.singularize.to_sym
+      self.send(:"#{name}_custom_fields").each do |cf|
+        I18n.backend.store_translations ::I18n.locale,
+                          {mongoid: { attributes: {klass_name => {cf.name.to_sym => cf.label}}}}
+      end
     end
 
     # Initializes the object tracking the modifications
@@ -145,7 +154,7 @@ module CustomFields
       # collect fields with a modified localized field
       fields.each do |field|
         if field.localized_changed? && field.persisted?
-          self._custom_field_localize_diff[name] << { :field => field.name, :localized => field.localized? }
+          self._custom_field_localize_diff[name] << { field: field.name, localized: field.localized? }
         end
       end
     end
@@ -165,14 +174,14 @@ module CustomFields
 
       # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
 
-      collection.update selector, operations, :multi => true
+      collection.find(selector).update operations, multi: true
     end
 
     # If the localized attribute has been changed in at least one of the custom fields,
     # we have to upgrade all the records enhanced by custom_fields in order to make
     # the values consistent with the mongoid localize option.
     #
-    # Ex: post.attributes[:name] = 'Hello world' => post.attributes[:name] = { :en => 'Hello world' }
+    # Ex: post.attributes[:name] = 'Hello world' => post.attributes[:name] = { en: 'Hello world' }
     #
     # @param [ String, Symbol ] name The name of the relation.
     #
@@ -198,7 +207,7 @@ module CustomFields
         next if updates.empty?
 
         collection = self.send(name).collection
-        collection.update record.atomic_selector, { '$set' => updates }
+        collection.find(record.atomic_selector).update({ '$set' => updates })
       end
     end
 
@@ -228,13 +237,13 @@ module CustomFields
       #   end
       #
       #   class Employee
-      #     embedded_in :company, :inverse_of => :employees
+      #     embedded_in :company, inverse_of: :employees
       #     field :name, String
       #   end
       #
-      #   company.employees_custom_fields.build :label => 'His/her position', :name => 'position', :kind => 'string'
+      #   company.employees_custom_fields.build label: 'His/her position', name: 'position', kind: 'string'
       #   company.save
-      #   company.employees.build :name => 'Michael Scott', :position => 'Regional manager'
+      #   company.employees.build name: 'Michael Scott', position: 'Regional manager'
       #
       def custom_fields_for(name)
         self.declare_embedded_in_definition_in_custom_field(name)
@@ -254,11 +263,11 @@ module CustomFields
       #
       def extend_for_custom_fields(name)
         class_eval do
-          field :"#{name}_custom_fields_version", :type => ::Integer, :default => 0
+          field :"#{name}_custom_fields_version", type: ::Integer, default: 0
 
-          embeds_many :"#{name}_custom_fields", :class_name => self.dynamic_custom_field_class_name(name) #, :cascade_callbacks => true # FIXME ?????
+          embeds_many :"#{name}_custom_fields", class_name: self.dynamic_custom_field_class_name(name) #, cascade_callbacks: true # FIXME ?????
 
-          accepts_nested_attributes_for :"#{name}_custom_fields", :allow_destroy => true
+          accepts_nested_attributes_for :"#{name}_custom_fields", allow_destroy: true
         end
 
         class_eval <<-EOV
@@ -324,7 +333,7 @@ module CustomFields
 
         unless source.const_defined?(klass_name)
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
-            embedded_in :#{self.name.demodulize.underscore}, :inverse_of => :#{name}_custom_fields, :class_name => '#{self.name}'
+            embedded_in :#{self.name.demodulize.underscore}, inverse_of: :#{name}_custom_fields, class_name: '#{self.name}'
           EOF
 
           source.const_set(klass_name, klass)

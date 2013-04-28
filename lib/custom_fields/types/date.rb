@@ -20,7 +20,7 @@ module CustomFields
           def apply_date_custom_field(klass, rule)
             name = rule['name']
 
-            klass.field name, :type => ::Date, :localize => rule['localized'] || false
+            klass.field name, type: ::Date, localize: rule['localized'] || false
 
             # other methods
             klass.send(:define_method, :"formatted_#{name}") { _get_formatted_date(name) }

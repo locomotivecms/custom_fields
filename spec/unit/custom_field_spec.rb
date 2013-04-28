@@ -8,7 +8,7 @@ describe CustomFields::Field do
 
 
   it 'removes dashes in the name if name comes from label' do
-    field = CustomFields::Field.new(:label => 'foo-bar')
+    field = CustomFields::Field.new(label: 'foo-bar')
     field.send(:set_name)
     field.name.should == 'foo_bar'
   end

@@ -7,15 +7,15 @@ module CustomFields
     included do
 
       ## types ##
-      %w(default string text date boolean file integer select belongs_to has_many many_to_many).each do |type|
+      %w(default string text date boolean file select float integer money
+         belongs_to has_many many_to_many).each do |type|
         include "CustomFields::Types::#{type.classify}::Target".constantize
       end
 
       include ::CustomFields::TargetHelpers
 
       ## fields ##
-      field :custom_fields_recipe, :type => Hash
-
+      field :custom_fields_recipe, type: Hash
     end
 
     module ClassMethods
@@ -37,9 +37,7 @@ module CustomFields
       #
       def build_klass_with_custom_fields(recipe)
         name = recipe['name']
-
         # puts "CREATING #{name}, #{recipe.inspect}" # DEBUG
-
         parent.const_set(name, Class.new(self)).tap do |klass|
           klass.cattr_accessor :version
 
@@ -52,6 +50,16 @@ module CustomFields
           recipe['rules'].each do |rule|
             self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
           end
+          recipe_model_name = recipe['model_name']
+          model_name = Proc.new do
+            if recipe_model_name.is_a?(ActiveModel::Name)
+              recipe_model_name
+            else
+              recipe_model_name.constantize.model_name
+            end
+          end
+          klass.send :define_method,           :model_name, model_name
+          klass.send :define_singleton_method, :model_name, model_name
         end
       end
 

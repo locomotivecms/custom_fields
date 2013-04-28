@@ -23,9 +23,9 @@ describe 'CustomFields::Field' do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'Main Author',  :type => 'string'
-      blog.posts_custom_fields.build :label => 'Location',     :type => 'string'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build label: 'Main Author',  type: 'string'
+      blog.posts_custom_fields.build label: 'Location',     type: 'string'
       blog.save
     end
   end

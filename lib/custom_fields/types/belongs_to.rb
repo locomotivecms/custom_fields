@@ -34,15 +34,15 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_belongs_to_custom_field(klass, rule)
-            # puts "#{klass.inspect}.belongs_to #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}" # DEBUG
+            # puts "#{klass.inspect}.belongs_to #{rule['name'].inspect}, class_name: #{rule['class_name'].inspect}" # DEBUG
 
             position_name = "position_in_#{rule['name'].underscore}"
 
             # puts "#{klass.inspect}.field :#{position_name}" # DEBUG
 
-            klass.field position_name, :type => ::Integer, :default => 0
+            klass.field position_name, type: ::Integer, default: 0
 
-            klass.belongs_to rule['name'].to_sym, :class_name => rule['class_name']
+            klass.belongs_to rule['name'].to_sym, class_name: rule['class_name']
 
             if rule['required']
               klass.validates_presence_of rule['name'].to_sym

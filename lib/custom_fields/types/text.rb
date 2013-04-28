@@ -10,7 +10,7 @@ module CustomFields
 
         included do
 
-          field :text_formatting, :default => 'html'
+          field :text_formatting, default: 'html'
 
         end
 

@@ -4,7 +4,7 @@ describe CustomFields::Types::Select do
 
   before(:each) do
     @blog = build_blog
-    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+    @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is not considered as a relationship field type' do
@@ -43,10 +43,10 @@ describe CustomFields::Types::Select do
   context '#localize' do
 
     before(:each) do
-      field = @blog.posts_custom_fields.build :label => 'Taxonomy', :type => 'select', :localized => true
+      field = @blog.posts_custom_fields.build label: 'Taxonomy', type: 'select', localized: true
       Mongoid::Fields::I18n.locale = :en
-      @option_1 = field.select_options.build :name => 'Item #1 in English'
-      @option_2 = field.select_options.build :name => 'Item #2 in English'
+      @option_1 = field.select_options.build name: 'Item #1 in English'
+      @option_2 = field.select_options.build name: 'Item #2 in English'
       Mongoid::Fields::I18n.locale = :fr
       @option_1.name = 'Item #1 in French'
       @option_2.name = 'Item #2 in French'
@@ -56,12 +56,12 @@ describe CustomFields::Types::Select do
     end
 
     it 'serializes / deserializes' do
-      post = @blog.posts.build :taxonomy => 'Item #1 in English'
+      post = @blog.posts.build taxonomy: 'Item #1 in English'
       post.taxonomy.should == 'Item #1 in English'
     end
 
     it 'serializes / deserializes in a different locale' do
-      post = @blog.posts.build :taxonomy => 'Item #1 in English'
+      post = @blog.posts.build taxonomy: 'Item #1 in English'
       Mongoid::Fields::I18n.locale = :fr
       post.taxonomy = 'Item #2 in French'
       post.taxonomy_id_translations['fr'].should == @option_2._id
@@ -103,9 +103,9 @@ describe CustomFields::Types::Select do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      @field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select', :required => true
-      @field.select_options.build :name => 'Test'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      @field = blog.posts_custom_fields.build label: 'Main category', type: 'select', required: true
+      @field.select_options.build name: 'Test'
       @field.valid?
     end
   end

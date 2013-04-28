@@ -8,15 +8,15 @@ module CustomFields
 
         include Mongoid::Document
 
-        field :name,      :localize => true
-        field :position,  :type => ::Integer, :default => 0
+        field :name,      localize: true
+        field :position,  type: ::Integer, default: 0
 
-        embedded_in :custom_field, :inverse_of => :select_options
+        embedded_in :custom_field, inverse_of: :select_options
 
         validates_presence_of :name
 
         def as_json(options = nil)
-          super :methods => %w(_id name position)
+          super methods: %w(_id name position)
         end
 
       end
@@ -27,11 +27,11 @@ module CustomFields
 
         included do
 
-          embeds_many :select_options, :class_name => 'CustomFields::Types::Select::Option'
+          embeds_many :select_options, class_name: 'CustomFields::Types::Select::Option'
 
           validates_associated :select_options
 
-          accepts_nested_attributes_for :select_options, :allow_destroy => true
+          accepts_nested_attributes_for :select_options, allow_destroy: true
 
         end
 
@@ -67,7 +67,7 @@ module CustomFields
           def apply_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", :type => BSON::ObjectId, :localize => rule['localized'] || false
+            klass.field :"#{name}_id", type: Moped::BSON::ObjectId, localize: rule['localized'] || false
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
@@ -129,22 +129,25 @@ module CustomFields
 
           # Returns a list of documents groupes by select values defined in the custom fields recipe
           #
-          # @param [ Class ] klass The class to modify
+          # @param  [ Class ] klass The class to modify
           # @return [ Array ] An array of hashes (keys: select option and related documents)
           #
           def group_by_select_option(name, order_by = nil)
-            groups = self.only(:"#{name}_id").group
+            name_id = "#{name}_id"
+            groups = self.each.group_by{|x| x.send(name_id)}.map do |(k, v)|
+              {name_id => k, "group" => v}
+            end
 
             _select_options(name).map do |option|
-              group = groups.detect { |g| g["#{name}_id"].to_s == option['_id'].to_s }
+              group = groups.detect { |g| g[name_id].to_s == option['_id'].to_s }
               list  = group ? group['group'] : []
 
               groups.delete(group) if group
 
-              { :name => option['name'], :entries => self._order_select_entries(list, order_by) }.with_indifferent_access
+              { name: option['name'], entries: self._order_select_entries(list, order_by) }.with_indifferent_access
             end.tap do |array|
               if not groups.empty? # orphan entries ?
-                empty = { :name => nil, :entries => [] }.with_indifferent_access
+                empty = { name: nil, entries: [] }.with_indifferent_access
                 groups.each do |group|
                   empty[:entries] += group['group']
                 end

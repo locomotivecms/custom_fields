@@ -9,7 +9,7 @@ describe CustomFields::Types::Select do
   describe 'a new post' do
 
     before(:each) do
-      @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+      @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
     it 'sets the category from an existing name' do
@@ -32,7 +32,7 @@ describe CustomFields::Types::Select do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :main_category => @marketing_cat._id
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', main_category: @marketing_cat._id
       @post = Post.find(@post._id)
     end
 
@@ -48,7 +48,7 @@ describe CustomFields::Types::Select do
     end
 
     it 'create a new category and assigns it' do
-      category = @blog.posts_custom_fields.first.select_options.build :name => 'Sales'
+      category = @blog.posts_custom_fields.first.select_options.build name: 'Sales'
       @blog.save
       @post = Post.find(@post._id)
       @post.main_category = 'Sales'
@@ -63,12 +63,12 @@ describe CustomFields::Types::Select do
   describe 'group_by' do
 
     before(:each) do
-      @blog.posts.create :title => 'Hello world 1(Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
-      @blog.posts.create :title => 'Hello world (Design)', :body => 'Lorem ipsum...', :main_category => @design_cat._id
-      @blog.posts.create :title => 'Hello world 2 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
-      @blog.posts.create :title => 'Hello world 3 (Development)', :body => 'Lorem ipsum...', :main_category => @development_cat._id
-      @blog.posts.create :title => 'Hello world (Unknow)', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
-      @blog.posts.create :title => 'Hello world (Unknow) 2', :body => 'Lorem ipsum...', :main_category => BSON::ObjectId.new
+      @blog.posts.create title: 'Hello world 1(Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world (Design)', body: 'Lorem ipsum...', main_category: @design_cat._id
+      @blog.posts.create title: 'Hello world 2 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world 3 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world (Unknow)', body: 'Lorem ipsum...', main_category: Moped::BSON::ObjectId.new
+      @blog.posts.create title: 'Hello world (Unknow) 2', body: 'Lorem ipsum...', main_category: Moped::BSON::ObjectId.new
 
       klass = @blog.klass_with_custom_fields(:posts)
       @groups = klass.group_by_select_option(:main_category)
@@ -101,7 +101,7 @@ describe CustomFields::Types::Select do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :author => 'Mister Foo'
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', author: 'Mister Foo'
       @post = Post.find(@post._id)
     end
 
@@ -131,19 +131,19 @@ describe CustomFields::Types::Select do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Main category', :type => 'select'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Main category', type: 'select'
 
       Mongoid::Fields::I18n.locale = :en
 
-      @design_cat       = field.select_options.build :name => 'Design'
-      @development_cat  = field.select_options.build :name => 'Development'
-      @marketing_cat    = field.select_options.build :name => 'Marketing'
+      @design_cat       = field.select_options.build name: 'Design'
+      @development_cat  = field.select_options.build name: 'Development'
+      @marketing_cat    = field.select_options.build name: 'Marketing'
 
-      field = blog.posts_custom_fields.build :label => 'Author', :type => 'select', :localized => true
+      field = blog.posts_custom_fields.build label: 'Author', type: 'select', localized: true
 
-      @option_1 = field.select_options.build :name => 'Mister Foo'
-      @option_2 = field.select_options.build :name => 'Mister Bar'
+      @option_1 = field.select_options.build name: 'Mister Foo'
+      @option_2 = field.select_options.build name: 'Mister Bar'
 
       Mongoid::Fields::I18n.locale = :fr
 

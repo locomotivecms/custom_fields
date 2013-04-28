@@ -7,3 +7,4 @@ doc/
 lib/custom_fields/types_old/
 tmp/
 coverage
+.bundle

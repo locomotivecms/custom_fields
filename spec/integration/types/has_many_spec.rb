@@ -4,15 +4,15 @@ describe CustomFields::Types::HasMany do
 
   before(:each) do
     @blog     = create_blog
-    @post_1   = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :published => true
-    @post_2   = @blog.posts.create :title => 'High and Dry', :body => 'Lorem ipsum...', :published => false
-    @post_3   = @blog.posts.create :title => 'Nude', :body => 'Lorem ipsum...', :published => true
+    @post_1   = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', published: true
+    @post_2   = @blog.posts.create title: 'High and Dry', body: 'Lorem ipsum...', published: false
+    @post_3   = @blog.posts.create title: 'Nude', body: 'Lorem ipsum...', published: true
   end
 
   describe 'a new author' do
 
     before(:each) do
-      @author = @blog.people.build :name => 'John Doe'
+      @author = @blog.people.build name: 'John Doe'
     end
 
     it 'sets the posts' do
@@ -28,7 +28,7 @@ describe CustomFields::Types::HasMany do
 
     it 'retrieves posts based on their position' do
       save_author @author, [@post_1.reload, @post_2.reload]
-      @post_1.reload.update_attributes :position_in_author => 4
+      @post_1.reload.update_attributes position_in_author: 4
       @author = Person.find(@author._id)
       @author.posts.map(&:title).should == ['High and Dry', 'Hello world']
     end
@@ -38,7 +38,7 @@ describe CustomFields::Types::HasMany do
   describe 'an existing author' do
 
     before(:each) do
-      @author = @blog.people.create :name => 'John Doe'
+      @author = @blog.people.create name: 'John Doe'
       save_author @author, [@post_1, @post_2]
       @author = Person.find(@author._id)
     end
@@ -59,14 +59,14 @@ describe CustomFields::Types::HasMany do
   describe 'filtering/ordering posts' do
 
     before(:each) do
-      @author = @blog.people.create :name => 'John Doe'
+      @author = @blog.people.create name: 'John Doe'
       save_author @author, [@post_1, @post_2, @post_3]
       @author = Person.find(@author._id)
     end
 
     it 'returns the list based on the position' do
-      @post_1.update_attributes :position_in_author => 3
-      @post_3.update_attributes :position_in_author => 1
+      @post_1.update_attributes position_in_author: 3
+      @post_3.update_attributes position_in_author: 1
       @author.posts.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
       @author.posts.ordered.all.map(&:title).should == ['Nude', 'High and Dry', 'Hello world']
     end
@@ -81,21 +81,21 @@ describe CustomFields::Types::HasMany do
     it 'filters the list' do
       @blog.people_custom_fields.first.order_by = ['title', 'desc']
       @blog.save & @author = Person.find(@author._id)
-      @author.posts.filtered({ :published => true }).map(&:title).should == ['Nude', 'Hello world']
+      @author.posts.filtered({ published: true }).map(&:title).should == ['Nude', 'Hello world']
     end
 
     it 'filters and sorts the list' do
       @blog.save & @author = Person.find(@author._id)
-      @author.posts.filtered({ :published => true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
+      @author.posts.filtered({ published: true }, %w(title desc)).map(&:title).should  include('Nude', 'Hello world')
     end
 
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build  :label => 'Author',     :type => 'belongs_to',  :class_name => 'Person'
-      blog.posts_custom_fields.build  :label => 'Published',  :type => 'boolean'
-      blog.people_custom_fields.build :label => 'Posts',      :type => 'has_many',    :class_name => "Post#{blog._id}", :inverse_of => 'author'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build  label: 'Author',     type: 'belongs_to',  class_name: 'Person'
+      blog.posts_custom_fields.build  label: 'Published',  type: 'boolean'
+      blog.people_custom_fields.build label: 'Posts',      type: 'has_many',    class_name: "Post#{blog._id}", inverse_of: 'author'
       blog.save & blog.reload
     end
   end

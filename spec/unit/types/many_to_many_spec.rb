@@ -4,9 +4,9 @@ describe CustomFields::Types::ManyToMany do
 
   before(:each) do
     @blog     = build_blog
-    @post     = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
-    @author_1 = @blog.people.build :name => 'John Doe'
-    @author_2 = @blog.people.build :name => 'Jane Doe'
+    @post     = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
+    @author_1 = @blog.people.build name: 'John Doe'
+    @author_2 = @blog.people.build name: 'Jane Doe'
   end
 
   it 'is considered as a relationship field type' do
@@ -35,8 +35,8 @@ describe CustomFields::Types::ManyToMany do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build  :label => 'Authors', :type => 'many_to_many', :class_name => 'Person', :required => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build  label: 'Authors', type: 'many_to_many', class_name: 'Person', required: true
       field.valid?
     end
   end

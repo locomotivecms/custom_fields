@@ -14,13 +14,13 @@ module Mongoid #:nodoc:
 
             attributes ||= {}
 
-            attributes.merge!(:custom_fields_recipe => recipe)
+            attributes.merge!(custom_fields_recipe: recipe)
 
             # build the class with custom_fields for the first time
             type = metadata.klass.klass_with_custom_fields(recipe)
           end
-
           build_without_custom_fields(attributes, options, type)
+
         end
 
         alias_method_chain :build, :custom_fields

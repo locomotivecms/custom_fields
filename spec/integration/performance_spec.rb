@@ -55,12 +55,12 @@ describe 'Performance' do
   end
 
   def create_blog(custom_fields = true)
-    Blog.new(:name => 'My personal blog').tap do |blog|
+    Blog.new(name: 'My personal blog').tap do |blog|
       if custom_fields
-        blog.posts_custom_fields.build :label => 'Main Author', :type => 'string'
-        blog.posts_custom_fields.build :label => 'Location',    :type => 'string'
-        blog.posts_custom_fields.build :label => 'Posted at',   :type => 'date'
-        blog.posts_custom_fields.build :label => 'Published',   :type => 'boolean'
+        blog.posts_custom_fields.build label: 'Main Author', type: 'string'
+        blog.posts_custom_fields.build label: 'Location',    type: 'string'
+        blog.posts_custom_fields.build label: 'Posted at',   type: 'date'
+        blog.posts_custom_fields.build label: 'Published',   type: 'boolean'
       end
       blog.save
     end
@@ -68,7 +68,7 @@ describe 'Performance' do
 
   def create_posts(blog, n)
     n.times do |i|
-      blog.posts.create :title => "Hello world #{i}", :body => 'Lorem ipsum...'
+      blog.posts.create title: "Hello world #{i}", body: 'Lorem ipsum...'
     end
   end
 

@@ -9,7 +9,7 @@ describe CustomFields::Types::Boolean do
   describe 'a new post' do
 
     before(:each) do
-      @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+      @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
     it 'sets the visible flag' do
@@ -27,7 +27,7 @@ describe CustomFields::Types::Boolean do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :visible => true
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', visible: true
       @post = Post.find(@post._id)
     end
 
@@ -48,7 +48,7 @@ describe CustomFields::Types::Boolean do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :published => true
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', published: true
       @post = Post.find(@post._id)
     end
 
@@ -70,9 +70,9 @@ describe CustomFields::Types::Boolean do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'Visible',   :type => 'boolean'
-      blog.posts_custom_fields.build :label => 'Published', :type => 'boolean', :localized => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build label: 'Visible',   type: 'boolean'
+      blog.posts_custom_fields.build label: 'Published', type: 'boolean', localized: true
       blog.save & blog.reload
     end
   end

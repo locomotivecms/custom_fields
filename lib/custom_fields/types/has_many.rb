@@ -34,14 +34,14 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the relation and if it is required or not
           #
           def apply_has_many_custom_field(klass, rule)
-            # puts "#{klass.inspect}.has_many #{rule['name'].inspect}, :class_name => #{rule['class_name'].inspect}, :inverse_of => #{rule['inverse_of']}" # DEBUG
+            # puts "#{klass.inspect}.has_many #{rule['name'].inspect}, class_name: #{rule['class_name'].inspect}, inverse_of: #{rule['inverse_of']}" # DEBUG
 
             position_name = "position_in_#{rule['inverse_of']}"
 
             _order_by   = rule['order_by'] || position_name.to_sym.asc
             _inverse_of = rule['inverse_of'].blank? ? nil : rule['inverse_of'] # an empty String can cause weird behaviours
 
-            klass.has_many rule['name'], :class_name => rule['class_name'], :inverse_of => _inverse_of, :order => _order_by do
+            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by do
 
               def filtered(conditions = {}, order_by = nil)
                 list = conditions.empty? ? self : self.where(conditions)
@@ -49,8 +49,7 @@ module CustomFields
                 if order_by
                   list.order_by(order_by)
                 else
-                  # calling all on a has_many relationship makes us lose the default order_by (mongoid bug ?)
-                  list.order(metadata.order)
+                  list.order_by(metadata.order)
                 end
               end
 
@@ -58,10 +57,10 @@ module CustomFields
 
             end
 
-            klass.accepts_nested_attributes_for rule['name'], :allow_destroy => true
+            klass.accepts_nested_attributes_for rule['name'], allow_destroy: true
 
             if rule['required']
-              klass.validates_length_of rule['name'], :minimum => 1
+              klass.validates_length_of rule['name'], minimum: 1
             end
           end
 

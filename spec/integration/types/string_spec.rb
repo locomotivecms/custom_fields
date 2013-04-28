@@ -9,7 +9,7 @@ describe CustomFields::Types::String do
   describe 'a new post' do
 
     before(:each) do
-      @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+      @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
     it 'sets the author' do
@@ -27,7 +27,7 @@ describe CustomFields::Types::String do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :author => 'John Doe'
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', author: 'John Doe'
 
       Object.send(:remove_const, @post.custom_fields_recipe['name'])
 
@@ -54,8 +54,8 @@ describe CustomFields::Types::String do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'author', :type => 'string'
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build label: 'author', type: 'string'
       blog.save & blog.reload
     end
   end

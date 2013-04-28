@@ -5,8 +5,10 @@ de:
       text: Formatierter Text
       select: Auswahl-Liste
       boolean: Auswahl-Box
-      date: Datum
       integer: Ganzzahl
+      float: Fließkommazahl
+      money: Währung
+      date: Datum
       file: Datei
       belongs_to: gehört zu
       has_many: Hat viele

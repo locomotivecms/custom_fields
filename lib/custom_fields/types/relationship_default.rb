@@ -14,8 +14,8 @@ module CustomFields
           field :inverse_of
           field :order_by
 
-          validates_presence_of :class_name,                  :if => :is_relationship?
-          validate              :ensure_class_name_security,  :if => :is_relationship?
+          validates_presence_of :class_name,                  if: :is_relationship?
+          validate              :ensure_class_name_security,  if: :is_relationship?
 
           def is_relationship?
             method_name = :"#{self.type}_is_relationship?"

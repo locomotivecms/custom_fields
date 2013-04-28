@@ -18,7 +18,7 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field.
           #
           def apply_boolean_custom_field(klass, rule)
-            klass.field rule['name'], :type => ::Boolean, :localize => rule['localized'] || false, :default => false
+            klass.field rule['name'], type: ::Boolean, localize: rule['localized'] || false, default: false
           end
 
           # Build a hash storing the boolean value (true / false) for

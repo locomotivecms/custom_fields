@@ -9,7 +9,7 @@ describe CustomFields::Types::File do
   describe 'a new post' do
 
     before(:each) do
-      @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+      @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
     it 'does not have 2 image fields' do
@@ -29,7 +29,7 @@ describe CustomFields::Types::File do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :image => FixturedFile.open('doc.txt')
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', image: FixturedFile.open('doc.txt')
       @post = Post.find(@post._id)
     end
 
@@ -50,7 +50,7 @@ describe CustomFields::Types::File do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :banner => FixturedFile.open('doc.txt')
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', banner: FixturedFile.open('doc.txt')
       @post = Post.find(@post._id)
     end
 
@@ -78,9 +78,9 @@ describe CustomFields::Types::File do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'image',   :type => 'file'
-      blog.posts_custom_fields.build :label => 'banner',  :type => 'file', :localized => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build label: 'image',   type: 'file'
+      blog.posts_custom_fields.build label: 'banner',  type: 'file', localized: true
       blog.save & blog.reload
     end
   end

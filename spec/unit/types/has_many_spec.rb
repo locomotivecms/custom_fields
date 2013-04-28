@@ -4,9 +4,9 @@ describe CustomFields::Types::HasMany do
 
   before(:each) do
     @blog     = build_blog
-    @post_1   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
-    @post_2   = @blog.posts.build :title => 'Keep writing', :body => 'Lorem ipsum...'
-    @author   = @blog.people.build :name => 'John Doe'
+    @post_1   = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
+    @post_2   = @blog.posts.build title: 'Keep writing', body: 'Lorem ipsum...'
+    @author   = @blog.people.build name: 'John Doe'
   end
 
   it 'is considered as a relationship field type' do
@@ -20,7 +20,7 @@ describe CustomFields::Types::HasMany do
 
   it 'includes a scope named ordered' do
     @author.posts.respond_to?(:ordered).should be_true
-    @author.posts.ordered.send(:options)[:sort].should == [[:position_in_author, :asc]]
+    @author.posts.ordered.send(:options)[:sort].should == {"position_in_author" => 1}
   end
 
   describe 'validation' do
@@ -46,10 +46,10 @@ describe CustomFields::Types::HasMany do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build  :label => 'Author', :type => 'belongs_to', :class_name => 'Person', :required => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build  label: 'Author', type: 'belongs_to', class_name: 'Person', required: true
       field.valid?
-      field = blog.people_custom_fields.build :label => 'Posts', :type => 'has_many', :class_name => "Post#{blog._id}", :inverse_of => 'author', :required => true
+      field = blog.people_custom_fields.build label: 'Posts', type: 'has_many', class_name: "Post#{blog._id}", inverse_of: 'author', required: true
       field.valid?
     end
   end

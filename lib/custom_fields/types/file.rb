@@ -39,7 +39,7 @@ module CustomFields
           # @return [ Hash ] field name => url or empty hash if no file
           #
           def file_attribute_get(instance, name)
-            if instance.send(:"#{name}?")
+            if instance.send(:"#{name}?") #"
               value = instance.send(name.to_sym).url
               { name => value, "#{name}_url" => value }
             else

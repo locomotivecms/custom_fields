@@ -4,7 +4,7 @@ describe CustomFields::Types::File do
 
   before(:each) do
     @blog = build_blog
-    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+    @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is not considered as a relationship field type' do
@@ -56,8 +56,8 @@ describe CustomFields::Types::File do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Picture', :type => 'file', :required => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Picture', type: 'file', required: true
       field.valid?
     end
   end

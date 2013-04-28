@@ -12,7 +12,7 @@ The main goals:
 
 h2. Requirements
 
-ActiveSupport 3.2.9, MongoDB 2.0 and Mongoid 2.4.12
+ActiveSupport 3.2.9, MongoDB 2.0 and Mongoid 3.0.19
 
 h2. Examples
 

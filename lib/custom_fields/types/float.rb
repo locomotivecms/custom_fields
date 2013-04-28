@@ -1,6 +1,6 @@
 module CustomFields
   module Types
-    module Integer
+    module Float
 
       module Field; end
 
@@ -8,18 +8,15 @@ module CustomFields
         extend ActiveSupport::Concern
 
         module ClassMethods
-
-          # Add a integer field
+          # Add a string field
           #
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
-          def apply_integer_custom_field(klass, rule)
-            name = rule['name']
-
-            klass.field name, type: ::Integer, localize: rule['localized'] || false
-            klass.validates_presence_of name if rule['required']
-            klass.validates name, numericality: { only_integer: true }, if: ->(x){ rule['required'] }
+          def apply_float_custom_field(klass, rule)
+            klass.field rule['name'], type: ::Float, localize: rule['localized'] || false
+            klass.validates_presence_of rule['name'] if rule['required']
+            klass.validates rule['name'], numericality: true, if: ->(x){ rule['required'] }
           end
 
           # Build a hash storing the raw value for
@@ -30,7 +27,7 @@ module CustomFields
           #
           # @return [ Hash ] field name => raw value
           #
-          def integer_attribute_get(instance, name)
+          def float_attribute_get(instance, name)
             self.default_attribute_get(instance, name)
           end
 
@@ -41,7 +38,7 @@ module CustomFields
           # @param [ String ] name The name of the string custom field
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
-          def integer_attribute_set(instance, name, attributes)
+          def float_attribute_set(instance, name, attributes)
             self.default_attribute_set(instance, name, attributes)
           end
 
@@ -49,6 +46,6 @@ module CustomFields
 
       end # Target
 
-    end # Integer
+    end # Float
   end # Types
 end # CustomFields

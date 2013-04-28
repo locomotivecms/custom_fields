@@ -4,8 +4,9 @@ describe CustomFields::Types::BelongsTo do
 
   before(:each) do
     @blog   = build_blog
-    @author = Person.new :name => 'John Doe'
-    @post   = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+    @author = Person.new name: 'John Doe'
+    @blog.posts_custom_fields
+    @post   = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is considered as a relationship field type' do
@@ -34,8 +35,8 @@ describe CustomFields::Types::BelongsTo do
   end
 
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Author', :type => 'belongs_to', :class_name => 'Person', :required => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Author', type: 'belongs_to', class_name: 'Person', required: true
       field.valid?
     end
   end

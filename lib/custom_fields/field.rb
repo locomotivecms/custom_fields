@@ -6,7 +6,8 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     ## types ##
-    %w(default string text date boolean file integer select relationship_default belongs_to has_many many_to_many).each do |type|
+    %w(default string text date boolean file select float integer money
+       relationship_default belongs_to has_many many_to_many).each do |type|
       include "CustomFields::Types::#{type.classify}::Field".constantize
     end
 
@@ -15,14 +16,14 @@ module CustomFields
     field :name
     field :type
     field :hint
-    field :position,  :type => ::Integer, :default => 0
-    field :required,  :type => ::Boolean, :default => false
-    field :localized, :type => ::Boolean, :default => false
+    field :position,  type: ::Integer, default: 0
+    field :required,  type: ::Boolean, default: false
+    field :localized, type: ::Boolean, default: false
 
     ## validations ##
     validates_presence_of   :label, :type
-    validates_exclusion_of  :name, :in => lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
-    validates_format_of     :name, :with => /^[a-z]([A-Za-z0-9_]+)?$/
+    validates_exclusion_of  :name, in: lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
+    validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/
     validate                :uniqueness_of_label_and_name
 
     ## callbacks ##
@@ -58,7 +59,10 @@ module CustomFields
       method_name       = :"#{self.type}_to_recipe"
       custom_to_recipe  = self.send(method_name) rescue {}
 
-      { 'name' => self.name, 'type' => self.type, 'required' => self.required?, 'localized' => self.localized? }.merge(custom_to_recipe)
+      { 'name'      => self.name,
+        'type'      => self.type,
+        'required'  => self.required?,
+        'localized' => self.localized? }.merge(custom_to_recipe)
     end
 
     def as_json(options = {})

@@ -8,6 +8,9 @@ fr:
       date: Date
       integer: Nombre
       file: Fichier
+      integer: Entier
+      float: Décimal
+      money: Monnaie
       belongs_to: Appartient à
       has_many: A plusieurs
       many_to_many: A plusieurs et appartient à

@@ -10,7 +10,7 @@ describe CustomFields::Types::Date do
   describe 'a new post' do
 
     before(:each) do
-      @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
+      @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
     it 'sets the posted_at date' do
@@ -28,7 +28,7 @@ describe CustomFields::Types::Date do
   describe 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :posted_at => @date
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', posted_at: @date
       @post = Post.find(@post._id)
     end
 
@@ -54,7 +54,7 @@ describe CustomFields::Types::Date do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create :title => 'Hello world', :body => 'Lorem ipsum...', :visible_at => @date
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', visible_at: @date
       @post = Post.find(@post._id)
     end
 
@@ -76,9 +76,9 @@ describe CustomFields::Types::Date do
   end
 
   def create_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build :label => 'posted_at',   :type => 'date'
-      blog.posts_custom_fields.build :label => 'visible_at',  :type => 'date', :localized => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      blog.posts_custom_fields.build label: 'posted_at',   type: 'date'
+      blog.posts_custom_fields.build label: 'visible_at',  type: 'date', localized: true
       blog.save & blog.reload
     end
   end

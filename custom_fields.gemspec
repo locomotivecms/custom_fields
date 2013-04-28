@@ -19,18 +19,17 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.3.6'
   s.rubyforge_project         = 'nowarning'
 
-  s.add_dependency 'mongoid', '~> 2.4.12'
-  s.add_dependency 'activesupport', '~> 3.2.9'
-  s.add_dependency 'carrierwave-mongoid', '~> 0.2.1'
+  s.add_dependency 'mongoid', '~> 3.1.3'
+  s.add_dependency 'activesupport', '~> 3.2.13'
+  s.add_dependency 'carrierwave-mongoid', '~> 0.5.0'
+  s.add_dependency 'money', '~> 5.0'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
-  s.add_development_dependency('bson', ['~> 1.3.1'])
-  s.add_development_dependency('mongo', ['~> 1.3.1'])
-  s.add_development_dependency('bson_ext', ['~> 1.3.1'])
   s.add_development_dependency('mocha', ['~> 0.9.12'])
   s.add_development_dependency('rspec', ['~> 2.6'])
   s.add_development_dependency('simplecov', ['~> 0.6.1'])
-  s.add_development_dependency('database_cleaner', ['~> 0.6.7'])
+  s.add_development_dependency('database_cleaner', ['~> 0.9.1'])
+  s.add_development_dependency('pry')
   s.add_development_dependency('RedCloth', ['~> 4.2.8'])
 
   s.files        = Dir[ 'init.rb',

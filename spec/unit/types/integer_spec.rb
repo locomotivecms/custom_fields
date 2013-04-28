@@ -4,8 +4,7 @@ describe CustomFields::Types::Integer do
 
   before(:each) do
     @blog = build_blog
-    @post = @blog.posts.build :title => 'Hello world', :body => 'Lorem ipsum...'
-
+    @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is not considered as a relationship field type' do
@@ -13,25 +12,47 @@ describe CustomFields::Types::Integer do
   end
 
   it 'sets a value' do
-    @post.age = 102
-    @post.age.should == 102
+    @post.count = 1
+    @post.count.should == 1
   end
 
   describe 'validation' do
 
-    [nil, ''].each do |value|
+    [nil, '', true, 'John Doe', 1.42].each do |value|
       it "should not valid if the value is #{value.inspect}" do
-        @post.age = value
+        @post.count = value
         @post.valid?.should be_false
-        @post.errors[:age].should_not be_blank
+        @post.errors[:count].should_not be_blank
       end
     end
 
   end
 
+  describe 'getter and setter' do
+
+    it 'returns an empty hash if no value has been set' do
+      @post.class.integer_attribute_get(@post, 'count').should == {}
+    end
+
+    it 'returns the value' do
+      @post.count = 42
+      @post.class.integer_attribute_get(@post, 'count').should == { 'count' => 42 }
+    end
+
+    it 'sets a nil value' do
+      @post.class.integer_attribute_set(@post, 'count', {}).should be_nil
+    end
+
+    it 'sets a value' do
+      @post.class.integer_attribute_set(@post, 'count', { 'count' => 42 })
+      @post.count.should == 42
+    end
+
+  end
+
   def build_blog
-    Blog.new(:name => 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build :label => 'Age', :name => 'age', :type => 'integer', :required => true
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Count', type: 'integer', required: true
       field.valid?
     end
   end
