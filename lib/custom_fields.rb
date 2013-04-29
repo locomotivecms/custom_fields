@@ -34,6 +34,7 @@ end
      types/default
      types/string
      types/text
+     types/email
      types/date
      types/boolean
      types/file
