@@ -49,9 +49,8 @@ module CustomFields
           def apply_custom_field(klass, rule)
             klass.field rule['name'], localize: rule['localized'] || false
 
-            if rule['required']
-              klass.validates_presence_of rule['name']
-            end
+            klass.validates_presence_of rule['name'] if rule['required']
+            klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
           end
 
           # Build a hash storing the formatted (or not) values
