@@ -18,6 +18,7 @@ module CustomFields
     field :hint
     field :position,  type: ::Integer, default: 0
     field :required,  type: ::Boolean, default: false
+    field :unique,    type: ::Boolean, default: false
     field :localized, type: ::Boolean, default: false
 
     ## validations ##
@@ -62,6 +63,7 @@ module CustomFields
       { 'name'      => self.name,
         'type'      => self.type,
         'required'  => self.required?,
+        'unique'    => self.unique?,
         'localized' => self.localized? }.merge(custom_to_recipe)
     end
 
