@@ -8,8 +8,8 @@ module CustomFields
 
       ## types ##
       %w(default string text email date boolean file select float integer money
-         belongs_to has_many many_to_many).each do |type|
-        include "CustomFields::Types::#{type.classify}::Target".constantize
+         belongs_to has_many many_to_many tags).each do |type|
+        include "CustomFields::Types::#{type.camelize}::Target".constantize
       end
 
       include ::CustomFields::TargetHelpers
