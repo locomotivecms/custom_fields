@@ -23,8 +23,8 @@ describe CustomFields::Types::Tags do
     end
     
     it "sets the tags as a string" do
-      @post.tags = 'one two'
-      @post.tags.should == ['one', 'two']
+      @post.tags = 'one,two, three ,four  ,  five'
+      @post.tags.should == %w[one two three four five]
     end
 
   end
@@ -46,7 +46,7 @@ describe CustomFields::Types::Tags do
     end
 
     it 'sets a new posted_at date' do
-      @post.tags = "new tags"
+      @post.tags = "new, tags"
       @post.save!
       @post = Post.find(@post._id)
       @post.tags.should == ['new', 'tags']

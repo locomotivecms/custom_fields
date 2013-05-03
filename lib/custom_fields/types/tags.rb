@@ -14,7 +14,7 @@ module CustomFields
             klass.class_eval do
               define_method("#{rule['name']}=") do |val|
                 #FIXME I would use is_a?(), but it doesn't work in my machine!
-                val = val.split(" ") if val.class.to_s == "String" 
+                val = val.split(/ *, */) if val.class.to_s == "String" 
                 super(val)
               end
             end
