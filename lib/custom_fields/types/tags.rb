@@ -19,6 +19,14 @@ module CustomFields
               end
             end
           end
+          
+          def tags_attribute_get(instance, name)
+            self.default_attribute_get(instance, name)
+          end
+
+          def tags_attribute_set(instance, name, attributes)
+            self.default_attribute_set(instance, name, attributes)
+          end
         end
       end
       
