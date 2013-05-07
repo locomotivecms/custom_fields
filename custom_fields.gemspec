@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '~> 3.2.13'
   s.add_dependency 'carrierwave-mongoid', '~> 0.5.0'
   s.add_dependency 'money', '~> 5.0'
-  s.add_dependency 'mongoid-tags-arent-hard'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
   s.add_development_dependency('mocha', ['~> 0.9.12'])
