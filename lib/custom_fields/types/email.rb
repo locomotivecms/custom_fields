@@ -23,6 +23,7 @@ module CustomFields
             klass.field name, type: ::String, localize: rule['localized'] || false
             klass.validates_presence_of name if rule['required']
             klass.validates_format_of name, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/, allow_blank: !rule['required']
+            klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
           end
 
           # Build a hash storing the raw value for
