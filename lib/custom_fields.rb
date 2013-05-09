@@ -46,6 +46,7 @@ end
      types/belongs_to
      types/has_many
      types/many_to_many
+     types/tags
      field
      source
      target_helpers
