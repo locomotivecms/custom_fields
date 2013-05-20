@@ -2,11 +2,12 @@ require 'mongoid'
 
 Mongoid.configure do |config|
   name = 'custom_fields_test'
-  # host = 'localhost'
   config.connect_to name
-  # config.master = Mongo::Connection.new.db(name)
-  # config.master = Mongo::Connection.new('localhost', '27017', logger: Logger.new($stdout)).db(name)
 end
+
+# Mongoid.logger = Logger.new($stdout)
+# Moped.logger = Logger.new($stdout)
+# Mongoid.logger.level = Logger::DEBUG
 
 module Mongoid
   def self.reload_document(doc)

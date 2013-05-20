@@ -33,7 +33,7 @@ module CustomFields
       #
       # @param [ Hash ] recipe The recipe describing the fields to add
       #
-      # @return [ Class] the anonymous custom klass
+      # @return [ Class ] the anonymous custom klass
       #
       def build_klass_with_custom_fields(recipe)
         name = recipe['name']

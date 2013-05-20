@@ -45,9 +45,19 @@ describe CustomFields::Types::ManyToMany do
   end
 
   it 'filters and orders the posts' do
-    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
-    author = Person.find(@author_1._id)
+    author = assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+    # author = Person.find(@author_1._id)
     author.posts.filtered({ published: true }, %w(title desc)).map(&:title).should == ['Nude', 'Hello world']
+  end
+
+  it 'works even if the related model is deleted' do
+    author = assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+
+    # mimic the deletion of a model and its data
+    [@post_1, @post_3, @post_2].collect(&:delete)
+    Object.send(:remove_const, "Post#{@blog._id}")
+
+    lambda { author.reload.posts.map(&:title) }.should_not raise_error
   end
 
   def create_blog

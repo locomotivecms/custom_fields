@@ -8,6 +8,7 @@ module CustomFields
         extend ActiveSupport::Concern
 
         module ClassMethods
+
           # Add a string field
           #
           # @param [ Class ] klass The class to modify
