@@ -20,10 +20,12 @@ module Mongoid #:nodoc:
       def lookup(object)
         if !object.respond_to?(:keys) # if no translation hash is given, we return the object itself
           object
-        elsif I18n.fallbacks?
-          object[I18n.fallbacks[locale].map(&:to_s).find{ |loc| !object[loc].nil? }]
-        else
+        elsif object.has_key?(locale.to_s)
           object[locale.to_s]
+        elsif I18n.fallbacks?
+          object[I18n.fallbacks[locale].map(&:to_s).find { |loc| !object[loc].nil? }]
+        else
+          nil
         end
       end
 
