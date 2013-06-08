@@ -6,11 +6,12 @@ en:
       select: Select
       boolean: Checkbox
       date: Date
-      integer: Integer
       file: File
       integer: Integer
       float: Float
       money: Money
+      email: E-mail
+      tags: Tags
       belongs_to: Belongs to
       has_many: Has many
       many_to_many: Many To Many
