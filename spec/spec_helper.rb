@@ -50,5 +50,7 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
+    ::I18n.locale = 'en'
+    Mongoid::Fields::I18n.locale = 'en'
   end
 end

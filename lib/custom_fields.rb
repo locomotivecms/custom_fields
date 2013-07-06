@@ -31,6 +31,9 @@ end
      extensions/mongoid/fields.rb
      extensions/mongoid/fields/i18n.rb
      extensions/mongoid/fields/localized.rb
+     extensions/mongoid/validations/collection_size.rb
+     extensions/mongoid/validations/macros.rb
+     extensions/origin/smash.rb
      types/default
      types/string
      types/text

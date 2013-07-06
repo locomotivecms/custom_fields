@@ -28,7 +28,7 @@ describe CustomFields::Types::ManyToMany do
       it "should not valid if the value is #{value.inspect}" do
         @post.authors = value
         @post.valid?.should be_false
-        @post.errors[:authors].should_not be_blank
+        @post.errors[:authors].should == ["must have at least one element"]
       end
     end
 

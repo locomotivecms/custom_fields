@@ -22,3 +22,4 @@ fr:
   errors:
     messages:
       blank: "doit être rempli(e)"
+      at_least_one_element: "doit avoir au moins un élément"

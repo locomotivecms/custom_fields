@@ -38,6 +38,10 @@ module CustomFields
 
             klass.has_and_belongs_to_many rule['name'], class_name: rule['class_name'], inverse_of: rule['inverse_of'], order: rule['order_by'] do
 
+              # def at_least_one_element?
+              #   (base.send(metadata.key.to_sym).try(:size) || 0) > 0
+              # end
+
               def filtered(conditions = {}, order_by = nil)
                 list = conditions.empty? ? self : self.where(conditions)
 
@@ -56,7 +60,7 @@ module CustomFields
             end
 
             if rule['required']
-              klass.validates_length_of rule['name'], minimum: 1
+              klass.validates_collection_size_of rule['name'], minimum: 1, message: :at_least_one_element
             end
           end
 

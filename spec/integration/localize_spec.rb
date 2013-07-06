@@ -86,10 +86,40 @@ describe 'CustomFields::Localize' do
   end
 
   describe 'localize mongoid custom field' do
+
     it 'set I18n key appropriate to field label' do
       post = @blog.posts.build title: 'Hello world', body: 'Yeaaaah', main_author: 'Bruce Lee'
       post.class.human_attribute_name(:main_author).should == 'Main Author'
     end
+
+  end
+
+  describe 'retrieve a post' do
+
+    before(:each) do
+      Mongoid::Fields::I18n.with_locale('fr') do
+        @post = @blog.posts.create title: 'Hello world', body: 'Yeaaaah', url: '/bonjour-le-monde'
+      end
+    end
+
+    subject { @blog.posts.where(url: '/bonjour-le-monde').first }
+
+    context 'in the locale of the content' do
+
+      before(:each) { Mongoid::Fields::I18n.locale = 'fr' }
+
+      it { should_not be_nil }
+
+      its(:url) { should == '/bonjour-le-monde' }
+
+    end
+
+    context 'in another locale' do
+
+      it { should be_nil }
+
+    end
+
   end
 
   def create_blog

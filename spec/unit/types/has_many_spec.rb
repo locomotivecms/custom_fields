@@ -25,12 +25,31 @@ describe CustomFields::Types::HasMany do
 
   describe 'validation' do
 
-    [nil, []].each do |value|
-      it "should not valid if the value is #{value.inspect}" do
-        @author.posts = value
-        @author.valid?.should be_false
-        @author.errors[:posts].should_not be_blank
+    context 'when not persisted' do
+
+      it 'is valid if nil' do
+        @author.valid?.should be_true
       end
+
+      it 'is valid if empty' do
+        @author.posts = []
+        @author.valid?.should be_true
+      end
+
+    end
+
+    context 'persisted' do
+
+      before(:each) { @author.stubs(:new_record?).returns(false) }
+
+      [nil, []].each do |value|
+        it "is not valid if the value is #{value.inspect}" do
+          @author.posts = value
+          @author.valid?.should be_false
+          @author.errors[:posts].should == ["must have at least one element"]
+        end
+      end
+
     end
 
   end
