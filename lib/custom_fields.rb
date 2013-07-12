@@ -36,6 +36,7 @@ end
      types/text
      types/email
      types/date
+     types/datetime
      types/boolean
      types/file
      types/select

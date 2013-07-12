@@ -6,7 +6,7 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     ## types ##
-    %w(default string text email date boolean file select float integer money
+    %w(default string text email date date_time boolean file select float integer money
        relationship_default belongs_to has_many many_to_many).each do |type|
       include "CustomFields::Types::#{type.classify}::Field".constantize
     end
