@@ -5,10 +5,12 @@ module CustomFields
     include ::Mongoid::Document
     include ::Mongoid::Timestamps
 
+    AVAILABLE_TYPES = %w(default string text email date boolean file select float integer money
+       tags relationship_default belongs_to has_many many_to_many)
+
     ## types ##
-    %w(default string text email date boolean file select float integer money
-       relationship_default belongs_to has_many many_to_many).each do |type|
-      include "CustomFields::Types::#{type.classify}::Field".constantize
+    AVAILABLE_TYPES.each do |type|
+      include "CustomFields::Types::#{type.camelize}::Field".constantize
     end
 
     ## fields ##
@@ -24,6 +26,7 @@ module CustomFields
     ## validations ##
     validates_presence_of   :label, :type
     validates_exclusion_of  :name, in: lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
+    validates_inclusion_of  :type, in: AVAILABLE_TYPES
     validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/
     validate                :uniqueness_of_label_and_name
 

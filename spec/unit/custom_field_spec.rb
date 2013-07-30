@@ -46,6 +46,15 @@ describe CustomFields::Field do
       end
     end
 
+    %w(has_one bool).each do |type|
+      it "does not accept unknown type like #{type}" do
+        stub_field_for_validation(@field)
+        @field.type = type
+        @field.valid?.should == false
+        @field.errors[:type].should_not be_empty
+      end
+    end
+
   end
 
   def stub_field_for_validation(field)
