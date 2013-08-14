@@ -43,7 +43,7 @@ describe CustomFields::Types::DateTime do
       @post.posted_at.should == @datetime
     end
 
-    it 'sets a new posted_at datetime' do
+    it 'sets a new posted_at date_time' do
       @post.posted_at = '2009-09-10 11:30:40'
       @post.save!
       @post = Post.find(@post._id)
