@@ -5,9 +5,11 @@ module Mongoid #:nodoc
 
     class I18n
 
-      include Singleton
-
       attr_accessor :locale, :fallbacks
+
+      def self.instance
+        Thread.current[:mongoid_i18n] ||= Mongoid::Fields::I18n.new
+      end
 
       def self.locale
         self.instance.locale || ::I18n.locale
