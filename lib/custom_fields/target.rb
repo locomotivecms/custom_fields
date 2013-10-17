@@ -73,6 +73,8 @@ module CustomFields
       # @return [ Class ] the custom klass
       #
       def klass_with_custom_fields(recipe)
+        return self if recipe.blank? # no recipe provided
+
         name = recipe['name']
 
         (modules = self.name.split('::')).pop
