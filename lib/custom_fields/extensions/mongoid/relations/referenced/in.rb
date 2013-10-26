@@ -7,9 +7,11 @@ module Mongoid # :nodoc:
 
         class << self
 
-          def valid_options
-            [:autosave, :foreign_key, :index, :polymorphic, :custom_fields_parent_klass]
+          def valid_options_with_parent_class
+            valid_options_without_parent_class.push :custom_fields_parent_klass
           end
+
+          alias_method_chain :valid_options, :parent_class
 
         end
 
