@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = 'nowarning'
 
   s.add_dependency 'mongoid', '~> 3.1.5'
-  s.add_dependency 'activesupport', '~> 3.2.13'
+  s.add_dependency 'activesupport', '~> 4.0'
   s.add_dependency 'carrierwave-mongoid', '~> 0.6.0'
   s.add_dependency 'money', '~> 5.0'
 
