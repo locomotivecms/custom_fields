@@ -27,7 +27,7 @@ module CustomFields
     validates_presence_of   :label, :type
     validates_exclusion_of  :name, in: lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
     validates_inclusion_of  :type, in: AVAILABLE_TYPES, allow_blank: true
-    validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/
+    validates_format_of     :name, with: /\A[a-z]([A-Za-z0-9_]+)?\z/
     validate                :uniqueness_of_label_and_name
 
     ## callbacks ##

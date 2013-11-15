@@ -6,7 +6,7 @@ class String
     rescue NameError => exception
       # DEBUG: puts "constantizing #{self.inspect}"
       # alright, does it look like a custom_fields dynamic klass ?
-      if self =~ /(.*)([0-9a-fA-F]{24})$/
+      if self =~ /(.*)([0-9a-fA-F]{24})\z/
         base = $1.constantize
         # we can know it for sure
         if base.with_custom_fields?
