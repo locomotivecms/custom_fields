@@ -43,7 +43,7 @@ module CustomFields
             klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by do
 
               def filtered(conditions = {}, order_by = nil)
-                list = conditions.empty? ? self : self.where(conditions)
+                list = conditions.empty? ? self.unscoped : self.where(conditions)
 
                 if order_by
                   list.order_by(order_by)
