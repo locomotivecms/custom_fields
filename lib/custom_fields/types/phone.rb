@@ -17,7 +17,7 @@ module CustomFields
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
-          def apply_email_custom_field(klass, rule)
+          def apply_phone_custom_field(klass, rule)
             name = rule['name']
 
             klass.field name, type: ::String, localize: rule['localized'] || false
