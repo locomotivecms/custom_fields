@@ -22,7 +22,7 @@ module CustomFields
 
             klass.field name, type: ::String, localize: rule['localized'] || false
             klass.validates_presence_of name if rule['required']
-            klass.validates_format_of name, with: /\A(.*)\s+\([0-9]{3,4}\)\s+([0-9]{3})-([0-9]{2})-([0-9]{2})\Z/, allow_blank: !rule['required']
+            klass.validates_format_of name, with: /\A(.+)([0-9]{1,2})\s+\([0-9]{3,4}\)\s+([0-9]{3})-([0-9]{2})-([0-9]{2})\Z/, allow_blank: !rule['required']
             klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
           end
 
