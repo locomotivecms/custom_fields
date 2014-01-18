@@ -51,6 +51,7 @@ end
      types/has_many
      types/many_to_many
      types/tags
+     types/phone
      field
      source
      target_helpers
