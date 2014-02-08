@@ -104,7 +104,7 @@ module CustomFields
 
       # puts "[CustomFields] refresh_metadata_with_custom_fields, #{name.inspect}, self = #{self.inspect}"
 
-      self.send(name).relation_metadata = old_metadata.clone.tap do |metadata|
+      self.send(name).metadata = old_metadata.clone.tap do |metadata|
         # Rails.logger.debug "[CustomFields] refresh_metadata_with_custom_fields #{metadata.klass}" if defined?(Rails) # DEBUG
 
         # backup the current klass
