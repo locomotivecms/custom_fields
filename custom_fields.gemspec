@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.3.6'
   s.rubyforge_project         = 'nowarning'
 
-  s.add_dependency 'mongoid', '~> 4.0.0.alpha1'
+  s.add_dependency 'mongoid', '~> 3.1.6'
   s.add_dependency 'activesupport', '~> 4.0'
   s.add_dependency 'carrierwave-mongoid', '~> 0.6.0'
   s.add_dependency 'money', '~> 5.0'
