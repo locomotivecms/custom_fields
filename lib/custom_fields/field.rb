@@ -97,7 +97,7 @@ module CustomFields
     end
 
     def siblings
-      self._parent.send(self.metadata.name)
+      self._parent.send(self.relation_metadata.name)
     end
 
   end
