@@ -1,6 +1,6 @@
 # encoding: utf-8
 module Mongoid
-  module Validations
+  module Validatable
 
     # Validates that the specified collections do or do not match a certain
     # size.

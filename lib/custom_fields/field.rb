@@ -5,8 +5,7 @@ module CustomFields
     include ::Mongoid::Document
     include ::Mongoid::Timestamps
 
-    AVAILABLE_TYPES = %w(default string text email date date_time boolean file select float integer
-       money tags relationship_default belongs_to has_many many_to_many)
+    AVAILABLE_TYPES = %w(default string text email date date_time boolean file select float integer money tags relationship_default belongs_to has_many many_to_many phone)
 
     ## types ##
     AVAILABLE_TYPES.each do |type|
@@ -27,7 +26,7 @@ module CustomFields
     validates_presence_of   :label, :type
     validates_exclusion_of  :name, in: lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
     validates_inclusion_of  :type, in: AVAILABLE_TYPES, allow_blank: true
-    validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/
+    validates_format_of     :name, with: /\A[a-z]([A-Za-z0-9_]+)?\z/
     validate                :uniqueness_of_label_and_name
 
     ## callbacks ##
@@ -98,7 +97,7 @@ module CustomFields
     end
 
     def siblings
-      self._parent.send(self.metadata.name)
+      self._parent.send(self.relation_metadata.name)
     end
 
   end

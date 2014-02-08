@@ -31,8 +31,8 @@ end
      extensions/mongoid/fields.rb
      extensions/mongoid/fields/i18n.rb
      extensions/mongoid/fields/localized.rb
-     extensions/mongoid/validations/collection_size.rb
-     extensions/mongoid/validations/macros.rb
+     extensions/mongoid/validatable/collection_size.rb
+     extensions/mongoid/validatable/macros.rb
      extensions/origin/smash.rb
      types/default
      types/string
@@ -51,6 +51,7 @@ end
      types/has_many
      types/many_to_many
      types/tags
+     types/phone
      field
      source
      target_helpers

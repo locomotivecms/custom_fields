@@ -36,7 +36,7 @@ module CustomFields
     def klass_with_custom_fields(name)
       # Rails.logger.debug "[CustomFields] klass_with_custom_fields #{self.send(name).metadata.klass} / #{self.send(name).metadata[:old_klass]}" if defined?(Rails) # DEBUG
       recipe    = self.custom_fields_recipe_for(name)
-      _metadata = self.send(name).metadata
+      _metadata = self.send(name).relation_metadata
       target    = _metadata[:original_klass] || _metadata.klass # avoid to use an already enhanced klass
       target.klass_with_custom_fields(recipe)
     end
@@ -63,10 +63,10 @@ module CustomFields
     #
     def custom_fields_recipe_for(name)
       {
-        'name'     => "#{self.relations[name.to_s].class_name.demodulize}#{self._id}",
-        'rules'    => self.ordered_custom_fields(name).map(&:to_recipe),
-        'version'  => self.custom_fields_version(name),
-        'model_name' => self.relations[name.to_s].class_name.constantize.model_name
+        'name'        => "#{self.relations[name.to_s].class_name.demodulize}#{self._id}",
+        'rules'       => self.ordered_custom_fields(name).map(&:to_recipe),
+        'version'     => self.custom_fields_version(name),
+        'model_name'  => self.relations[name.to_s].class_name.constantize.model_name.name
       }
     end
 
@@ -98,7 +98,7 @@ module CustomFields
     def refresh_metadata_with_custom_fields(name)
       return if !self.persisted? || self.send(:"#{name}_custom_fields").blank? # do not generate a klass without all the information
 
-      old_metadata = self.send(name).metadata
+      old_metadata = self.send(name).relation_metadata
 
       # puts "old_metadata = #{old_metadata.klass.inspect} / #{old_metadata.object_id.inspect}" # DEBUG
 
