@@ -4,7 +4,7 @@ PATH
     custom_fields (2.3.1)
       activesupport (~> 4.0.8)
       carrierwave-mongoid (~> 0.6.0)
-      money (~> 5.0)
+      money (~> 5.1.1)
       mongoid (~> 4.0.0)
 
 GEM

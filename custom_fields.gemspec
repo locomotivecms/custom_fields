@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'mongoid', '~> 4.0.0'
   s.add_dependency 'activesupport', '~> 4.0.8'
   s.add_dependency 'carrierwave-mongoid', '~> 0.6.0'
-  s.add_dependency 'money', '~> 5.0'
+  s.add_dependency 'money', '~> 5.1.1'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
   s.add_development_dependency('mocha', ['~> 0.9.12'])

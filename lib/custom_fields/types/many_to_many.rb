@@ -42,7 +42,7 @@ module CustomFields
                 else
                   # use the natural order given by the initial array (ex: project_ids).
                   # Warning: it returns an array and not a criteria object meaning it breaks the chain
-                  ids = base.send(metadata.key.to_sym)
+                  ids = base.send(__metadata.key.to_sym)
                   list.entries.sort { |a, b| ids.index(a.id) <=> ids.index(b.id) }
                 end
               end

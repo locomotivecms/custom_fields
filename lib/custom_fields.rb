@@ -4,6 +4,8 @@ require 'active_support'
 require 'carrierwave/mongoid'
 require 'money'
 
+Money.use_i18n = false
+
 module CustomFields
 
   @@options = {
