@@ -86,6 +86,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth (~> 4.2.8)
   SystemTimer
+  bson
   custom_fields!
   database_cleaner (~> 0.9.1)
   json (~> 1.7.7)

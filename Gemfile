@@ -8,6 +8,8 @@ gem 'rake'
 
 gem 'json', '~> 1.7.7'
 
+gem 'bson'
+
 platforms :mri_18 do
   gem 'SystemTimer'
 end

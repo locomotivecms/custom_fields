@@ -1,15 +1,10 @@
 module CustomFields
-
   module Types
-
     module ManyToMany
-
       module Field
-
         extend ActiveSupport::Concern
 
         included do
-
           def many_to_many_to_recipe
             { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of, 'order_by' => self.order_by }
           end
@@ -17,13 +12,10 @@ module CustomFields
           def many_to_many_is_relationship?
             self.type == 'many_to_many'
           end
-
         end
-
       end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
