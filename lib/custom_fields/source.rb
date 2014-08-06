@@ -66,7 +66,7 @@ module CustomFields
         'name'     => "#{self.relations[name.to_s].class_name.demodulize}#{self._id}",
         'rules'    => self.ordered_custom_fields(name).map(&:to_recipe),
         'version'  => self.custom_fields_version(name),
-        'model_name' => self.relations[name.to_s].class_name.constantize.model_name
+        'model_name' => self.relations[name.to_s].class_name.constantize.model_name.to_s
       }
     end
 
