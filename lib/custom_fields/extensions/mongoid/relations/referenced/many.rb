@@ -8,6 +8,7 @@ module Mongoid #:nodoc:
       class Many < Relations::Many
 
         def build_with_custom_fields(attributes = {}, options = {}, type = nil)
+          # binding.pry
           if base.respond_to?(:custom_fields_for?) && base.custom_fields_for?(metadata.name)
             # all the information about how to build the custom class are stored here
             recipe = base.custom_fields_recipe_for(metadata.name)
@@ -19,7 +20,9 @@ module Mongoid #:nodoc:
             # build the class with custom_fields for the first time
             type = metadata.klass.klass_with_custom_fields(recipe)
           end
-          build_without_custom_fields(attributes, options, type)
+          # binding.pry
+          # build_without_custom_fields(attributes, options, type)
+          build_without_custom_fields(attributes, type)
 
         end
 
