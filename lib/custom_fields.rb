@@ -7,7 +7,7 @@ require 'money'
 module CustomFields
 
   @@options = {
-    reserved_names:     Mongoid.destructive_fields + %w(id _id send class),
+    reserved_names:     Mongoid.destructive_fields + %w(id _id send class destroy),
     default_currency:   'EUR'
   }
 
