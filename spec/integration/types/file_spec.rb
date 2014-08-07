@@ -15,7 +15,7 @@ describe CustomFields::Types::File do
     it 'does not have 2 image fields' do
       @post.image = FixturedFile.open('doc.txt')
       @post.save
-      (@post.attributes.key?('source') && @post.attributes.key?(:source)).should be_false
+      (@post.attributes.key?('source') && @post.attributes.key?(:source)).should be false
     end
 
     it 'attaches the file' do
@@ -70,8 +70,8 @@ describe CustomFields::Types::File do
     it 'validates the presence of a file not filled in a locale' do
       Mongoid::Fields::I18n.locale = :de
       @post = Post.find(@post._id)
-      @post.valid?.should be_true
-      @post.save.should be_true
+      @post.valid?.should be true
+      @post.save.should be true
       @post.banner.url.should == '/uploads/doc.txt'
     end
 

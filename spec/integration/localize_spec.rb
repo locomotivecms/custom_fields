@@ -80,7 +80,7 @@ describe 'CustomFields::Localize' do
       @blog.save
       post = Post.find(@post._id)
       post.main_author.should == 'Mister Foo'
-      post.respond_to?(:main_author_translations).should be_false
+      post.respond_to?(:main_author_translations).should be false
     end
 
   end

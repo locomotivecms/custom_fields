@@ -8,7 +8,7 @@ describe CustomFields::Types::Float do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   it 'sets a value' do
@@ -21,7 +21,7 @@ describe CustomFields::Types::Float do
     [nil, '', true, 'John Doe'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.count = value
-        @post.valid?.should be_false
+        @post.valid?.should be false
         @post.errors[:count].should_not be_blank
       end
     end

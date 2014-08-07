@@ -8,7 +8,7 @@ describe CustomFields::Types::String do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   it 'sets a value' do
@@ -21,7 +21,7 @@ describe CustomFields::Types::String do
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.author = value
-        @post.valid?.should be_false
+        @post.valid?.should be false
         @post.errors[:author].should_not be_blank
       end
     end

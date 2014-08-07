@@ -8,7 +8,7 @@ describe CustomFields::Types::Boolean do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   context '#true' do
@@ -60,7 +60,7 @@ describe CustomFields::Types::Boolean do
 
     it 'serializes / deserializes' do
       post = @blog.posts.build published: true
-      post.published.should be_true
+      post.published.should be true
     end
 
     it 'serializes / deserializes in a different locale' do
@@ -85,7 +85,7 @@ describe CustomFields::Types::Boolean do
 
     it 'sets a value' do
       @post.class.boolean_attribute_set(@post, 'visible', { 'visible' => 'true' })
-      @post.visible.should be_true
+      @post.visible.should be true
     end
 
   end

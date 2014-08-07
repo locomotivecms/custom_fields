@@ -10,11 +10,11 @@ describe CustomFields::Types::BelongsTo do
   end
 
   it 'is considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_true
+    @blog.posts_custom_fields.first.is_relationship?.should be true
   end
 
   it 'has a field storing the position' do
-    @post.respond_to?(:position_in_author).should be_true
+    @post.respond_to?(:position_in_author).should be true
   end
 
   it 'sets a value' do
@@ -27,7 +27,7 @@ describe CustomFields::Types::BelongsTo do
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.author = value
-        @post.valid?.should be_false
+        @post.valid?.should be false
         @post.errors[:author].should_not be_blank
       end
     end

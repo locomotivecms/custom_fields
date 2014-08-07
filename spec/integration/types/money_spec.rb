@@ -35,7 +35,7 @@ describe CustomFields::Types::Money do
 
     it 'does not modify the other Post class' do
       post = Post.new
-      post.respond_to?(:donation).should be_false
+      post.respond_to?(:donation).should be false
     end
 
     it 'returns the donated money' do

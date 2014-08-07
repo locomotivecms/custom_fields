@@ -23,7 +23,7 @@ describe CustomFields::Field do
       it "does not accept name like #{value}" do
         stub_field_for_validation(@field)
         @field.name = value
-        @field.valid?.should be_false
+        @field.valid?.should be false
         @field.errors[:name].should_not be_empty
       end
     end

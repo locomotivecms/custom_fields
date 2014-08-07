@@ -42,7 +42,7 @@ describe 'CustomFieldsFor' do
 
       it 'is included in new posts' do
         @post.title.should == 'Hello world'
-        @post.custom_fields_recipe.should_not be_false
+        @post.custom_fields_recipe.should_not be false
       end
 
     end
@@ -64,24 +64,24 @@ describe 'CustomFieldsFor' do
 
     it 'includes the new fields' do
       post = @blog.posts.first
-      post.respond_to?(:main_author).should be_true
-      post.respond_to?(:location).should be_true
+      post.respond_to?(:main_author).should be true
+      post.respond_to?(:location).should be true
     end
 
     it 'renames a field' do
       @blog.posts_custom_fields.first.name = 'author'
       @blog.save & @blog.reload
       post = @blog.posts.first
-      post.respond_to?(:author).should be_true
-      post.respond_to?(:main_author).should be_false
+      post.respond_to?(:author).should be true
+      post.respond_to?(:main_author).should be false
     end
 
     it 'destroys a field' do
       @blog.posts_custom_fields.delete_all(name: 'main_author' )
       @blog.save & @blog.reload
       post = @blog.posts.first
-      post.respond_to?(:location).should be_true
-      post.respond_to?(:main_author).should be_false
+      post.respond_to?(:location).should be true
+      post.respond_to?(:main_author).should be false
     end
 
   end

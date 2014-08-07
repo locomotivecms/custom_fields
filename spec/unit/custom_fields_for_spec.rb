@@ -13,7 +13,7 @@ describe 'CustomFieldsFor' do
     end
 
     it 'tells if an association is enhanced by the custom fields' do
-      @blog.custom_fields_for?(:posts).should be_true
+      @blog.custom_fields_for?(:posts).should be true
     end
 
   end

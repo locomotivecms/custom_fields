@@ -8,14 +8,14 @@ describe CustomFields::Types::File do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   describe 'validation' do
 
     it "should not valid if the value is nil" do
       @post.picture = nil
-      @post.valid?.should be_false
+      @post.valid?.should be false
       @post.errors[:picture].should_not be_blank
     end
 
@@ -29,8 +29,8 @@ describe CustomFields::Types::File do
 
     it 'returns the value' do
       @post.picture = FixturedFile.open('doc.txt')
-      @post.class.file_attribute_get(@post, 'picture').key?('picture').should be_true
-      @post.class.file_attribute_get(@post, 'picture').key?('picture_url').should be_true
+      @post.class.file_attribute_get(@post, 'picture').key?('picture').should be true
+      @post.class.file_attribute_get(@post, 'picture').key?('picture_url').should be true
     end
 
     it 'sets a nil value' do

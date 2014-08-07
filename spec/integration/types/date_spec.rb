@@ -34,7 +34,7 @@ describe CustomFields::Types::Date do
 
     it 'does not modify the other Post class' do
       post = Post.new
-      post.respond_to?(:posted_at).should be_false
+      post.respond_to?(:posted_at).should be false
     end
 
     it 'returns the posted_at date' do

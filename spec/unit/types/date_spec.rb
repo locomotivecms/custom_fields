@@ -9,7 +9,7 @@ describe CustomFields::Types::Date do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   it 'sets value (in French format) from a string' do

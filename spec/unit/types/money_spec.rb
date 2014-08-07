@@ -13,7 +13,7 @@ describe CustomFields::Types::Money do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   it "returns the currency symbol if allow_currency_from_symbol" do
@@ -37,7 +37,7 @@ describe CustomFields::Types::Money do
       [nil,''].each do |value|
         it "should not be valid if the value is #{value.inspect}" do
           @post.donation = value
-          @post.valid?.should be_false
+          @post.valid?.should be false
           @post.errors[:donation].should_not be_blank
         end
       end

@@ -10,7 +10,7 @@ describe 'CustomFieldsFor' do
 
     subject { blog.posts.create(title: 'Hello world', body: 'Lorem ipsum') }
 
-    its(:persisted?) { should be_true }
+    its(:persisted?) { should be true }
     its(:title) { should == 'Hello world' }
 
   end

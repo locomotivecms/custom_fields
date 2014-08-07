@@ -29,10 +29,12 @@ Dir[File.join(NAMESPACED_MODELS, "*.rb")].sort.each { |file| require File.basena
 RSpec.configure do |config|
   config.mock_with :mocha
 
+  require 'rspec/its'
+
   require 'database_cleaner'
   require 'database_cleaner/mongoid/truncation'
 
-  config.backtrace_clean_patterns = [
+  config.backtrace_exclusion_patterns = [
     /\/lib\d*\/ruby\//,
     /bin\//,
     /gems/,

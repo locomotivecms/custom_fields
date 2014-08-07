@@ -53,18 +53,18 @@ describe CustomFields::Types::Boolean do
     end
 
     it 'serializes / deserializes' do
-      @post.published.should be_true
+      @post.published.should be true
     end
 
     it 'serializes / deserializes with a different locale' do
       Mongoid::Fields::I18n.locale = :fr
-      @post.published.should be_true
+      @post.published.should be true
       @post.published = false
       @post.save
       @post = Post.find(@post._id)
-      @post.published.should be_false
+      @post.published.should be false
       Mongoid::Fields::I18n.locale = :en
-      @post.published.should be_true
+      @post.published.should be true
     end
 
   end

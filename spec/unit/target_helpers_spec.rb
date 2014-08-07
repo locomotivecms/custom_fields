@@ -41,58 +41,58 @@ describe CustomFields::TargetHelpers do
     end
 
     it 'includes setters for string' do
-      @names.include?('author_name').should be_true
+      @names.include?('author_name').should be true
     end
 
     it 'includes setters for boolean' do
-      @names.include?('visible').should be_true
+      @names.include?('visible').should be true
     end
 
     it 'includes setters for integer' do
-      @names.include?('int_count').should be_true
+      @names.include?('int_count').should be true
     end
 
     it 'includes setters for float' do
-      @names.include?('float_count').should be_true
+      @names.include?('float_count').should be true
     end
 
     it 'includes setters for money' do
-      @names.include?('formatted_donation').should be_true
+      @names.include?('formatted_donation').should be true
     end
 
     it 'includes setters for date' do
-      @names.include?('formatted_posted_at').should be_true
+      @names.include?('formatted_posted_at').should be true
     end
 
     it 'includes setters for file' do
-      @names.include?('illustration').should be_true
-      @names.include?('remove_illustration').should be_true
+      @names.include?('illustration').should be true
+      @names.include?('remove_illustration').should be true
     end
 
     it 'includes setters for select' do
-      @names.include?('category_id').should be_true
-      @names.include?('category').should be_false
+      @names.include?('category_id').should be true
+      @names.include?('category').should be false
     end
 
     it 'includes setters for integer' do
-      @names.include?('int_count').should be_true
-      @names.include?('remove_int_count').should be_false
+      @names.include?('int_count').should be true
+      @names.include?('remove_int_count').should be false
     end
 
     it 'includes setters for float' do
-      @names.include?('float_count').should be_true
-      @names.include?('remove_float_count').should be_false
+      @names.include?('float_count').should be true
+      @names.include?('remove_float_count').should be false
     end
 
     it 'includes setters for belongs_to' do
-      @names.include?('ghost_writer_id').should be_true
-      @names.include?('position_in_ghost_writer').should be_true
-      @names.include?('ghost_writer').should be_false
+      @names.include?('ghost_writer_id').should be true
+      @names.include?('position_in_ghost_writer').should be true
+      @names.include?('ghost_writer').should be false
     end
 
     it 'does not include setters for has_many and many_to_many' do
-      @names.include?('contributors').should be_false
-      @names.include?('projects').should be_false
+      @names.include?('contributors').should be false
+      @names.include?('projects').should be false
     end
 
   end
@@ -226,39 +226,39 @@ describe CustomFields::TargetHelpers do
     it 'includes the default method name for string, select, boolean, integer, float, has_many and many_to_many fields' do
       %w(author_name category visible projects illustrations
          contributors int_count float_count).each do |name|
-        @methods.include?(name).should be_true
+        @methods.include?(name).should be true
       end
     end
 
     it 'also includes another method name for select (<name>_id)' do
-      @methods.include?('category_id').should be_true
+      @methods.include?('category_id').should be true
     end
 
     it 'includes the method name for files' do
-      @methods.include?('illustration_url').should be_true
-      @methods.include?('illustration').should be_false
-      @methods.include?('author_picture_url').should be_true
-      @methods.include?('author_picture').should be_false
+      @methods.include?('illustration_url').should be true
+      @methods.include?('illustration').should be false
+      @methods.include?('author_picture_url').should be true
+      @methods.include?('author_picture').should be false
     end
 
     it 'includes the method name for dates' do
-      @methods.include?('formatted_posted_at').should be_true
-      @methods.include?('posted_at').should be_false
+      @methods.include?('formatted_posted_at').should be true
+      @methods.include?('posted_at').should be false
     end
 
     it 'includes the method name for money' do
-      @methods.include?('formatted_donation').should be_true
-      @methods.include?('donation').should be_false
+      @methods.include?('formatted_donation').should be true
+      @methods.include?('donation').should be false
     end
 
     it 'includes the method name for belongs_to relationships' do
-      @methods.include?('formatted_posted_at').should be_true
-      @methods.include?('posted_at').should be_false
+      @methods.include?('formatted_posted_at').should be true
+      @methods.include?('posted_at').should be false
     end
 
     it 'includes the method name for the has_many and many_to_many relationships' do
       %w(contributors projects illustrations).each do |name|
-        @methods.include?(name).should be_true
+        @methods.include?(name).should be true
       end
     end
 

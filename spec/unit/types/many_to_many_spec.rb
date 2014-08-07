@@ -10,7 +10,7 @@ describe CustomFields::Types::ManyToMany do
   end
 
   it 'is considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_true
+    @blog.posts_custom_fields.first.is_relationship?.should be true
   end
 
   it 'sets a value' do
@@ -19,7 +19,7 @@ describe CustomFields::Types::ManyToMany do
   end
 
   it 'includes a scope named ordered' do
-    @post.authors.respond_to?(:ordered).should be_true
+    @post.authors.respond_to?(:ordered).should be true
   end
 
   describe 'validation' do
@@ -27,7 +27,7 @@ describe CustomFields::Types::ManyToMany do
     [nil, []].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.authors = value
-        @post.valid?.should be_false
+        @post.valid?.should be false
         @post.errors[:authors].should == ["must have at least one element"]
       end
     end

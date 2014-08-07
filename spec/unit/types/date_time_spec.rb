@@ -10,7 +10,7 @@ describe CustomFields::Types::DateTime do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   context 'French format' do

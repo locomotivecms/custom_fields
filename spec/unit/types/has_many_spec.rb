@@ -10,7 +10,7 @@ describe CustomFields::Types::HasMany do
   end
 
   it 'is considered as a relationship field type' do
-    @blog.posts_custom_fields.last.is_relationship?.should be_true
+    @blog.posts_custom_fields.last.is_relationship?.should be true
   end
 
   it 'sets a value' do
@@ -19,7 +19,7 @@ describe CustomFields::Types::HasMany do
   end
 
   it 'includes a scope named ordered' do
-    @author.posts.respond_to?(:ordered).should be_true
+    @author.posts.respond_to?(:ordered).should be true
     @author.posts.ordered.send(:options)[:sort].should == {"position_in_author" => 1}
   end
 
@@ -28,12 +28,12 @@ describe CustomFields::Types::HasMany do
     context 'when not persisted' do
 
       it 'is valid if nil' do
-        @author.valid?.should be_true
+        @author.valid?.should be true
       end
 
       it 'is valid if empty' do
         @author.posts = []
-        @author.valid?.should be_true
+        @author.valid?.should be true
       end
 
     end
@@ -45,7 +45,7 @@ describe CustomFields::Types::HasMany do
       [nil, []].each do |value|
         it "is not valid if the value is #{value.inspect}" do
           @author.posts = value
-          @author.valid?.should be_false
+          @author.valid?.should be false
           @author.errors[:posts].should == ["must have at least one element"]
         end
       end

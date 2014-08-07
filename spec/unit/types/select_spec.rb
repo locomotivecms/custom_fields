@@ -8,11 +8,11 @@ describe CustomFields::Types::Select do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    @blog.posts_custom_fields.first.is_relationship?.should be false
   end
 
   it 'stores the list of categories' do
-    @field.respond_to?(:select_options).should be_true
+    @field.respond_to?(:select_options).should be true
   end
 
   it 'includes the categories in the as_json method' do
@@ -33,7 +33,7 @@ describe CustomFields::Types::Select do
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.main_category = value
-        @post.valid?.should be_false
+        @post.valid?.should be false
         @post.errors[:main_category].should_not be_blank
       end
     end
