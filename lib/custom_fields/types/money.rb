@@ -21,7 +21,7 @@ module CustomFields
           end
 
           def check_currency
-            ::Money::Currency.find( self.default_currency )
+            ::Money::Currency.find(self.default_currency)
           end
 
         end # included
@@ -71,18 +71,18 @@ module CustomFields
             klass.field names[:currency_field], type: ::String,  localize: false
 
             # getters and setters
-            klass.send( :define_method, name ) { _get_money(names) }
-            klass.send( :define_method, :"#{name}=" ) { |value| _set_money(value, names) }
+            klass.send(:define_method, name) { _get_money(names) }
+            klass.send(:define_method, :"#{name}=") { |value| _set_money(value, names) }
 
-            klass.send( :define_method, names[:formatted_name_field] ) { _get_formatted_money(names) }
-            klass.send( :define_method, :"#{names[:formatted_name_field]}=" ) { |value| _set_money(value, names) }
+            klass.send(:define_method, names[:formatted_name_field]) { _get_formatted_money(names) }
+            klass.send(:define_method, :"#{names[:formatted_name_field]}=") { |value| _set_money(value, names) }
 
-            klass.send( :define_method, names[:allow_currency_from_symbol] ) { rule['allow_currency_from_symbol'] }
-            klass.send( :define_method, names[:default_currency] ) { rule['default_currency'] }
+            klass.send(:define_method, names[:allow_currency_from_symbol]) { rule['allow_currency_from_symbol'] }
+            klass.send(:define_method, names[:default_currency]) { rule['default_currency'] }
 
             # validations
-            klass.validate { _check_money( names ) }  if rule['required']
-            klass.validates_presence_of( names[:cents_field], names[:currency_field] ) if rule['required']
+            klass.validate { _check_money(names) }  if rule['required']
+            klass.validates_presence_of(names[:cents_field], names[:currency_field]) if rule['required']
             klass.validates_numericality_of names[:cents_field], only_integer: true, if: names[:cents_field]
 
           end
@@ -106,38 +106,38 @@ module CustomFields
 
         protected
 
-        def _set_money_defaults( names )
-          ::Money.assume_from_symbol = self.send( names[:allow_currency_from_symbol] )
-          ::Money.default_currency = self.send( names[:default_currency] )
+        def _set_money_defaults(names)
+          ::Money.assume_from_symbol = self.send(names[:allow_currency_from_symbol])
+          ::Money.default_currency = self.send(names[:default_currency])
         end
 
-        def _get_money( names )
-          _set_money_defaults( names )
-          ::Money.new( self.read_attribute( names[:cents_field] ), self.read_attribute( names[:currency_field] ) || ::Money.default_currency )
+        def _get_money(names)
+          _set_money_defaults(names)
+          ::Money.new(self.read_attribute(names[:cents_field]), self.read_attribute(names[:currency_field]) || ::Money.default_currency)
         end
 
-        def _check_money( names )
+        def _check_money(names)
           if [nil, ''].include? self.read_attribute.names[:cents_field]
             raise ArgumentError.new 'Unrecognized amount'
           end
-          _get_money( names )
+          _get_money(names)
         rescue
-          self.errors.add( names[:name], "#{$!}" )
+          self.errors.add(names[:name], "#{$!}")
           false
         end
 
-        def _set_money( _money, names )
+        def _set_money(_money, names)
           return if _money.blank?
-          _set_money_defaults( names )
-          money = _money.kind_of?( Money ) ? _money : ::Money.parse( _money )
-          self.write_attribute( names[:cents_field], money.cents )
-          self.write_attribute( names[:currency_field], money.currency.iso_code )
+          _set_money_defaults(names)
+          money = _money.kind_of?(Money) ? _money : ::Money.parse(_money)
+          self.write_attribute(names[:cents_field], money.cents)
+          self.write_attribute(names[:currency_field], money.currency.iso_code)
         rescue
-          self.errors.add( names[:name], "#{$!}" )
+          self.errors.add(names[:name], "#{$!}")
         end
 
-        def _get_formatted_money( names )
-          _get_money( names ).format( symbol: self.send( names[:allow_currency_from_symbol] ), no_cents_if_whole: true ) rescue nil
+        def _get_formatted_money(names)
+          _get_money(names).format(symbol: self.send(names[:allow_currency_from_symbol]), no_cents_if_whole: true) rescue nil
         end
 
       end
