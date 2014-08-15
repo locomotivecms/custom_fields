@@ -34,7 +34,7 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the relation and if it is required or not
           #
           def apply_has_many_custom_field(klass, rule)
-            # puts "#{klass.inspect}.has_many #{rule['name'].inspect}, class_name: #{rule['class_name'].inspect}, inverse_of: #{rule['inverse_of']}" # DEBUG
+            # puts "#{klass.inspect}.has_many #{rule['name'].inspect}, class_name: #{rule['class_name'].inspect}, inverse_of: #{rule['inverse_of']}, order_by: #{rule['order_by'].inspect}" # DEBUG
             position_name = "position_in_#{rule['inverse_of']}"
 
             _order_by   = rule['order_by'] || position_name.to_sym.asc

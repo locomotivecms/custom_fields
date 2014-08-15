@@ -172,9 +172,12 @@ module CustomFields
       operations['$set'].merge!({ 'custom_fields_recipe.version' => self.custom_fields_version(name) })
       collection, selector = self.send(name).collection, self.send(name).criteria.selector
 
-      # puts "selector = #{selector.inspect}, memo = #{attributes.inspect}" # DEBUG
-
-      collection.find(selector).update operations, multi: true
+      # http://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
+      # The <update> document must contain only update operator expressions.
+      %w(set unset rename).each do |operation_name|
+        _operations = { "$#{operation_name}" => operations.delete("$#{operation_name}") }
+        collection.find(selector).update _operations, multi: true
+      end
     end
 
     # If the localized attribute has been changed in at least one of the custom fields,
