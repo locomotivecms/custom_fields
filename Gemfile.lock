@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.3.1)
+    custom_fields (2.3.2)
       activesupport (~> 3.2.13)
       carrierwave-mongoid (~> 0.6.0)
       money (~> 5.0)
@@ -33,7 +33,7 @@ GEM
     i18n (0.6.11)
     json (1.7.7)
     method_source (0.8.1)
-    mime-types (1.25.1)
+    mime-types (2.3)
     mocha (0.9.12)
     money (5.1.1)
       i18n (~> 0.6.0)
@@ -66,7 +66,7 @@ GEM
       simplecov-html (~> 0.5.3)
     simplecov-html (0.5.3)
     slop (3.4.5)
-    tzinfo (0.3.40)
+    tzinfo (0.3.41)
     yard (0.7.5)
 
 PLATFORMS
