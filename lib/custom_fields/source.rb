@@ -175,7 +175,7 @@ module CustomFields
       # http://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
       # The <update> document must contain only update operator expressions.
       %w(set unset rename).each do |operation_name|
-        _operations = { "$#{operation_name}" => operations.delete("$#{operation_name}") }
+        _operations = { "$#{operation_name}" => operations.delete("$#{operation_name}") || {} }
         collection.find(selector).update _operations, multi: true
       end
     end
