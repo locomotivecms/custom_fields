@@ -175,8 +175,14 @@ module CustomFields
       # http://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
       # The <update> document must contain only update operator expressions.
       %w(set unset rename).each do |operation_name|
-        _operations = { "$#{operation_name}" => operations.delete("$#{operation_name}") || {} }
-        collection.find(selector).update _operations, multi: true
+        _operation_key   = "$#{operation_name}"
+        _operation_value = operations.delete("$#{operation_name}")
+        _operation_hash  = { _operation_key => _operation_value }
+        unless _operation_value.nil? || _operation_value.empty?
+          # don't run a $set / $unset / $rename operation with a null or {} value
+          # per breaking syntax in mongo 2.6 (https://groups.google.com/forum/#!topic/mongodb-user/OLCofnfZu4M)
+          collection.find(selector).update _operation_hash, multi: true
+        end
       end
     end
 
