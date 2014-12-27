@@ -75,9 +75,12 @@ other_company.self_metadata.address # Returns a `not defined method` error
 ```
 
 Contact
-=======
+-------
 
 Feel free to contact me at didier at nocoffee dot fr.
+
+License
+-------
 
 Copyright (c) 2013-2014 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
 
