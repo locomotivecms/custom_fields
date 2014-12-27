@@ -48,4 +48,5 @@ describe 'CustomFields::Validations' do
   def post_attributes
     { title: 'My fancy post', body: 'Lipsum', codename: 'blog', main_author: 'Me', location: 'Somewhere' }
   end
+
 end

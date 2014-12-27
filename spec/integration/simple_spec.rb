@@ -28,4 +28,5 @@ describe 'CustomFields::Simple' do
   def create_blog
     Blog.create name: 'My personal blog'
   end
+
 end

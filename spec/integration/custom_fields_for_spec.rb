@@ -103,4 +103,5 @@ describe 'CustomFields::CustomFieldsFor' do
       blog.posts_custom_fields.build label: 'Location',    type: 'string'
     end
   end
+
 end

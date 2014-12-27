@@ -31,4 +31,5 @@ describe 'CustomFields::Field' do
       blog.save
     end
   end
+
 end

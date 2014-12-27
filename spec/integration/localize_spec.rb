@@ -160,4 +160,5 @@ describe 'CustomFields::Localize' do
       blog.save
     end
   end
+
 end
