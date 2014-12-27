@@ -34,6 +34,7 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.add_dependency 'activesupport',       '~> 4.1.8'
   spec.add_dependency 'money',               '~> 5.1.1'
 
+  spec.add_development_dependency 'rake',             '~> 10.4'
   spec.add_development_dependency 'rspec',            '~> 2.99'
   spec.add_development_dependency 'rspec-its',        '~> 1.0.1'
   spec.add_development_dependency 'mocha',            '~> 0.9.12'
