@@ -6,6 +6,7 @@
 /coverage/
 /custom_fields.sublime-workspace
 /doc/
+/Gemfile.lock/
 /lib/custom_fields/types_old/
 /pkg/
 /rdoc/
