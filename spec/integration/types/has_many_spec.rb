@@ -109,7 +109,7 @@ describe CustomFields::Types::HasMany do
 
       @author = Person.find @author._id
 
-      expect(@author.posts.filtered({ published: true }, %w(title desc)).map(&:title)).to include('Nude', 'Hello world')
+      expect(@author.posts.filtered({ published: true }, %w[title desc]).map(&:title)).to include('Nude', 'Hello world')
     end
 
   end

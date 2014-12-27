@@ -99,8 +99,10 @@ describe CustomFields::TargetHelpers do
   context '#returning basic attributes' do
 
     before(:each) do
-      %w(category formatted_posted_at visible author_name illustration?
-         author_picture? int_count float_count formatted_donation).each do |meth|
+      %w[
+        category formatted_posted_at visible author_name illustration?
+        author_picture? int_count float_count formatted_donation
+      ].each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -158,8 +160,10 @@ describe CustomFields::TargetHelpers do
   context '#setting basic attributes' do
 
     before(:each) do
-      %w(category= formatted_posted_at= visible=
-         author_name= int_count= float_count= money=).each do |meth|
+      %w[
+        category= formatted_posted_at= visible=
+        author_name= int_count= float_count= money=
+      ].each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
     end
@@ -221,8 +225,10 @@ describe CustomFields::TargetHelpers do
     end
 
     it 'includes the default method name for string, select, boolean, integer, float, has_many and many_to_many fields' do
-      %w(author_name category visible projects illustrations
-         contributors int_count float_count).each do |name|
+      %w[
+        author_name category visible projects illustrations
+        contributors int_count float_count
+      ].each do |name|
         expect(@methods.include?(name)).to be true
       end
     end
@@ -254,7 +260,7 @@ describe CustomFields::TargetHelpers do
     end
 
     it 'includes the method name for the has_many and many_to_many relationships' do
-      %w(contributors projects illustrations).each do |name|
+      %w[contributors projects illustrations].each do |name|
         expect(@methods.include?(name)).to be true
       end
     end

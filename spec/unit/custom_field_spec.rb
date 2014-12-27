@@ -19,8 +19,8 @@ describe CustomFields::Field do
       stub_field_for_validation(@field)
     end
 
-    %w(foo-bar f- 42test -52).each do |value|
-      it "does not accept name like #{value}" do
+    %w[foo-bar f- 42test -52].each do |value|
+      it "does not accept name like `#{value}`" do
         @field.name = value
 
         expect(@field.valid?).to be false
@@ -28,8 +28,8 @@ describe CustomFields::Field do
       end
     end
 
-    %w(a a42 ab a_b a_ abc_ abc foo42_bar).each do |value|
-      it "accepts name like #{value}" do
+    %w[a a42 ab a_b a_ abc_ abc foo42_bar].each do |value|
+      it "accepts name like `#{value}`" do
         @field.name = value
 
         @field.valid?
@@ -39,8 +39,8 @@ describe CustomFields::Field do
       end
     end
 
-    %w(id _id save destroy send class).each do |name|
-      it "does not accept very unsecure name like #{name}" do
+    %w[id _id save destroy send class].each do |name|
+      it "does not accept reserved name like `#{name}`" do
         @field.name = name
 
         expect(@field.valid?).to be false
@@ -48,8 +48,8 @@ describe CustomFields::Field do
       end
     end
 
-    %w(has_one bool).each do |type|
-      it "does not accept unknown type like #{type}" do
+    %w[has_one bool].each do |type|
+      it "does not accept unknown type like `#{type}`" do
         @field.type = type
 
         expect(@field.valid?).to be false

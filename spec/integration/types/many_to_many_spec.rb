@@ -52,7 +52,7 @@ describe CustomFields::Types::ManyToMany do
   it 'filters and orders the posts' do
     author = assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
 
-    expect(author.posts.filtered({ published: true }, %w(title desc)).map(&:title)).to eq ['Nude', 'Hello world']
+    expect(author.posts.filtered({ published: true }, %w[title desc]).map(&:title)).to eq ['Nude', 'Hello world']
   end
 
   it 'works even if the related model is deleted' do
