@@ -43,11 +43,11 @@ class Employee
 end
 
 company = Company.new
-company.employees_custom_fields.build(label: 'His/her position', name: 'position', type: 'string', required: true)
+company.employees_custom_fields.build label: 'His/her position', name: 'position', type: 'string', required: true
 
 company.save
 
-company.employees.build(name: 'Michael Scott', position: 'Regional manager')
+company.employees.build name: 'Michael Scott', position: 'Regional manager'
 
 another_company = Company.new
 employee = another_company.employees.build
@@ -64,7 +64,7 @@ class Company
 end
 
 company = Company.new
-company.self_metadata_custom_fields.build(label: 'Shipping Address', name: 'address', type: 'text')
+company.self_metadata_custom_fields.build label: 'Shipping Address', name: 'address', type: 'text'
 
 company.save
 
