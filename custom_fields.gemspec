@@ -15,14 +15,14 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
 
   spec.files = Dir[
     'LICENSE',
-    'README.textile',
+    'README.md',
     '{lib}/**/*',
     '{config}/**/*'
   ]
 
   spec.extra_rdoc_files = [
     'LICENSE',
-    'README.textile'
+    'README.md'
   ]
 
   spec.required_ruby_version = '~> 2.1'
