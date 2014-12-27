@@ -21,7 +21,7 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   ]
 
   spec.extra_rdoc_files = [
-    'MIT-LICENSE',
+    'LICENSE',
     'README.textile'
   ]
 
