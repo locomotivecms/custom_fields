@@ -74,6 +74,17 @@ another_company = Company.new
 other_company.self_metadata.address # Returns a `not defined method` error
 ```
 
+Development
+-----------
+
+### Run specs
+
+Run `rspec` or `rake`.
+
+### Test Coverage
+
+Run `COVERAGE=true rspec` or `COVERAGE=true rake`.
+
 Contact
 -------
 

@@ -1,10 +1,10 @@
 require 'carrierwave/test/matchers'
 
 CarrierWave.configure do |config|
-  config.storage = :file
+  config.storage   = :file
   config.store_dir = 'uploads'
   config.cache_dir = 'cache'
-  config.root = File.join(File.dirname(__FILE__), '..', 'tmp')
+  config.root      = File.join(File.dirname(__FILE__), '..', 'tmp')
 end
 
 module FixturedFile

@@ -1,5 +1,5 @@
-require 'simplecov'
+#!/usr/bin/env ruby
 
 SimpleCov.start do
   add_filter '/spec/'
-end
+end if ENV['COVERAGE']

@@ -1,4 +1,5 @@
 require 'bundler/setup'
+require 'simplecov'
 
 root = File.expand_path '../../', __FILE__
 
