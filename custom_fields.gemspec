@@ -14,7 +14,7 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.license     = 'MIT'
 
   spec.files = Dir[
-    'MIT-LICENSE',
+    'LICENSE',
     'README.textile',
     '{lib}/**/*',
     '{config}/**/*'
