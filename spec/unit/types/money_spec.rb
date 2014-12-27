@@ -1,4 +1,5 @@
 describe CustomFields::Types::Money do
+
   before(:each) do
     @blog  = build_blog
     @post  = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'

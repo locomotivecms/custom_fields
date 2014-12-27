@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe 'Performance' do
+describe 'CustomFields::Performance' do
 
   occurences = 1000
 
@@ -8,8 +6,10 @@ describe 'Performance' do
 
     before(:each) do
       @blog = create_blog
-      create_posts(@blog, occurences)
-      @blog = Blog.find(@blog._id)
+
+      create_posts @blog, occurences
+
+      @blog = Blog.find @blog._id
     end
 
     it "retrieves #{occurences} posts" do
@@ -32,9 +32,11 @@ describe 'Performance' do
   context 'without custom fields' do
 
     before(:each) do
-      @blog = create_blog(false)
-      create_posts(@blog, occurences)
-      @blog = Blog.find(@blog._id)
+      @blog = create_blog false
+
+      create_posts @blog, occurences
+
+      @blog = Blog.find @blog._id
     end
 
     it "retrieves #{occurences} posts" do
@@ -53,6 +55,8 @@ describe 'Performance' do
     end
 
   end
+
+  protected
 
   def create_blog(custom_fields = true)
     Blog.new(name: 'My personal blog').tap do |blog|
