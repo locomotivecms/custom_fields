@@ -61,6 +61,7 @@ describe CustomFields::Types::Float do
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build label: 'age', type: 'float'
+
       blog.save & blog.reload
     end
   end

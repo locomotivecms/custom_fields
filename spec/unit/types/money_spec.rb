@@ -1,9 +1,8 @@
 describe CustomFields::Types::Money do
 
   before(:each) do
-    @blog  = build_blog
-    @post  = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
-    @money = Money.parse 'EUR 5,95'
+    @blog = build_blog
+    @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
   end
 
   it 'is not considered as a relationship field type' do
@@ -12,7 +11,7 @@ describe CustomFields::Types::Money do
 
   context 'allow_currency_from_symbol' do
 
-    it 'returns the currency symbol' do
+    it 'returns the formatted donation' do
       @post.donation = '10'
 
       expect(@post.formatted_donation).to eq '€10'
