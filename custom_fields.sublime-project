@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "custom_fields",
+      "path": "./",
+      "folder_exclude_patterns": [
+        "coverage",
+        "tmp"
+      ],
+      "file_exclude_patterns": [
+        ".keep"
+      ]
+    }
+  ]
+}

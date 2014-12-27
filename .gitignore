@@ -4,6 +4,7 @@
 /.ruby-version
 /.yardoc/
 /coverage/
+/custom_fields.sublime-workspace
 /doc/
 /lib/custom_fields/types_old/
 /pkg/
