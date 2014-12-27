@@ -72,6 +72,7 @@ company.self_metadata.address = '700 S Laflin, 60607 Chicago'
 
 another_company = Company.new
 other_company.self_metadata.address # Returns a `not defined method` error
+```
 
 Contact
 =======
