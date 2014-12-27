@@ -56,7 +56,7 @@ employee.position # Returns a `not defined method` error
 
 ### On the class itself
 
-[IN PROGRESS]
+**IN PROGRESS**
 
 ```ruby
 class Company
