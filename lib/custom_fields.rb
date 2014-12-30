@@ -2,7 +2,7 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'active_support'
 require 'carrierwave/mongoid'
-require 'money'
+require 'monetize'
 
 Money.use_i18n = false
 

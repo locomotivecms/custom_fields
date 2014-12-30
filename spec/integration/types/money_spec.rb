@@ -6,7 +6,7 @@ describe CustomFields::Types::Money do
   before(:each) do
     @blog = create_blog
     @money_string = 'EUR 5,95'
-    @money = Money.parse( @money_string )
+    @money = Monetize.parse(@money_string)
   end
 
   describe 'a new post with donation' do

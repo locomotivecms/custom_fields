@@ -9,7 +9,7 @@ describe CustomFields::Types::Money do
     @blog = build_blog
     @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     @money_string = 'EUR 5,95'
-    @money = Money.parse( @money_string )
+    @money = ::Monetize.parse(@money_string)
   end
 
   it 'is not considered as a relationship field type' do

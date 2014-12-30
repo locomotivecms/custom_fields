@@ -20,9 +20,10 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = 'nowarning'
 
   s.add_dependency 'mongoid',             '~> 4.0.0'
-  s.add_dependency 'activesupport',       '~> 4.1.5'
+  s.add_dependency 'activesupport',       '~> 4.2.0'
   s.add_dependency 'carrierwave-mongoid', '~> 0.7'
-  s.add_dependency 'money',               '~> 5.1.1'
+  # s.add_dependency 'money',               '~> 6.5.0' # 5.1.1
+  s.add_dependency 'monetize',            '~> 1.1.0'
 
   s.add_development_dependency('yard', ['~> 0.7.3'])
   s.add_development_dependency('mocha', ['~> 0.9.12'])
