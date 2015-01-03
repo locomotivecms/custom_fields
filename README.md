@@ -18,7 +18,7 @@ Requirements
 
 * MongoDB 2.x
 * Mongoid 4.x
-* ActiveSupport 4.1.x
+* ActiveSupport 4.2.x
 
 Examples
 --------
@@ -93,7 +93,7 @@ Feel free to contact me at didier at nocoffee dot fr.
 License
 -------
 
-Copyright (c) 2013-2014 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
+Copyright (c) 2013-2015 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
 
 [CustomFields]: https://github.com/locomotivecms/custom_fields "Custom fields extension for Mongoid."
 [Gemnasium]: https://gemnasium.com/locomotivecms/custom_fields "CustomFields at Gemnasium"
