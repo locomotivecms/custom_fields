@@ -8,16 +8,12 @@ $:.unshift lib unless $:.include? lib
 
 require 'custom_fields'
 
-# Requires supporting ruby files with custom matchers and macros, etc. in `spec/support` and its subdirectories. Files
-# matching `spec/**/*_spec.rb` are run as spec files by default. This means that files in `spec/support` that end in
-# `_spec.rb` will both be required and run as specs, causing the specs to be run twice. It is recommended that you do
-# not name files matching this glob to end with `_spec.rb`. You can configure this pattern with with the `--pattern`
-# option.
+# Requires supporting ruby files with custom matchers and macros, etc. in `spec/support` and its subdirectories.
 support = File.expand_path 'spec/support', root
 
 Dir["#{support}/**/*.rb"].each { |file| require file }
 
-# Requires supporting ruby files with custom matchers and macros, etc. in `spec/models`.
+# Requires supporting ruby files with custom models in `spec/models` and its subdirectories.
 models = File.expand_path 'spec/models', root
 
 Dir["#{models}/**/*.rb"].each { |file| require file }
