@@ -23,7 +23,7 @@ Requirements
 Examples
 --------
 
-### On a has_many relationship
+### On a `has_many` relationship
 
 ```ruby
 class Company
