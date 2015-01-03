@@ -107,7 +107,7 @@ module CustomFields
         protected
 
         def _set_money_defaults(names)
-          ::Money.assume_from_symbol = self.send(names[:allow_currency_from_symbol])
+          ::Monetize.assume_from_symbol = self.send(names[:allow_currency_from_symbol])
           ::Money.default_currency = self.send(names[:default_currency])
         end
 
@@ -129,7 +129,7 @@ module CustomFields
         def _set_money(_money, names)
           return if _money.blank?
           _set_money_defaults(names)
-          money = _money.kind_of?(Money) ? _money : ::Money.parse(_money)
+          money = _money.kind_of?(Money) ? _money : ::Monetize.parse(_money)
           self.write_attribute(names[:cents_field], money.cents)
           self.write_attribute(names[:currency_field], money.currency.iso_code)
         rescue

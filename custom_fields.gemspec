@@ -31,8 +31,8 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
 
   spec.add_dependency 'mongoid',             '~> 4.0.0'
   spec.add_dependency 'carrierwave-mongoid', '~> 0.7.1'
-  spec.add_dependency 'activesupport',       '~> 4.1.8'
-  spec.add_dependency 'money',               '~> 5.1.1'
+  spec.add_dependency 'activesupport',       '~> 4.2.0'
+  spec.add_dependency 'monetize',            '~> 1.1.0'
 
   spec.add_development_dependency 'rake', '~> 10.4'
   spec.add_development_dependency 'pry',  '~> 0.10.1'
