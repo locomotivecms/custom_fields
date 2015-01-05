@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Origin
 
   # This is a smart hash for use with options and selectors.
