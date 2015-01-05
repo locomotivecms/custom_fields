@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe CustomFields::Types::Select do
 
   before(:each) do
@@ -8,24 +6,27 @@ describe CustomFields::Types::Select do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be false
+    expect(@blog.posts_custom_fields.first.is_relationship?).to be false
   end
 
   it 'stores the list of categories' do
-    @field.respond_to?(:select_options).should be true
+    expect(@field.respond_to?(:select_options)).to be true
   end
 
   it 'includes the categories in the as_json method' do
-    @field.as_json['select_options'].should_not be_empty
+    expect(@field.as_json['select_options']).not_to be_empty
   end
 
   it 'adds the categories when calling to_recipe' do
-    @field.to_recipe['select_options'].should_not be_empty
+    expect(@field.to_recipe['select_options']).not_to be_empty
   end
 
   it 'sets a value' do
-    @post.main_category = 'Test'
-    @post.main_category.should == 'Test'
+    expected = 'Test'
+
+    @post.main_category = expected
+
+    expect(@post.main_category).to eq expected
   end
 
   describe 'validation' do
@@ -33,8 +34,9 @@ describe CustomFields::Types::Select do
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.main_category = value
-        @post.valid?.should be false
-        @post.errors[:main_category].should_not be_blank
+
+        expect(@post.valid?).to eq false
+        expect(@post.errors[:main_category]).not_to be_blank
       end
     end
 
@@ -44,27 +46,40 @@ describe CustomFields::Types::Select do
 
     before(:each) do
       field = @blog.posts_custom_fields.build label: 'Taxonomy', type: 'select', localized: true
+
       Mongoid::Fields::I18n.locale = :en
+
       @option_1 = field.select_options.build name: 'Item #1 in English'
+
       @option_2 = field.select_options.build name: 'Item #2 in English'
+
       Mongoid::Fields::I18n.locale = :fr
+
       @option_1.name = 'Item #1 in French'
+
       @option_2.name = 'Item #2 in French'
+
       field.valid?
+
       Mongoid::Fields::I18n.locale = :en
+
       @blog.bump_custom_fields_version(:posts)
     end
 
     it 'serializes / deserializes' do
       post = @blog.posts.build taxonomy: 'Item #1 in English'
-      post.taxonomy.should == 'Item #1 in English'
+
+      expect(post.taxonomy).to eq 'Item #1 in English'
     end
 
     it 'serializes / deserializes in a different locale' do
       post = @blog.posts.build taxonomy: 'Item #1 in English'
+
       Mongoid::Fields::I18n.locale = :fr
+
       post.taxonomy = 'Item #2 in French'
-      post.taxonomy_id_translations['fr'].should == @option_2._id
+
+      expect(post.taxonomy_id_translations['fr']).to eq @option_2._id
     end
 
   end
@@ -72,40 +87,51 @@ describe CustomFields::Types::Select do
   describe 'getter and setter' do
 
     it 'returns an empty hash if no value has been set' do
-      @post.class.select_attribute_get(@post, 'main_category').should == {}
+      expected = {}
+
+      expect(@post.class.select_attribute_get(@post, 'main_category')).to eq expected
     end
 
     it 'returns the value' do
       @post.main_category = 'Test'
-      @post.class.select_attribute_get(@post, 'main_category').should == {
+
+      expected = {
         'main_category'     => 'Test',
         'main_category_id'  => @field.select_options.first._id
       }
+
+      expect(@post.class.select_attribute_get(@post, 'main_category')).to eq expected
     end
 
     it 'sets a nil value' do
-      @post.class.select_attribute_set(@post, 'main_category', {}).should be_nil
+      expect(@post.class.select_attribute_set(@post, 'main_category', {})).to be_nil
     end
 
     it 'sets a value from a name' do
       @post.class.select_attribute_set(@post, 'main_category', { 'main_category' => 'Test' })
-      @post.main_category.should == 'Test'
+
+      expect(@post.main_category).to eq 'Test'
     end
 
     it 'sets a value from an id' do
       @post.class.select_attribute_set(@post, 'main_category', { 'main_category' => @field.select_options.first._id })
-      @post.main_category.should == 'Test'
+
+      expect(@post.main_category).to eq 'Test'
 
       @post.class.select_attribute_set(@post, 'main_category', { 'main_category_id' => @field.select_options.first._id })
-      @post.main_category.should == 'Test'
+
+      expect(@post.main_category).to eq 'Test'
     end
 
   end
+
+  protected
 
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       @field = blog.posts_custom_fields.build label: 'Main category', type: 'select', required: true
       @field.select_options.build name: 'Test'
+
       @field.valid?
     end
   end

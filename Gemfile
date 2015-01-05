@@ -1,15 +1,11 @@
-# encoding: utf-8
+#!/usr/bin/env bundle
 
 source 'https://rubygems.org'
 
 gemspec # Include gemspec dependencies
 
-gem 'rake'
+group :default do
+  gem 'bson', '~> 2.3.0'
 
-gem 'json', '~> 1.7.7'
-
-gem 'bson'
-
-platforms :mri_18 do
-  gem 'SystemTimer'
+  gem 'json', '~> 1.8.1'
 end

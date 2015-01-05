@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Mongoid #:nodoc:
 
   # Instantiates documents that came from the database.

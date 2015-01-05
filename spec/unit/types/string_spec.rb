@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe CustomFields::Types::String do
 
   before(:each) do
@@ -8,12 +6,15 @@ describe CustomFields::Types::String do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be false
+    expect(@blog.posts_custom_fields.first.is_relationship?).to be false
   end
 
   it 'sets a value' do
-    @post.author = 'John Doe'
-    @post.author.should == 'John Doe'
+    expected = 'John Doe'
+
+    @post.author = expected
+
+    expect(@post.author).to be expected
   end
 
   describe 'validation' do
@@ -21,8 +22,9 @@ describe CustomFields::Types::String do
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.author = value
-        @post.valid?.should be false
-        @post.errors[:author].should_not be_blank
+
+        expect(@post.valid?).to eq false
+        expect(@post.errors[:author]).not_to be_blank
       end
     end
 
@@ -31,28 +33,37 @@ describe CustomFields::Types::String do
   describe 'getter and setter' do
 
     it 'returns an empty hash if no value has been set' do
-      @post.class.string_attribute_get(@post, 'author').should == {}
+      expected = {}
+
+      expect(@post.class.string_attribute_get(@post, 'author')).to eq expected
     end
 
     it 'returns the value' do
       @post.author = 'John Doe'
-      @post.class.string_attribute_get(@post, 'author').should == { 'author' => 'John Doe' }
+
+      expected = { 'author' => 'John Doe' }
+
+      expect(@post.class.string_attribute_get(@post, 'author')).to eq expected
     end
 
     it 'sets a nil value' do
-      @post.class.string_attribute_set(@post, 'author', {}).should be_nil
+      expect(@post.class.string_attribute_set(@post, 'author', {})).to be_nil
     end
 
     it 'sets a value' do
       @post.class.string_attribute_set(@post, 'author', { 'author' => 'John' })
-      @post.author.should == 'John'
+
+      expect(@post.author).to eq 'John'
     end
 
   end
 
+  protected
+
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build label: 'Author', type: 'string', required: true
+
       field.valid?
     end
   end

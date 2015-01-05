@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'CustomFieldsFor' do
 
   describe 'helpers' do
@@ -9,11 +7,11 @@ describe 'CustomFieldsFor' do
     end
 
     it 'keeps track of all the associations enhanced by the custom fields' do
-      @blog._custom_fields_for.should_not be_empty
+      expect(@blog._custom_fields_for).not_to be_empty
     end
 
     it 'tells if an association is enhanced by the custom fields' do
-      @blog.custom_fields_for?(:posts).should be true
+      expect(@blog.custom_fields_for?(:posts)).to be true
     end
 
   end

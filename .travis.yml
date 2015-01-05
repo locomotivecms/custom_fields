@@ -1,9 +1,13 @@
+env:
+  - COVERAGE=true
+language: ruby
 rvm:
-  - 1.9.3
+  - 2.1.5
+  - 2.2.0
 services: mongodb
 notifications:
   email:
     - didier@nocoffee.fr
 branches:
-  only:
-    - mongoid-3
+  except:
+    - gh-pages
