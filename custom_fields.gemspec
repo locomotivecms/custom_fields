@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://github.com/locomotivecms/custom_fields'
   s.summary     = 'Custom fields extension for Mongoid'
   s.description = 'Manage custom fields to a mongoid document or a collection. This module is one of the core features we implemented in our custom cms named Locomotive.'
+  s.license     = 'MIT'
 
   s.required_rubygems_version = '>= 1.3.6'
   s.rubyforge_project         = 'nowarning'
