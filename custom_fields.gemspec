@@ -12,13 +12,13 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.email            = 'didier@nocoffee.fr'
   spec.homepage         = 'https://github.com/locomotivecms/custom_fields'
   spec.license          = 'MIT'
-  spec.files            = Dir['LICENSE', 'README.md', 'config/**/*', 'lib/**/*']
+  spec.files            = Dir['{config,lib}/**/*', 'LICENSE', 'README.md']
   spec.extra_rdoc_files = ['LICENSE', 'README.md']
 
   spec.required_ruby_version     = '~> 2.1'
   spec.required_rubygems_version = '~> 2.4'
 
-  spec.add_runtime_dependency 'mongoid',             '~> 4.0.0'
+  spec.add_runtime_dependency 'mongoid',             '~> 4.0.1'
   spec.add_runtime_dependency 'carrierwave-mongoid', '~> 0.7.1'
   spec.add_runtime_dependency 'activesupport',       '~> 4.2.0'
   spec.add_runtime_dependency 'monetize',            '~> 1.1.0'
