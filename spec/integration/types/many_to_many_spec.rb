@@ -49,6 +49,15 @@ describe CustomFields::Types::ManyToMany do
     expect(author.posts.filtered({ published: true }).map(&:title)).to eq ['Hello world', 'Nude']
   end
 
+  it 'orders the posts but not load all the attributes' do
+    assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
+
+    author = Person.find @author_1._id
+
+    expect(author.posts.pluck_with_natural_order(:title)).to eq ['Hello world', 'Nude', 'High and Dry']
+    expect(author.posts.pluck_with_natural_order(:title, :published)).to eq [['Hello world', true], ['Nude', true], ['High and Dry', false]]
+  end
+
   it 'filters and orders the posts' do
     author = assign_posts_to_author @author_1, [@post_1, @post_3, @post_2]
 

@@ -134,8 +134,8 @@ module CustomFields
           #
           def group_by_select_option(name, order_by = nil)
             name_id = "#{name}_id"
-            groups = self.each.group_by{|x| x.send(name_id)}.map do |(k, v)|
-              {name_id => k, "group" => v}
+            groups = self.each.group_by { |x| x.send(name_id) }.map do |(k, v)|
+              { name_id => k, 'group' => v }
             end
 
             _select_options(name).map do |option|

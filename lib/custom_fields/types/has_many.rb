@@ -32,7 +32,7 @@ module CustomFields
             _order_by   = rule['order_by'] || position_name.to_sym.asc
             _inverse_of = rule['inverse_of'].blank? ? nil : rule['inverse_of'] # an empty String can cause weird behaviours
 
-            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by do
+            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by, validate: false do
 
               def filtered(conditions = {}, order_by = nil)
                 list = conditions.empty? ? self.unscoped : self.where(conditions)
