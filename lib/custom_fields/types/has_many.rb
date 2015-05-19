@@ -1,11 +1,7 @@
 module CustomFields
-
   module Types
-
     module HasMany
-
       module Field
-
         extend ActiveSupport::Concern
 
         included do
@@ -17,15 +13,11 @@ module CustomFields
           def has_many_is_relationship?
             self.type == 'has_many'
           end
-
         end
-
       end
 
       module Target
-
         extend ActiveSupport::Concern
-
         module ClassMethods
 
           # Adds a has_many relationship between 2 mongoid models
@@ -40,7 +32,7 @@ module CustomFields
             _order_by   = rule['order_by'] || position_name.to_sym.asc
             _inverse_of = rule['inverse_of'].blank? ? nil : rule['inverse_of'] # an empty String can cause weird behaviours
 
-            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by do
+            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by, validate: false do
 
               def filtered(conditions = {}, order_by = nil)
                 list = conditions.empty? ? self.unscoped : self.where(conditions)
@@ -48,12 +40,10 @@ module CustomFields
                 if order_by
                   list.order_by(order_by)
                 else
-                  list.order_by(metadata.order)
+                  list.order_by(relation_metadata.order)
                 end
               end
-
               alias :ordered :filtered # backward compatibility + semantic purpose
-
             end
 
             klass.accepts_nested_attributes_for rule['name'], allow_destroy: true
@@ -62,13 +52,8 @@ module CustomFields
               klass.validates_collection_size_of rule['name'], minimum: 1, message: :at_least_one_element, on: :update
             end
           end
-
         end
-
       end
-
     end
-
   end
-
 end

@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Mongoid #:nodoc:
   module Fields #:nodoc:
 
@@ -23,7 +22,18 @@ module Mongoid #:nodoc:
         elsif object.has_key?(locale.to_s)
           object[locale.to_s]
         elsif I18n.fallbacks?
-          object[I18n.fallbacks[locale].map(&:to_s).find { |loc| !object[loc].nil? }]
+          lookup_with_fallback(object)
+        else
+          nil
+        end
+      end
+
+      def lookup_with_fallback(object)
+        fallback_locales = I18n.fallbacks[locale].try(:map, &:to_s)
+
+        if fallback_locales
+          _locale = fallback_locales.find { |loc| !object[loc].nil? }
+          object[_locale]
         else
           nil
         end

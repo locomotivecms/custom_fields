@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe CustomFields::Types::ManyToMany do
 
   before(:each) do
@@ -10,16 +8,17 @@ describe CustomFields::Types::ManyToMany do
   end
 
   it 'is considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_true
+    expect(@blog.posts_custom_fields.first.is_relationship?).to be true
   end
 
   it 'sets a value' do
     @post.authors = [@author_1, @author_2]
-    @post.authors.map(&:name).should == ['John Doe', 'Jane Doe']
+
+    expect(@post.authors.map(&:name)).to eq ['John Doe', 'Jane Doe']
   end
 
   it 'includes a scope named ordered' do
-    @post.authors.respond_to?(:ordered).should be_true
+    expect(@post.authors.respond_to?(:ordered)).to eq true
   end
 
   describe 'validation' do
@@ -27,16 +26,20 @@ describe CustomFields::Types::ManyToMany do
     [nil, []].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.authors = value
-        @post.valid?.should be_false
-        @post.errors[:authors].should == ["must have at least one element"]
+
+        expect(@post.valid?).to eq false
+        expect(@post.errors[:authors]).to eq ['must have at least one element']
       end
     end
 
   end
 
+  protected
+
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build  label: 'Authors', type: 'many_to_many', class_name: 'Person', required: true
+
       field.valid?
     end
   end

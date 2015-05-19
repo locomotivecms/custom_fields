@@ -1,12 +1,10 @@
-require 'spec_helper'
-
 describe CustomFields::Types::Select do
 
   before(:each) do
     @blog = create_blog
   end
 
-  describe 'a new post' do
+  context 'a new post' do
 
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -14,48 +12,62 @@ describe CustomFields::Types::Select do
 
     it 'sets the category from an existing name' do
       @post.main_category = 'Development'
-      @post.attributes['main_category_id'].should == @development_cat._id
+
+      expect(@post.attributes['main_category_id']).to eq @development_cat._id
     end
 
     it 'sets the category from an id' do
       @post.main_category = @development_cat._id
-      @post.attributes['main_category_id'].should == @development_cat._id
+
+      expect(@post.attributes['main_category_id']).to eq @development_cat._id
     end
 
     it 'returns the name of the category' do
       @post.main_category = @design_cat._id
-      @post.main_category.should == 'Design'
+
+      expect(@post.main_category).to eq 'Design'
     end
 
   end
 
-  describe 'an existing post' do
+  context 'an existing post' do
 
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', main_category: @marketing_cat._id
-      @post = Post.find(@post._id)
+
+      @post = Post.find @post._id
     end
 
     it 'returns the main category' do
-      @post.main_category.should == 'Marketing'
+      expect(@post.main_category).to eq 'Marketing'
     end
 
     it 'assigns a new main category' do
       @post.main_category = @design_cat._id
+
       @post.save
-      @post = Post.find(@post._id)
-      @post.main_category.should == 'Design'
+
+      @post = Post.find @post._id
+
+      expect(@post.main_category).to eq 'Design'
     end
 
     it 'create a new category and assigns it' do
       category = @blog.posts_custom_fields.first.select_options.build name: 'Sales'
+
       @blog.save
-      @post = Post.find(@post._id)
+
+      @post = Post.find @post._id
+
       @post.main_category = 'Sales'
-      @post.attributes['main_category_id'].should == category._id
+
+      expect(@post.attributes['main_category_id']).to eq category._id
+
       @post.save
-      @post = Post.find(@post._id)
-      @post.main_category.should == 'Sales'
+
+      @post = Post.find @post._id
+
+      expect(@post.main_category).to eq 'Sales'
     end
 
   end
@@ -63,36 +75,38 @@ describe CustomFields::Types::Select do
   describe 'group_by' do
 
     before(:each) do
-      @blog.posts.create title: 'Hello world 1(Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
-      @blog.posts.create title: 'Hello world (Design)', body: 'Lorem ipsum...', main_category: @design_cat._id
+      @blog.posts.create title: 'Hello world 1(Development)',  body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world (Design)',        body: 'Lorem ipsum...', main_category: @design_cat._id
       @blog.posts.create title: 'Hello world 2 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
       @blog.posts.create title: 'Hello world 3 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
-      @blog.posts.create title: 'Hello world (Unknow)', body: 'Lorem ipsum...', main_category: Moped::BSON::ObjectId.new
-      @blog.posts.create title: 'Hello world (Unknow) 2', body: 'Lorem ipsum...', main_category: Moped::BSON::ObjectId.new
+      @blog.posts.create title: 'Hello world (Unknow)',        body: 'Lorem ipsum...', main_category: BSON::ObjectId.new
+      @blog.posts.create title: 'Hello world (Unknow) 2',      body: 'Lorem ipsum...', main_category: BSON::ObjectId.new
 
-      klass = @blog.klass_with_custom_fields(:posts)
-      @groups = klass.group_by_select_option(:main_category)
+      klass = @blog.klass_with_custom_fields :posts
+      @groups = klass.group_by_select_option :main_category
     end
 
     it 'is an non empty array' do
-      @groups.class.should == Array
-      @groups.size.should == 4
+      expect(@groups.class).to be Array
+
+      expect(@groups.size).to eq 4
     end
 
     it 'is an array of hashes composed of a name' do
-      @groups.map { |g| g[:name].to_s }.should == ["Design", "Development", "Marketing", ""]
+      expect(@groups.map { |g| g[:name].to_s }).to eq ['Design', 'Development', 'Marketing', '']
     end
 
     it 'is an array of hashes composed of a list of documents' do
-      @groups[0][:entries].size.should == 1
-      @groups[1][:entries].size.should == 3
-      @groups[2][:entries].size.should == 0
-      @groups[3][:entries].size.should == 2
+      expect(@groups[0][:entries].size).to be 1
+      expect(@groups[1][:entries].size).to be 3
+      expect(@groups[2][:entries].size).to be 0
+      expect(@groups[3][:entries].size).to be 2
     end
 
     it 'can be accessed from the parent document' do
-      blog = Blog.find(@blog._id)
-      blog.posts.group_by_select_option(:main_category).class.should == Array
+      blog = Blog.find @blog._id
+
+      expect(blog.posts.group_by_select_option(:main_category).class).to be Array
     end
 
   end
@@ -101,49 +115,70 @@ describe CustomFields::Types::Select do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
+
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', author: 'Mister Foo'
-      @post = Post.find(@post._id)
+
+      @post = Post.find @post._id
     end
 
     it 'serializes / deserializes' do
-      @post.author.should == 'Mister Foo'
+      expect(@post.author).to eq 'Mister Foo'
     end
 
     it 'serializes / deserializes with a different locale' do
       Mongoid::Fields::I18n.locale = :fr
-      @post.author.should == 'Monsieur Foo'
+
+      expect(@post.author).to eq 'Monsieur Foo'
+
       @post.author = 'Monsieur Bar'
+
       @post.save
-      @post = Post.find(@post._id)
-      @post.author.should == 'Monsieur Bar'
+
+      @post = Post.find @post._id
+
+      expect(@post.author).to eq 'Monsieur Bar'
+
       Mongoid::Fields::I18n.locale = :en
-      @post.author.should == 'Mister Foo'
+
+      expect(@post.author).to eq 'Mister Foo'
     end
 
     it 'displays all the categories' do
-      @post.class.author_options.first['name'] = 'Mister Foo'
+      expect(@post.class.author_options.first['name']).to eq 'Mister Foo'
+
       Mongoid::Fields::I18n.locale = :fr
-      @post.class.author_options.first['name'] = 'Monsieur Foo'
+
+      expect(@post.class.author_options.first['name']).to eq 'Monsieur Foo'
+
       Mongoid::Fields::I18n.locale = :en
-      @post.class.author_options.first['name'] = 'Mister Foo'
+
+      expect(@post.class.author_options.first['name']).to eq 'Mister Foo'
     end
 
   end
 
+  protected
+
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build label: 'Main category', type: 'select'
-
       Mongoid::Fields::I18n.locale = :en
+
+      # === Categories ===
+
+      field = blog.posts_custom_fields.build label: 'Main category', type: 'select'
 
       @design_cat       = field.select_options.build name: 'Design'
       @development_cat  = field.select_options.build name: 'Development'
       @marketing_cat    = field.select_options.build name: 'Marketing'
 
+      # === Authors ===
+
       field = blog.posts_custom_fields.build label: 'Author', type: 'select', localized: true
 
       @option_1 = field.select_options.build name: 'Mister Foo'
       @option_2 = field.select_options.build name: 'Mister Bar'
+
+      # === Localizations ===
 
       Mongoid::Fields::I18n.locale = :fr
 

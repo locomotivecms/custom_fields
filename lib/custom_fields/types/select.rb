@@ -67,7 +67,7 @@ module CustomFields
           def apply_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: Moped::BSON::ObjectId, localize: rule['localized'] || false
+            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
@@ -134,8 +134,8 @@ module CustomFields
           #
           def group_by_select_option(name, order_by = nil)
             name_id = "#{name}_id"
-            groups = self.each.group_by{|x| x.send(name_id)}.map do |(k, v)|
-              {name_id => k, "group" => v}
+            groups = self.each.group_by { |x| x.send(name_id) }.map do |(k, v)|
+              { name_id => k, 'group' => v }
             end
 
             _select_options(name).map do |option|

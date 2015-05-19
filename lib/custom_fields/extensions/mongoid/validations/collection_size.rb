@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Mongoid
   module Validations
 
@@ -13,7 +12,7 @@ module Mongoid
     #
     #     validates_collection_size_of :addresses, in: 1..10
     #   end
-    class CollectionSizeValidator < LengthValidator
+    class CollectionSizeValidator < Mongoid::Validatable::LengthValidator
 
       def validate_each_with_collection(record, attribute, value)
         value = collection_to_size(record, attribute)

@@ -1,3 +1,4 @@
---colour
---format nested
 --backtrace
+--color
+--format documentation
+--require spec_helper

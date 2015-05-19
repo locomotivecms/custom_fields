@@ -1,5 +1,5 @@
 module Mongoid
-  module Validations
+  module Validatable
     module Macros
       extend ActiveSupport::Concern
 

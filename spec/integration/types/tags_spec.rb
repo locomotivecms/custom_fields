@@ -1,55 +1,65 @@
-require 'spec_helper'
-
 describe CustomFields::Types::Tags do
 
   before(:each) do
     @blog = create_blog
   end
 
-  describe 'a new post' do
+  context 'a new post' do
 
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
 
-    it 'sets the tags as array' do
-      @post.tags = ['one', 'two']
-      @post.attributes['tags'].should == ['one', 'two']
+    it 'sets the tags' do
+      @post.tags = %w[one two three]
+
+      expect(@post.attributes['tags']).to eq %w[one two three]
     end
 
     it 'returns the tags' do
-      @post.tags = ['one', 'two']
-      @post.tags.should == ['one', 'two']
+      @post.tags = %w[one two three]
+
+      expect(@post.tags).to eq %w[one two three]
     end
-    
-    it "sets the tags as a string" do
+
+    it 'sets the tags from a string' do
+      @post.tags = 'one, two, three'
+
+      expect(@post.tags).to eq %w[one two three]
+
       @post.tags = 'one,two, three ,four  ,  five'
-      @post.tags.should == %w[one two three four five]
+
+      expect(@post.tags).to eq %w[one two three four five]
     end
 
   end
 
-  describe 'an existing post' do
+  context 'an existing post' do
 
     before(:each) do
-      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', tags: ['one', 'two']
-      @post = Post.find(@post._id)
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', tags: %w[one two]
+
+      @post = Post.find @post._id
+    end
+
+    it 'returns the tags' do
+      expect(@post.tags).to eq %w[one two]
+    end
+
+    it 'sets a new posted_at date' do
+      @post.tags = 'one, two, three'
+
+      @post.save!
+
+      @post = Post.find @post._id
+
+      expect(@post.tags).to eq %w[one two three]
     end
 
     it 'does not modify the other Post class' do
       post = Post.new
-      post.respond_to?(:tags).should be_false
-    end
 
-    it 'returns the tags' do
-      @post.tags.should == ['one', 'two']
-    end
-
-    it 'sets a new posted_at date' do
-      @post.tags = "new, tags"
-      @post.save!
-      @post = Post.find(@post._id)
-      @post.tags.should == ['new', 'tags']
+      expect(post.respond_to?(:tags)).to eq false
     end
 
   end
@@ -58,32 +68,45 @@ describe CustomFields::Types::Tags do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', localized_tags: ['hello', 'world']
-      @post = Post.find(@post._id)
+
+      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', localized_tags: %w[hello world]
+
+      @post = Post.find @post._id
     end
 
     it 'serializes / deserializes' do
-      @post.localized_tags.should == %w[hello world]
+      expect(@post.localized_tags).to eq %w[hello world]
     end
 
     it 'serializes / deserializes with a different locale' do
       Mongoid::Fields::I18n.locale = :fr
-      @post.localized_tags.should == %w[hello world]
-      @post.localized_tags = ['bonjour']
+
+      expect(@post.localized_tags).to eq %w[hello world]
+
+      @post.localized_tags = %w[bonjour]
+
       @post.save
-      @post = Post.find(@post._id)
-      @post.localized_tags.should == ['bonjour']
+
+      @post = Post.find @post._id
+
+      expect(@post.localized_tags).to eq %w[bonjour]
+
       Mongoid::Fields::I18n.locale = :en
-      @post.localized_tags.should == ['hello', 'world']
+
+      expect(@post.localized_tags).to eq %w[hello world]
     end
 
   end
+
+  protected
 
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
-      blog.posts_custom_fields.build label: 'tags', type: 'tags'
-      blog.posts_custom_fields.build label: 'localized_tags',  type: 'tags', localized: true
+      blog.posts_custom_fields.build label: 'Tags', type: 'tags'
+      blog.posts_custom_fields.build label: 'Localized tags',  type: 'tags', localized: true
+
       blog.save & blog.reload
     end
   end
+
 end

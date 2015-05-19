@@ -13,10 +13,8 @@ module Mongoid
   def self.reload_document(doc)
     if doc.embedded?
       parent = doc.class._parent
-
       parent = parent.class.find(parent._id)
-
-      parent.send(doc.metadata.name).find(doc._id)
+      parent.send(doc.relation_metadata.name).find(doc._id)
     else
       doc.class.find(doc._id)
     end

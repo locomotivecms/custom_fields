@@ -2,12 +2,14 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'active_support'
 require 'carrierwave/mongoid'
-require 'money'
+require 'monetize'
+
+Money.use_i18n = false
 
 module CustomFields
 
   @@options = {
-    reserved_names:     Mongoid.destructive_fields + %w(id _id send class),
+    reserved_names:     Mongoid.destructive_fields + %w(id _id send class destroy),
     default_currency:   'EUR'
   }
 

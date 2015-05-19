@@ -1,26 +1,28 @@
-require 'spec_helper'
-
 describe CustomFields::Types::HasMany do
 
   before(:each) do
-    @blog     = build_blog
-    @post_1   = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
-    @post_2   = @blog.posts.build title: 'Keep writing', body: 'Lorem ipsum...'
-    @author   = @blog.people.build name: 'John Doe'
+    @blog   = build_blog
+    @post_1 = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
+    @post_2 = @blog.posts.build title: 'Keep writing', body: 'Lorem ipsum...'
+    @author = @blog.people.build name: 'John Doe'
   end
 
   it 'is considered as a relationship field type' do
-    @blog.posts_custom_fields.last.is_relationship?.should be_true
+    expect(@blog.posts_custom_fields.last.is_relationship?).to be true
   end
 
   it 'sets a value' do
     @author.posts = [@post_1, @post_2]
-    @author.posts.map(&:title).should == ['Hello world', 'Keep writing']
+
+    expect(@author.posts.map(&:title)).to eq ['Hello world', 'Keep writing']
   end
 
   it 'includes a scope named ordered' do
-    @author.posts.respond_to?(:ordered).should be_true
-    @author.posts.ordered.send(:options)[:sort].should == {"position_in_author" => 1}
+    expect(@author.posts.respond_to?(:ordered)).to eq true
+
+    expected = { 'position_in_author' => 1 }
+
+    expect(@author.posts.ordered.send(:options)[:sort]).to eq expected
   end
 
   describe 'validation' do
@@ -28,12 +30,13 @@ describe CustomFields::Types::HasMany do
     context 'when not persisted' do
 
       it 'is valid if nil' do
-        @author.valid?.should be_true
+        expect(@author.valid?).to eq true
       end
 
       it 'is valid if empty' do
         @author.posts = []
-        @author.valid?.should be_true
+
+        expect(@author.valid?).to eq true
       end
 
     end
@@ -45,8 +48,9 @@ describe CustomFields::Types::HasMany do
       [nil, []].each do |value|
         it "is not valid if the value is #{value.inspect}" do
           @author.posts = value
-          @author.valid?.should be_false
-          @author.errors[:posts].should == ["must have at least one element"]
+
+          expect(@author.valid?).to eq false
+          expect(@author.errors[:posts]).to eq ['must have at least one element']
         end
       end
 
@@ -54,21 +58,28 @@ describe CustomFields::Types::HasMany do
 
   end
 
-  describe 'mimic multi-thread env' do
+  context 'multi-thread environment' do
 
     it 're-builds the class even if it has not been loaded' do
       Object.send(:remove_const, "Post#{@blog._id}".to_sym)
+
       Blog.expects(:find).with(@blog._id.to_s).returns(@blog)
-      @author.posts.should == []
+
+      expect(@author.posts).to eq []
     end
 
   end
 
+  protected
+
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build  label: 'Author', type: 'belongs_to', class_name: 'Person', required: true
+
       field.valid?
+
       field = blog.people_custom_fields.build label: 'Posts', type: 'has_many', class_name: "Post#{blog._id}", inverse_of: 'author', required: true
+
       field.valid?
     end
   end

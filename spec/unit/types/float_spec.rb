@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe CustomFields::Types::Float do
 
   before(:each) do
@@ -8,12 +6,13 @@ describe CustomFields::Types::Float do
   end
 
   it 'is not considered as a relationship field type' do
-    @blog.posts_custom_fields.first.is_relationship?.should be_false
+    expect(@blog.posts_custom_fields.first.is_relationship?).to be false
   end
 
   it 'sets a value' do
     @post.count = 1.42
-    @post.count.should == 1.42
+
+    expect(@post.count).to eq 1.42
   end
 
   describe 'validation' do
@@ -21,8 +20,9 @@ describe CustomFields::Types::Float do
     [nil, '', true, 'John Doe'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.count = value
-        @post.valid?.should be_false
-        @post.errors[:count].should_not be_blank
+
+        expect(@post.valid?).to eq false
+        expect(@post.errors[:count]).not_to be_blank
       end
     end
 
@@ -31,28 +31,37 @@ describe CustomFields::Types::Float do
   describe 'getter and setter' do
 
     it 'returns an empty hash if no value has been set' do
-      @post.class.float_attribute_get(@post, 'count').should == {}
+      expected = {}
+
+      expect(@post.class.float_attribute_get(@post, 'count')).to eq expected
     end
 
     it 'returns the value' do
       @post.count = 42.12345
-      @post.class.float_attribute_get(@post, 'count').should == { 'count' => 42.12345 }
+
+      expected = { 'count' => 42.12345 }
+
+      expect(@post.class.float_attribute_get(@post, 'count')).to eq expected
     end
 
     it 'sets a nil value' do
-      @post.class.float_attribute_set(@post, 'count', {}).should be_nil
+      expect(@post.class.float_attribute_set(@post, 'count', {})).to be_nil
     end
 
     it 'sets a value' do
       @post.class.float_attribute_set(@post, 'count', { 'count' => 42.12345 })
-      @post.count.should == 42.12345
+
+      expect(@post.count).to eq 42.12345
     end
 
   end
 
+  protected
+
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build label: 'Count', type: 'float', required: true
+
       field.valid?
     end
   end

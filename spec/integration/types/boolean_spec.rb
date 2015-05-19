@@ -1,12 +1,10 @@
-require 'spec_helper'
-
 describe CustomFields::Types::Boolean do
 
   before(:each) do
     @blog = create_blog
   end
 
-  describe 'a new post' do
+  context 'a new post' do
 
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -14,32 +12,35 @@ describe CustomFields::Types::Boolean do
 
     it 'sets the visible flag' do
       @post.visible = 'true'
-      @post.attributes['visible'].should == true
+
+      expect(@post.attributes['visible']).to eq true
     end
 
     it 'returns the visible flag' do
       @post.visible = 'true'
-      @post.visible.should == true
+
+      expect(@post.visible).to eq true
     end
 
   end
 
-  describe 'an existing post' do
+  context 'an existing post' do
 
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', visible: true
-      @post = Post.find(@post._id)
+      @post = Post.find @post._id
     end
 
     it 'returns the visible flag' do
-      @post.visible.should == true
+      expect(@post.visible).to eq true
     end
 
     it 'toggles the visible flag' do
       @post.visible = false
       @post.save
       @post = Post.find(@post._id)
-      @post.visible.should == false
+
+      expect(@post.visible).to eq false
     end
 
   end
@@ -48,32 +49,42 @@ describe CustomFields::Types::Boolean do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
+
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', published: true
       @post = Post.find(@post._id)
     end
 
     it 'serializes / deserializes' do
-      @post.published.should be_true
+      expect(@post.published).to be true
     end
 
     it 'serializes / deserializes with a different locale' do
       Mongoid::Fields::I18n.locale = :fr
-      @post.published.should be_true
+
+      expect(@post.published).to be true
+
       @post.published = false
       @post.save
       @post = Post.find(@post._id)
-      @post.published.should be_false
+
+      expect(@post.published).to be false
+
       Mongoid::Fields::I18n.locale = :en
-      @post.published.should be_true
+
+      expect(@post.published).to be true
     end
 
   end
+
+  protected
 
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build label: 'Visible',   type: 'boolean'
       blog.posts_custom_fields.build label: 'Published', type: 'boolean', localized: true
+
       blog.save & blog.reload
     end
   end
+
 end

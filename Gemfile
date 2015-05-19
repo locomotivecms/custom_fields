@@ -1,13 +1,13 @@
-# encoding: utf-8
+#!/usr/bin/env bundle
 
 source 'https://rubygems.org'
 
 gemspec # Include gemspec dependencies
 
-gem 'rake'
+gem 'pry-byebug'
 
-gem 'json', '~> 1.7.7'
+group :default do
+  gem 'bson', '~> 2.3.0'
 
-platforms :mri_18 do
-  gem 'SystemTimer'
+  gem 'json', '~> 1.8.1'
 end
