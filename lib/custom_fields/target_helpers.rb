@@ -37,7 +37,7 @@ module CustomFields
       self.custom_fields_recipe['rules'].map do |rule|
         case rule['type'].to_sym
         when :date, :date_time, :money  then "formatted_#{rule['name']}"
-        when :file                      then [rule['name'], "remove_#{rule['name']}"]
+        when :file                      then [rule['name'], "remove_#{rule['name']}", "remote_#{rule['name']}_url"]
         when :select, :belongs_to       then ["#{rule['name']}_id", "position_in_#{rule['name']}"]
         when :has_many, :many_to_many   then nil
         else
