@@ -48,6 +48,7 @@ end
      types/integer
      types/float
      types/money
+     types/color
      types/relationship_default
      types/belongs_to
      types/has_many
