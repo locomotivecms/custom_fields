@@ -20,10 +20,10 @@ module Mongoid #:nodoc
       end
 
       def self.fallbacks
-        if ::I18n.respond_to?(:fallbacks)
-          ::I18n.fallbacks
-        elsif !self.instance.fallbacks.blank?
+        if !self.instance.fallbacks.blank?
           self.instance.fallbacks
+        elsif ::I18n.respond_to?(:fallbacks)
+          ::I18n.fallbacks
         else
           nil
         end
@@ -35,7 +35,11 @@ module Mongoid #:nodoc
       end
 
       def self.fallbacks?
-        ::I18n.respond_to?(:fallbacks) || !self.instance.fallbacks.blank?
+        !self.instance.fallbacks.blank? || ::I18n.respond_to?(:fallbacks)
+      end
+
+      def self.clear_fallbacks
+        self.instance.fallbacks.try(:clear)
       end
 
       def self.with_locale(new_locale = nil)
