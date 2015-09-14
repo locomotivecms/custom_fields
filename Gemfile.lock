@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.3.2)
+    custom_fields (2.3.3)
       activesupport (~> 3.2.21)
       carrierwave-mongoid (~> 0.6.0)
       money (~> 5.0)
@@ -12,10 +12,10 @@ GEM
   specs:
     RedCloth (4.2.9)
     SystemTimer (1.2.3)
-    activemodel (3.2.21)
-      activesupport (= 3.2.21)
+    activemodel (3.2.22)
+      activesupport (= 3.2.22)
       builder (~> 3.0.0)
-    activesupport (3.2.21)
+    activesupport (3.2.22)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
     builder (3.0.4)
@@ -37,7 +37,7 @@ GEM
     mocha (0.9.12)
     money (5.1.1)
       i18n (~> 0.6.0)
-    mongoid (3.1.6)
+    mongoid (3.1.7)
       activemodel (~> 3.2)
       moped (~> 1.4)
       origin (~> 1.0)
@@ -45,7 +45,7 @@ GEM
     mongoid-grid_fs (1.9.2)
       mime-types (>= 1.19, < 3.0)
       mongoid (>= 3.0, < 5.0)
-    moped (1.5.2)
+    moped (1.5.3)
     multi_json (1.7.3)
     origin (1.1.0)
     pry (0.9.12.2)
