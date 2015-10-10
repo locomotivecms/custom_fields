@@ -9,9 +9,6 @@ end
 # Moped.logger = Logger.new($stdout)
 # Mongoid.logger.level = Logger::DEBUG
 
-Mongoid.logger.level = Logger::INFO
-Mongo::Logger.logger.level = Logger::INFO
-
 module Mongoid
   def self.reload_document(doc)
     if doc.embedded?

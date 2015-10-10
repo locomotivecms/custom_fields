@@ -180,7 +180,7 @@ module CustomFields
         next if _fields.empty?
 
         _operation = { "$#{operation_name}" => _fields }
-        collection.find(selector).update_many _operation
+        collection.find(selector).update _operation, multi: true
       end
     end
 
@@ -214,7 +214,7 @@ module CustomFields
         next if updates.empty?
 
         collection = self.send(name).collection
-        collection.find(record.atomic_selector).update_one({ '$set' => updates })
+        collection.find(record.atomic_selector).update({ '$set' => updates })
       end
     end
 
