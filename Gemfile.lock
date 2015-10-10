@@ -1,11 +1,17 @@
+GIT
+  remote: https://github.com/DatabaseCleaner/database_cleaner.git
+  revision: b87f00320f8aa0f7e499d183128f05ce29cedc33
+  specs:
+    database_cleaner (1.5.1)
+
 PATH
   remote: .
   specs:
-    custom_fields (2.4.0.rc5)
-      activesupport (~> 4.2.1)
-      carrierwave-mongoid (~> 0.7.1)
+    custom_fields (2.5.0.rc1)
+      activesupport (~> 4.2.4)
+      carrierwave-mongoid (~> 0.8.1)
       monetize (~> 1.1.0)
-      mongoid (~> 4.0.2)
+      mongoid (~> 5.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -20,58 +26,53 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    bson (2.3.0)
+    bson (3.2.6)
     builder (3.2.2)
-    byebug (4.0.5)
+    byebug (5.0.0)
       columnize (= 0.9.0)
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
       json (>= 1.7)
       mime-types (>= 1.16)
-    carrierwave-mongoid (0.7.1)
+    carrierwave-mongoid (0.8.1)
       carrierwave (>= 0.8.0, < 0.11.0)
-      mongoid (>= 3.0, < 5.0)
+      mongoid (>= 3.0, < 6.0)
       mongoid-grid_fs (>= 1.3, < 3.0)
     coderay (1.1.0)
     columnize (0.9.0)
-    connection_pool (2.2.0)
-    database_cleaner (1.3.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
     i18n (0.7.0)
-    json (1.8.2)
+    json (1.8.3)
     metaclass (0.0.4)
     method_source (0.8.2)
-    mime-types (2.6.1)
-    minitest (5.8.0)
+    mime-types (2.6.2)
+    minitest (5.8.1)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     monetize (1.1.0)
       money (~> 6.5.0)
     money (6.5.1)
       i18n (>= 0.6.4, <= 0.7.0)
-    mongoid (4.0.2)
+    mongo (2.1.1)
+      bson (~> 3.0)
+    mongoid (5.0.0)
       activemodel (~> 4.0)
-      moped (~> 2.0.0)
+      mongo (~> 2.1)
       origin (~> 2.1)
       tzinfo (>= 0.3.37)
-    mongoid-grid_fs (2.1.0)
+    mongoid-grid_fs (2.2.1)
       mime-types (>= 1.0, < 3.0)
-      mongoid (>= 3.0, < 5.0)
-    moped (2.0.4)
-      bson (~> 2.2)
-      connection_pool (~> 2.0)
-      optionable (~> 0.2.0)
-    multi_json (1.11.0)
-    optionable (0.2.0)
+      mongoid (>= 3.0, < 6.0)
+    multi_json (1.11.2)
     origin (2.1.1)
-    pry (0.10.1)
+    pry (0.10.2)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-byebug (3.1.0)
-      byebug (~> 4.0)
+    pry-byebug (3.2.0)
+      byebug (~> 5.0)
       pry (~> 0.10)
     rake (10.4.2)
     rspec (3.1.0)
@@ -105,10 +106,9 @@ PLATFORMS
 
 DEPENDENCIES
   RedCloth (~> 4.2.9)
-  bson (~> 2.3.0)
   custom_fields!
-  database_cleaner (~> 1.3.0)
-  json (~> 1.8.1)
+  database_cleaner!
+  json (~> 1.8.3)
   mocha (~> 1.1.0)
   pry (~> 0.10.1)
   pry-byebug
@@ -117,3 +117,6 @@ DEPENDENCIES
   rspec-its (~> 1.1.0)
   simplecov (~> 0.9.1)
   yard (~> 0.8.7)
+
+BUNDLED WITH
+   1.10.6
