@@ -27,7 +27,11 @@ module CustomFields
             end
 
             if rule['required']
-              klass.validates_presence_of name
+              # FIXME: previously, we called "klass.validates_presence_of name"
+              # but it didn't work well with localized fields.
+              klass.validate do |object|
+                UploaderPresenceValidator.new(object, name).validate
+              end
             end
           end
 
@@ -60,6 +64,20 @@ module CustomFields
             end.compact
           end
 
+        end
+
+      end
+
+      class UploaderPresenceValidator
+
+        def initialize(document, name)
+          @document, @name = document, name
+        end
+
+        def validate
+          if @document.send(@name).blank?
+            @document.errors.add(@name, :blank)
+          end
         end
 
       end
