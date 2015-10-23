@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.4.0.rc5)
+    custom_fields (2.4.0.rc6)
       activesupport (~> 4.2.1)
       carrierwave-mongoid (~> 0.7.1)
       monetize (~> 1.1.0)
@@ -43,8 +43,8 @@ GEM
     json (1.8.2)
     metaclass (0.0.4)
     method_source (0.8.2)
-    mime-types (2.6.1)
-    minitest (5.8.0)
+    mime-types (2.6.2)
+    minitest (5.8.1)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     monetize (1.1.0)
@@ -56,9 +56,9 @@ GEM
       moped (~> 2.0.0)
       origin (~> 2.1)
       tzinfo (>= 0.3.37)
-    mongoid-grid_fs (2.1.0)
+    mongoid-grid_fs (2.2.1)
       mime-types (>= 1.0, < 3.0)
-      mongoid (>= 3.0, < 5.0)
+      mongoid (>= 3.0, < 6.0)
     moped (2.0.4)
       bson (~> 2.2)
       connection_pool (~> 2.0)
@@ -117,3 +117,6 @@ DEPENDENCIES
   rspec-its (~> 1.1.0)
   simplecov (~> 0.9.1)
   yard (~> 0.8.7)
+
+BUNDLED WITH
+   1.10.6
