@@ -11,7 +11,7 @@ module CustomFields
         included do
 
           def belongs_to_to_recipe
-            { 'class_name' => self.class_name }
+            { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of }
           end
 
           def belongs_to_is_relationship?
@@ -42,7 +42,10 @@ module CustomFields
 
             klass.field position_name, type: ::Integer, default: 0
 
-            klass.belongs_to rule['name'].to_sym, class_name: rule['class_name']
+            options = { class_name: rule['class_name'] }
+            options[:inverse_of] = rule['inverse_of'] unless rule['inverse_of'].blank? # an empty String can cause weird behaviours
+
+            klass.belongs_to rule['name'].to_sym, options
 
             if rule['required']
               klass.validates_presence_of rule['name'].to_sym
