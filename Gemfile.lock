@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.4.0.rc7)
+    custom_fields (2.4.0.rc8)
       activesupport (~> 4.2.1)
       carrierwave-mongoid (~> 0.7.1)
       monetize (~> 1.1.0)
