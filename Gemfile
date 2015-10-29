@@ -7,7 +7,6 @@ gemspec # Include gemspec dependencies
 gem 'pry-byebug'
 
 group :default do
-  gem 'bson', '~> 2.3.0'
-
-  gem 'json', '~> 1.8.1'
+  gem 'json', '~> 1.8.3'
+  gem 'database_cleaner', git: 'https://github.com/DatabaseCleaner/database_cleaner.git'
 end
