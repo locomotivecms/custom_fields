@@ -5,7 +5,6 @@ require 'bundler/setup'
 
 require 'rspec/core/rake_task'
 require 'rubygems/package_task'
-require 'yard'
 
 lib = File.expand_path '../lib', __FILE__
 $:.unshift lib unless $:.include? lib
@@ -37,13 +36,6 @@ end
 
 task spec: ['spec:unit', 'spec:integration']
 
-# === YARD ===
-
-desc 'Generate documentation for the gem.'
-YARD::Rake::YardocTask.new do |t|
-  t.files   = ['lib/**/*.rb']
-  t.options = ['--title', "CustomFields #{CustomFields::VERSION}", '--file', 'README.md']
-end
 
 # Set default Rake tasks.
 task default: :spec

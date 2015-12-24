@@ -33,16 +33,4 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.add_dependency 'carrierwave-mongoid', '~> 0.8.1'
   spec.add_dependency 'activesupport',       '~> 4.2.5'
   spec.add_dependency 'monetize',            '~> 1.3.1'
-
-  spec.add_development_dependency 'rake', '~> 10.4'
-  spec.add_development_dependency 'pry',  '~> 0.10.1'
-
-  spec.add_development_dependency 'rspec',            '~> 3.1.0'
-  spec.add_development_dependency 'rspec-its',        '~> 1.1.0'
-  spec.add_development_dependency 'mocha',            '~> 1.1.0'
-  spec.add_development_dependency 'simplecov',        '~> 0.9.1'
-  spec.add_development_dependency 'database_cleaner', '~> 1.3.0'
-
-  spec.add_development_dependency 'RedCloth', '~> 4.2.9'
-  spec.add_development_dependency 'yard',     '~> 0.8.7'
 end

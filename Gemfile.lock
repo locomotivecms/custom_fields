@@ -1,6 +1,6 @@
 GIT
-  remote: https://github.com/DatabaseCleaner/database_cleaner.git
-  revision: b87f00320f8aa0f7e499d183128f05ce29cedc33
+  remote: git://github.com/DatabaseCleaner/database_cleaner.git
+  revision: ddbec4e2070d77bc94ae0658016aaf8c3b27467d
   specs:
     database_cleaner (1.5.1)
 
@@ -16,7 +16,6 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    RedCloth (4.2.9)
     activemodel (4.2.5)
       activesupport (= 4.2.5)
       builder (~> 3.1)
@@ -97,24 +96,19 @@ GEM
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    yard (0.8.7.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  RedCloth (~> 4.2.9)
   custom_fields!
   database_cleaner!
-  json (~> 1.8.3)
   mocha (~> 1.1.0)
-  pry (~> 0.10.1)
   pry-byebug
   rake (~> 10.4)
   rspec (~> 3.1.0)
   rspec-its (~> 1.1.0)
   simplecov (~> 0.9.1)
-  yard (~> 0.8.7)
 
 BUNDLED WITH
    1.10.6

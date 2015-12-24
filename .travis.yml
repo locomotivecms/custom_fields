@@ -11,3 +11,5 @@ notifications:
 branches:
   except:
     - gh-pages
+sudo: required
+dist: precise
