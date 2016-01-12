@@ -16,8 +16,8 @@ The main goals:
 Requirements
 ------------
 
-* MongoDB 2.x
-* Mongoid 4.x
+* MongoDB 3.x
+* Mongoid 5.x
 * ActiveSupport 4.2.x
 
 Examples
@@ -88,12 +88,12 @@ Run `COVERAGE=true rspec` or `COVERAGE=true rake`.
 Contact
 -------
 
-Feel free to contact me at didier at nocoffee dot fr.
+Feel free to contact me at did at locomotivecms dot com.
 
 License
 -------
 
-Copyright (c) 2013-2015 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
+Copyright (c) 2013-2016 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
 
 [CustomFields]: https://github.com/locomotivecms/custom_fields "Custom fields extension for Mongoid."
 [Gemnasium]: https://gemnasium.com/locomotivecms/custom_fields "CustomFields at Gemnasium"
