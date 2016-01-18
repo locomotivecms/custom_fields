@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gemspec # Include gemspec dependencies
 
-gem 'rake', '~> 10.4'
+gem 'rake', '~> 10.5.0'
 gem 'pry-byebug'
 
 gem 'rspec',            '~> 3.4.0'
