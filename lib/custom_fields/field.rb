@@ -22,6 +22,7 @@ module CustomFields
     field :required,  type: ::Boolean, default: false
     field :unique,    type: ::Boolean, default: false
     field :localized, type: ::Boolean, default: false
+    field :default
 
     ## validations ##
     validates_presence_of   :label, :type
@@ -67,7 +68,8 @@ module CustomFields
         'type'      => self.type,
         'required'  => self.required?,
         'unique'    => self.unique?,
-        'localized' => self.localized? }.merge(custom_to_recipe)
+        'localized' => self.localized?,
+        'default'   => self.default }.merge(custom_to_recipe)
     end
 
     def as_json(options = {})

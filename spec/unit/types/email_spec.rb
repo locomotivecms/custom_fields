@@ -1,4 +1,4 @@
-describe CustomFields::Types::String do
+describe CustomFields::Types::Email do
 
   let(:default) { nil }
   let(:blog)    { build_blog }
@@ -10,18 +10,18 @@ describe CustomFields::Types::String do
   end
 
   it 'sets a value' do
-    expect(post.author).to eq nil
-    post.author = 'John Doe'
-    expect(post.author).to eq 'John Doe'
+    expect(post.email).to eq nil
+    post.email = 'john@doe.net'
+    expect(post.email).to eq 'john@doe.net'
   end
 
   describe 'validation' do
 
-    [nil, ''].each do |value|
+    [nil, 'foo.fr', 'foo@foo'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
-        post.author = value
+        post.email = value
         expect(post.valid?).to eq false
-        expect(post.errors[:author]).not_to be_blank
+        expect(post.errors[:email]).not_to be_blank
       end
     end
 
@@ -29,15 +29,15 @@ describe CustomFields::Types::String do
 
   describe 'default value' do
 
-    let(:default) { 'Ricky G.' }
+    let(:default) { 'john@doe.net' }
 
-    subject { post.author }
+    subject { post.email }
 
-    it { is_expected.to eq 'Ricky G.' }
+    it { is_expected.to eq 'john@doe.net' }
 
     context 'when unsetting a value' do
 
-      before { post.author = 'Stephen M.'; post.author = nil }
+      before { post.email = 'jane@doe.net'; post.email = nil }
 
       it { is_expected.to eq nil }
 
@@ -48,21 +48,21 @@ describe CustomFields::Types::String do
   describe 'getter and setter' do
 
     it 'returns an empty hash if no value has been set' do
-      expect(post.class.string_attribute_get(post, 'author')).to eq({})
+      expect(post.class.string_attribute_get(post, 'email')).to eq({})
     end
 
     it 'returns the value' do
-      post.author = 'John Doe'
-      expect(post.class.string_attribute_get(post, 'author')).to eq('author' => 'John Doe')
+      post.email = 'john@doe.net'
+      expect(post.class.string_attribute_get(post, 'email')).to eq('email' => 'john@doe.net')
     end
 
     it 'sets a nil value' do
-      expect(post.class.string_attribute_set(post, 'author', {})).to be_nil
+      expect(post.class.string_attribute_set(post, 'email', {})).to be_nil
     end
 
     it 'sets a value' do
-      post.class.string_attribute_set(post, 'author', { 'author' => 'John' })
-      expect(post.author).to eq 'John'
+      post.class.string_attribute_set(post, 'email', { 'email' => 'john@doe.net' })
+      expect(post.email).to eq 'john@doe.net'
     end
 
   end
@@ -71,7 +71,7 @@ describe CustomFields::Types::String do
 
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build label: 'Author', type: 'string', required: true, default: default
+      field = blog.posts_custom_fields.build label: 'Email', type: 'email', required: true, default: default
       field.valid?
     end
   end

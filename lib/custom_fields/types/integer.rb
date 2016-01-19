@@ -17,7 +17,7 @@ module CustomFields
           def apply_integer_custom_field(klass, rule)
             name = rule['name']
 
-            klass.field name, type: ::Integer, localize: rule['localized'] || false
+            klass.field name, type: ::Integer, localize: rule['localized'] || false, default: rule['default']
             klass.validates_presence_of name if rule['required']
             klass.validates name, numericality: { only_integer: true }, if: ->(x){ rule['required'] }
           end

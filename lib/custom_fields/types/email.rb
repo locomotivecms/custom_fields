@@ -20,7 +20,7 @@ module CustomFields
           def apply_email_custom_field(klass, rule)
             name = rule['name']
 
-            klass.field name, type: ::String, localize: rule['localized'] || false
+            klass.field name, type: ::String, localize: rule['localized'] || false, default: rule['default']
             klass.validates_presence_of name if rule['required']
             klass.validates_format_of name, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/, allow_blank: !rule['required']
             klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']

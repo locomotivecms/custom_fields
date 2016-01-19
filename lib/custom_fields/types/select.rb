@@ -67,7 +67,7 @@ module CustomFields
           def apply_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false
+            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: ->{ _set_select_option(name, rule['default']) }
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
