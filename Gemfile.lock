@@ -7,7 +7,7 @@ GIT
 PATH
   remote: .
   specs:
-    custom_fields (2.5.0)
+    custom_fields (2.6.0)
       activesupport (~> 4.2.5)
       carrierwave-mongoid (~> 0.8.1)
       monetize (~> 1.4.0)
@@ -16,16 +16,16 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (4.2.5)
-      activesupport (= 4.2.5)
+    activemodel (4.2.5.1)
+      activesupport (= 4.2.5.1)
       builder (~> 3.1)
-    activesupport (4.2.5)
+    activesupport (4.2.5.1)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    bson (4.0.0)
+    bson (4.0.1)
     builder (3.2.2)
     byebug (8.2.1)
     carrierwave (0.10.0)
@@ -45,7 +45,7 @@ GEM
     metaclass (0.0.4)
     method_source (0.8.2)
     mime-types (2.99)
-    minitest (5.8.3)
+    minitest (5.8.4)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     monetize (1.4.0)
@@ -53,7 +53,7 @@ GEM
     money (6.7.0)
       i18n (>= 0.6.4, <= 0.7.0)
       sixarm_ruby_unaccent (>= 1.1.1, < 2)
-    mongo (2.2.1)
+    mongo (2.2.2)
       bson (~> 4.0)
     mongoid (5.0.2)
       activemodel (~> 4.0)
@@ -63,7 +63,7 @@ GEM
     mongoid-grid_fs (2.2.1)
       mime-types (>= 1.0, < 3.0)
       mongoid (>= 3.0, < 6.0)
-    origin (2.1.1)
+    origin (2.2.0)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
