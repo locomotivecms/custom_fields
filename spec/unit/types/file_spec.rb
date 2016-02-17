@@ -22,10 +22,12 @@ describe CustomFields::Types::File do
 
   describe 'getter and setter' do
 
-    it 'returns an empty hash if no value has been set' do
-      expected = {}
+    it 'has a field to store the size of the file' do
+      expect(@post).to respond_to(:picture_size)
+    end
 
-      expect(@post.class.file_attribute_get(@post, 'picture')).to eq expected
+    it 'returns an empty hash if no value has been set' do
+      expect(@post.class.file_attribute_get(@post, 'picture')).to eq({})
     end
 
     it 'returns the value' do

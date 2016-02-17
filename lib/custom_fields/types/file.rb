@@ -21,6 +21,7 @@ module CustomFields
             name = rule['name']
 
             klass.mount_uploader name, FileUploader
+            klass.field :"#{name}_size", type: ::Integer, localize: rule['localized'] == true
 
             if rule['localized'] == true
               klass.replace_field name, ::String, true
@@ -83,6 +84,17 @@ module CustomFields
       end
 
       class FileUploader < ::CarrierWave::Uploader::Base
+
+        process :set_size_in_model
+
+        def set_size_in_model
+          size_field_name = :"#{mounted_as}_size="
+
+          if model.respond_to?(size_field_name)
+            model.send(size_field_name, file.size)
+          end
+        end
+
       end
 
     end

@@ -22,6 +22,12 @@ describe CustomFields::Types::File do
       expect(@post.image.url).to eq '/uploads/doc.txt'
     end
 
+    it 'stores the size of the file' do
+      @post.image = FixturedFile.open('doc.txt')
+      @post.save
+      expect(@post.image_size).to eq 13
+    end
+
   end
 
   context 'an existing post' do
@@ -40,6 +46,7 @@ describe CustomFields::Types::File do
       @post.save
       @post = Post.find @post._id
       expect(@post.image.url).to eq '/uploads/another_doc.txt'
+      expect(@post.image_size).to eq 14
     end
 
   end
