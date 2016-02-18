@@ -26,6 +26,10 @@ describe CustomFields::Types::File do
       expect(@post).to respond_to(:picture_size)
     end
 
+    it 'uses a hash (empty by default) to store the size of the file' do
+      expect(@post.picture_size).to eq({})
+    end
+
     it 'returns an empty hash if no value has been set' do
       expect(@post.class.file_attribute_get(@post, 'picture')).to eq({})
     end

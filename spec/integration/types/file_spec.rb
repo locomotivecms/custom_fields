@@ -25,7 +25,7 @@ describe CustomFields::Types::File do
     it 'stores the size of the file' do
       @post.image = FixturedFile.open('doc.txt')
       @post.save
-      expect(@post.image_size).to eq 13
+      expect(@post.image_size).to eq('default' => 13)
     end
 
   end
@@ -46,7 +46,7 @@ describe CustomFields::Types::File do
       @post.save
       @post = Post.find @post._id
       expect(@post.image.url).to eq '/uploads/another_doc.txt'
-      expect(@post.image_size).to eq 14
+      expect(@post.image_size).to eq('default' => 14)
     end
 
   end
@@ -55,7 +55,7 @@ describe CustomFields::Types::File do
 
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
-      @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', banner: FixturedFile.open('doc.txt')
+      @post = @blog.posts.create! title: 'Hello world', body: 'Lorem ipsum...', banner: FixturedFile.open('doc.txt')
       @post = Post.find @post._id
     end
 
@@ -64,12 +64,14 @@ describe CustomFields::Types::File do
     end
 
     it 'serializes / deserializes with a different locale' do
+      expect(@post.banner_size).to eq('en' => 13)
       Mongoid::Fields::I18n.locale = :fr
       expect(@post.banner.url).to eq '/uploads/doc.txt'
       @post.banner = FixturedFile.open 'another_doc.txt'
       @post.save
       @post = Post.find @post._id
       expect(@post.banner.url).to eq '/uploads/another_doc.txt'
+      expect(@post.banner_size).to eq('en' => 13, 'fr' => 14)
     end
 
     it 'validates the presence of a file not filled in a locale' do
