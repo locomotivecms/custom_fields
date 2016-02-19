@@ -35,7 +35,7 @@ module Mongoid #:nodoc
       end
 
       def self.fallbacks?
-        !self.instance.fallbacks.blank? || ::I18n.respond_to?(:fallbacks)
+        !self.instance.fallbacks.blank? || (::I18n.respond_to?(:fallbacks) && !::I18n.fallbacks.blank?)
       end
 
       def self.clear_fallbacks
