@@ -164,10 +164,12 @@ module CustomFields
 
               name = if !option['name'].respond_to?(:merge)
                 option['name']
+              elsif option['name'].has_key?(locale)
+                option['name'][locale.to_s]
               elsif Mongoid::Fields::I18n.fallbacks?
                 option['name'][Mongoid::Fields::I18n.fallbacks[locale.to_sym].map(&:to_s).find { |loc| !option['name'][loc].nil? }]
               else
-                option['name'][locale.to_s]
+                nil
               end
 
               { '_id' => option['_id'], 'name' => name }

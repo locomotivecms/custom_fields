@@ -153,6 +153,14 @@ describe CustomFields::Types::Select do
       Mongoid::Fields::I18n.locale = :en
 
       expect(@post.class.author_options.first['name']).to eq 'Mister Foo'
+
+      # special case: no fallback found
+      Mongoid::Fields::I18n.stubs(:fallbacks?).returns true
+      Mongoid::Fields::I18n.stubs(:fallbacks).returns {}
+
+      Mongoid::Fields::I18n.with_locale(:en) do
+        expect(@post.class.author_options.first['name']).to eq 'Mister Foo'
+      end
     end
 
   end
