@@ -8,7 +8,7 @@ module CustomFields
 
       ## types ##
       %w(default string text email date date_time boolean file select
-        float integer money color belongs_to has_many many_to_many tags).each do |type|
+        float integer money color belongs_to has_many many_to_many tags password).each do |type|
         include "CustomFields::Types::#{type.camelize}::Target".constantize
       end
 
