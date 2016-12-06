@@ -3,6 +3,7 @@ $:.unshift File.expand_path(File.dirname(__FILE__))
 require 'active_support'
 require 'carrierwave/mongoid'
 require 'monetize'
+require 'bcrypt'
 
 Money.use_i18n = false
 
@@ -55,6 +56,8 @@ end
      types/has_many
      types/many_to_many
      types/tags
+     types/password
+     types/json
      field
      source
      target_helpers

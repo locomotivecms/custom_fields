@@ -81,7 +81,7 @@ module CustomFields
             klass.send(:define_method, names[:default_currency]) { rule['default_currency'] }
 
             # validations
-            klass.validate { _check_money(names) }  if rule['required']
+            klass.validate { _check_money(names) } if rule['required']
             klass.validates_presence_of(names[:cents_field], names[:currency_field]) if rule['required']
             klass.validates_numericality_of names[:cents_field], only_integer: true, if: names[:cents_field]
 
