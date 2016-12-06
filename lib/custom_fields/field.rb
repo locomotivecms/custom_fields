@@ -6,7 +6,7 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     AVAILABLE_TYPES = %w(default string text email date date_time boolean file select float integer
-       money tags color relationship_default belongs_to has_many many_to_many password)
+       money tags color relationship_default belongs_to has_many many_to_many password json)
 
     ## types ##
     AVAILABLE_TYPES.each do |type|

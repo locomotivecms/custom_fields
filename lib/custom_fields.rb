@@ -57,6 +57,7 @@ end
      types/many_to_many
      types/tags
      types/password
+     types/json
      field
      source
      target_helpers
