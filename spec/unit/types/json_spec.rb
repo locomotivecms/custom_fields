@@ -47,6 +47,12 @@ describe CustomFields::Types::Json do
       expect(@post.errors[:metadata]).not_to be_blank
     end
 
+    it "should be valid if the value is an empty string" do
+      @post.metadata = ''
+      expect(@post.metadata).to eq nil
+      expect(@post.valid?).to eq true
+    end
+
   end
 
   context '#localize' do

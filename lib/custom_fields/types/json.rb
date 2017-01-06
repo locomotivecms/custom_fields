@@ -59,7 +59,8 @@ module CustomFields
 
         def decode_json(name, json)
           begin
-            value = json.respond_to?(:to_str) ? ActiveSupport::JSON.decode(URI.unescape(json)) : json
+            value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.unescape(json)) : json
+            value = nil if json.blank?
             instance_variable_set(:"@#{name}_json_parsing_error", nil)
             value
           rescue ActiveSupport::JSON.parse_error
