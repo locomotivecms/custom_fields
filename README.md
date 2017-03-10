@@ -93,7 +93,7 @@ Feel free to contact me at did at locomotivecms dot com.
 License
 -------
 
-Copyright (c) 2013-2016 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
+Copyright (c) 2017 NoCoffee, released under the [MIT License (MIT)], see [LICENSE].
 
 [CustomFields]: https://github.com/locomotivecms/custom_fields "Custom fields extension for Mongoid."
 [Gemnasium]: https://gemnasium.com/locomotivecms/custom_fields "CustomFields at Gemnasium"

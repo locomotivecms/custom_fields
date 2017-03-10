@@ -61,6 +61,12 @@ module CustomFields
           begin
             value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.unescape(json)) : json
             value = nil if json.blank?
+
+            # Only hashes are accepted
+            if value && !value.is_a?(Hash)
+              raise ActiveSupport::JSON.parse_error.new('Only a Hash object is accepted')
+            end
+
             instance_variable_set(:"@#{name}_json_parsing_error", nil)
             value
           rescue ActiveSupport::JSON.parse_error

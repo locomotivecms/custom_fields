@@ -41,8 +41,14 @@ describe CustomFields::Types::Json do
 
   describe 'validation' do
 
-    it "should not valid if the value is not a valid JSON" do
+    it "should not valid if the value is not a valid JSON hash" do
       @post.metadata = "{a:2"
+      expect(@post.valid?).to eq false
+      expect(@post.errors[:metadata]).not_to be_blank
+    end
+
+    it "should not valid if the value is a string (which is a valid JSON)" do
+      @post.metadata = "2"
       expect(@post.valid?).to eq false
       expect(@post.errors[:metadata]).not_to be_blank
     end
