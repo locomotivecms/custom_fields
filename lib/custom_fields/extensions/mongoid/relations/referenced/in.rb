@@ -1,15 +1,15 @@
-module Mongoid # :nodoc:
-  module Relations #:nodoc:
-    module Referenced #:nodoc:
+module CustomFieldsInExtension
+  module ClassMethods
+    def valid_options
+      [:custom_fields_parent_klass] + super
+    end
+  end
 
-      class In < Relations::One
-        class << self
-          def valid_options_with_parent_class
-            valid_options_without_parent_class.push :custom_fields_parent_klass
-          end
-          alias_method_chain :valid_options, :parent_class
-        end
-      end
+  def self.prepended(base)
+    class << base
+      prepend ClassMethods
     end
   end
 end
+
+::Mongoid::Relations::Referenced::In.send(:prepend, CustomFieldsInExtension)

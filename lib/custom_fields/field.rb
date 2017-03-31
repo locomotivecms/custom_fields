@@ -95,7 +95,8 @@ module CustomFields
       return if self.label.blank? && self.name.blank?
 
       if self.name.blank?
-        self.name = self.label.parameterize('_').gsub('-', '_').downcase
+        self.name = ActiveSupport::Inflector.parameterize(self.label, separator: '_')
+        self.name.gsub!('-', '_')
       end
     end
 
