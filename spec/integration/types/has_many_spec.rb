@@ -27,7 +27,7 @@ describe CustomFields::Types::HasMany do
     end
 
     it 'retrieves posts based on their position' do
-      save_author @author, [@post_1.reload, @post_2.reload]
+      save_author @author, [@post_1, @post_2]
 
       @post_1.reload.update_attributes position_in_author: 4
 

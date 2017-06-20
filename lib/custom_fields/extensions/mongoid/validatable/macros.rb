@@ -17,7 +17,7 @@ module Mongoid
       #
       # @since 2.4.0
       def validates_collection_size_of(*args)
-        validates_with(Mongoid::Validations::CollectionSizeValidator, _merge_attributes(args))
+        validates_with(Mongoid::Validatable::CollectionSizeValidator, _merge_attributes(args))
       end
 
     end
