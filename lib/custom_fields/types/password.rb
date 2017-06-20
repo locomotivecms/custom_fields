@@ -19,14 +19,16 @@ module CustomFields
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_password_custom_field(klass, rule)
-            name = rule['name']
+            label, name = rule['label'], rule['name']
 
             klass.field :"#{name}_hash"
 
             klass.send(:define_method, name.to_sym) { '' }
             klass.send(:define_method, :"#{name}=") { |value| _encrypt_password(name, value) }
+            klass.send(:define_method, :"#{name}_confirmation") { '' }
+            klass.send(:define_method, :"#{name}_confirmation=") { |value| _set_confirmation_password(name, value) }
 
-            klass.validate { _check_password(name) }
+            klass.validate { _check_password(label, name) }
           end
 
           # Build a hash storing the raw value for
@@ -54,6 +56,10 @@ module CustomFields
 
         end # ClassMethods
 
+        def _set_confirmation_password(name, confirmation)
+          self.instance_variable_set(:"@#{name}_confirmation", confirmation)
+        end
+
         def _encrypt_password(name, new_password)
           return if new_password.blank?
 
@@ -62,13 +68,18 @@ module CustomFields
           self.send(:"#{name}_hash=", BCrypt::Password.create(new_password))
         end
 
-        def _check_password(name)
+        def _check_password(label, name)
           new_password = self.instance_variable_get(:"@#{name}")
+          confirmation = self.instance_variable_get(:"@#{name}_confirmation")
 
           return if new_password.blank?
 
           if new_password.size < CustomFields::Types::Password::Field::MIN_PASSWORD_LENGTH
-            self.errors.add(name, :too_short, count: 6)
+            self.errors.add(name, :too_short, count: CustomFields::Types::Password::Field::MIN_PASSWORD_LENGTH)
+          end
+
+          if confirmation && confirmation != new_password
+            self.errors.add("#{name}_confirmation", :confirmation, attribute: label || name)
           end
         end
 

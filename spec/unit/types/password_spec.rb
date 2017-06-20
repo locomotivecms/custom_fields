@@ -23,10 +23,35 @@ describe CustomFields::Types::Password do
 
   describe 'validation' do
 
-    it "should not valid if the value is too short" do
+    it "should be valid" do
+      post.password = 'superlongpassword'
+      expect(post.valid?).to eq true
+    end
+
+    it "should be valid if the confirmation matches the password" do
+      post.password = 'superlongpassword'
+      post.password_confirmation = 'superlongpassword'
+      expect(post.valid?).to eq true
+    end
+
+    it "shouldn't be valid if the value is too short" do
       post.password = 'short'
       expect(post.valid?).to eq false
-      expect(post.errors[:password]).not_to be_blank
+      expect(post.errors[:password]).to eq(['is too short (minimum is 6 characters)'])
+    end
+
+    it "shouldn't be valid if the confirmation is blank" do
+      post.password = 'superlongpassword'
+      post.password_confirmation = ''
+      expect(post.valid?).to eq false
+      expect(post.errors[:password_confirmation]).to eq(["doesn't match password"])
+    end
+
+    it "shouldn't be valid if the confirmation is different from the password" do
+      post.password = 'superlongpassword'
+      post.password_confirmation = 'superlongpwd'
+      expect(post.valid?).to eq false
+      expect(post.errors[:password_confirmation]).to eq(["doesn't match password"])
     end
 
   end
