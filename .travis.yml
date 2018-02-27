@@ -2,7 +2,7 @@ env:
   - COVERAGE=true
 language: ruby
 rvm:
-  - 2.3.3
+  - 2.4.3
 services: mongodb
 notifications:
   email:
@@ -13,4 +13,3 @@ branches:
   except:
     - gh-pages
 sudo: required
-dist: precise
