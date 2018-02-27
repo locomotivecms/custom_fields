@@ -6,7 +6,7 @@ class Post
   field :title
   field :body
 
-  belongs_to :blog, inverse_of: :posts, custom_fields_parent_klass: true
+  belongs_to :blog, inverse_of: :posts, optional: true, custom_fields_parent_klass: true
 
   validates_presence_of :title, :body
 

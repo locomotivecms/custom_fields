@@ -24,5 +24,7 @@ class String
     end
   end
 
-  alias_method_chain :constantize, :custom_fields
+  alias_method :constantize_without_custom_fields, :constantize
+  alias_method :constantize, :constantize_with_custom_fields
+
 end

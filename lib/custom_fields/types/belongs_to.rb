@@ -42,7 +42,7 @@ module CustomFields
 
             klass.field position_name, type: ::Integer, default: 0
 
-            options = { class_name: rule['class_name'] }
+            options = { class_name: rule['class_name'], optional: true }
             options[:inverse_of] = rule['inverse_of'] unless rule['inverse_of'].blank? # an empty String can cause weird behaviours
 
             klass.belongs_to rule['name'].to_sym, options

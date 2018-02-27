@@ -95,7 +95,7 @@ module CustomFields
       return if self.label.blank? && self.name.blank?
 
       if self.name.blank?
-        self.name = self.label.parameterize('_').gsub('-', '_').downcase
+        self.name = self.label.parameterize(separator: '_').gsub('-', '_').downcase
       end
     end
 

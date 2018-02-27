@@ -29,6 +29,8 @@ end
      extensions/carrierwave
      extensions/mongoid/document
      extensions/mongoid/factory
+     extensions/mongoid/criteria/queryable/smash
+     extensions/mongoid/relations/options
      extensions/mongoid/relations/referenced/many
      extensions/mongoid/relations/referenced/in
      extensions/mongoid/fields.rb

@@ -20,7 +20,8 @@ module Mongoid
         self.validate_each_without_collection(record, attribute, value)
       end
 
-      alias_method_chain :validate_each, :collection
+      alias_method :validate_each_without_collection, :validate_each
+      alias_method :validate_each, :validate_each_with_collection
 
       private
 
