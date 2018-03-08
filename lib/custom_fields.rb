@@ -38,7 +38,6 @@ end
      extensions/mongoid/fields/localized.rb
      extensions/mongoid/validations/collection_size.rb
      extensions/mongoid/validations/macros.rb
-     extensions/mongoid/attributes
      extensions/origin/smash.rb
      types/default
      types/string
