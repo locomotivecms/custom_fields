@@ -14,18 +14,18 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.license     = 'MIT'
 
   spec.files = Dir[
-    'LICENSE',
+    'MIT-LICENSE',
     'README.md',
     '{lib}/**/*',
     '{config}/**/*'
   ]
 
   spec.extra_rdoc_files = [
-    'LICENSE',
+    'MIT-LICENSE',
     'README.md'
   ]
 
-  spec.required_ruby_version = '~> 2.1'
+  spec.required_ruby_version = '~> 2.3'
 
   spec.required_rubygems_version = '~> 2.4'
 
