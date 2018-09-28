@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.9.0)
-      activesupport (~> 5.1.5)
+    custom_fields (2.10.0.beta)
+      activesupport (~> 5.2.1)
       bcrypt (~> 3.1.11)
       carrierwave-mongoid (~> 1.0.0)
       monetize (~> 1.7.0)
@@ -11,9 +11,9 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (5.1.6)
-      activesupport (= 5.1.6)
-    activesupport (5.1.6)
+    activemodel (5.2.1)
+      activesupport (= 5.2.1)
+    activesupport (5.2.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)

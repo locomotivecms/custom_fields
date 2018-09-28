@@ -17,6 +17,7 @@ describe CustomFields::Types::Float do
 
   describe 'validation' do
 
+    # https://github.com/rails/rails/issues/33651
     [nil, '', true, 'John Doe'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.count = value
