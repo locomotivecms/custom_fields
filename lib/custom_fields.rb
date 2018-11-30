@@ -5,7 +5,7 @@ require 'carrierwave/mongoid'
 require 'monetize'
 require 'bcrypt'
 
-Money.use_i18n = false
+Money.locale_backend = :currency
 
 module CustomFields
 
