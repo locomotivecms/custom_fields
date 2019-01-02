@@ -87,6 +87,15 @@ module CustomFields
 
         process :set_size_in_model
 
+        def filename
+          if original_filename && model.fields[mounted_as.to_s].localized?
+            _original_filename, extension = original_filename.split('.')
+            ["#{_original_filename}_#{::Mongoid::Fields::I18n.locale}", extension].compact.join('.')
+          else
+            original_filename
+          end
+        end
+
         def set_size_in_model
           size_field_name = :"#{mounted_as}_size"
 
