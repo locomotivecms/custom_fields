@@ -38,7 +38,7 @@ module CarrierWave
       # We absolutely don't want to erase the file in the default locale
       if  record.class.fields[column.to_s].localized? &&
           record.changes[column]&.first == '_new_'
-        _before = ['_new_']
+        _before = [nil]
       end
 
       # FIXME: can't reproduce this behavior locally but it happens in production

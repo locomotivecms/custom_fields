@@ -1,4 +1,5 @@
 *.swp
+gcp-keyfile.json
 /.bundle
 /.ruby-gemset
 /.ruby-version
@@ -12,3 +13,4 @@
 /rdoc/
 /spec/tmp/
 /tmp/
+/uploads/

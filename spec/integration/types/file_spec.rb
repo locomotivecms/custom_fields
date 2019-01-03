@@ -19,7 +19,7 @@ describe CustomFields::Types::File do
     it 'attaches the file' do
       @post.image = FixturedFile.open('doc.txt')
       @post.save
-      expect(@post.image.url).to eq '/uploads/doc.txt'
+      expect(@post.image.url).to  match(/\/uploads\/doc\.txt$/)
     end
 
     it 'stores the size of the file' do
@@ -38,14 +38,14 @@ describe CustomFields::Types::File do
     end
 
     it 'returns the url to the file' do
-      expect(@post.image.url).to eq '/uploads/doc.txt'
+      expect(@post.image.url).to match(/\/uploads\/doc\.txt$/)
     end
 
     it 'attaches a new file' do
       @post.image = FixturedFile.open 'another_doc.txt'
       @post.save
       @post = Post.find @post._id
-      expect(@post.image.url).to eq '/uploads/another_doc.txt'
+      expect(@post.image.url).to match(/\/uploads\/another_doc\.txt$/)
       expect(@post.image_size).to eq('default' => 14)
     end
 
@@ -60,17 +60,17 @@ describe CustomFields::Types::File do
     end
 
     it 'serializes / deserializes' do
-      expect(@post.banner.url).to eq '/uploads/doc_en.txt'
+      expect(@post.banner.url).to match(/\/uploads\/doc_en\.txt$/)
     end
 
     it 'serializes / deserializes with a different locale' do
       expect(@post.banner_size).to eq('en' => 13)
       Mongoid::Fields::I18n.locale = :fr
-      expect(@post.banner.url).to eq '/uploads/doc_en.txt'
+      expect(@post.banner.url).to match(/\/uploads\/doc_en\.txt$/)
       @post.banner = FixturedFile.open 'another_doc.txt'
       @post.save
       @post = Post.find @post._id
-      expect(@post.banner.url).to eq '/uploads/another_doc_fr.txt'
+      expect(@post.banner.url).to match(/\/uploads\/another_doc_fr\.txt$/)
       expect(@post.banner_size).to eq('en' => 13, 'fr' => 14)
     end
 
@@ -79,16 +79,16 @@ describe CustomFields::Types::File do
       @post = Post.find @post._id
       expect(@post.valid?).to eq true
       expect(@post.save).to eq true
-      expect(@post.banner.url).to eq '/uploads/doc_en.txt'
+      expect(@post.banner.url).to match(/\/uploads\/doc_en\.txt$/)
     end
 
     it 'attaches a new file' do
-      expect(@post.banner.url).to eq '/uploads/doc_en.txt'
+      expect(@post.banner.url).to match(/\/uploads\/doc_en\.txt$/)
       Mongoid::Fields::I18n.locale = :fr
       post = Post.find(@post._id)
       post.attributes = { title: 'Bonjour le monde', banner: FixturedFile.open('another_doc.txt') }
       post.save
-      expect(post.banner.url).to eq '/uploads/another_doc_fr.txt'
+      expect(post.banner.url).to match(/\/uploads\/another_doc_fr\.txt$/)
       Mongoid::Fields::I18n.locale = :en
       post = Post.find @post._id
       expect(post.banner_size).to eq('en' => 13, 'fr' => 14)

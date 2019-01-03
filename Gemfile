@@ -9,6 +9,8 @@ gem 'pry-byebug',   '~> 3.6.0'
 
 gem 'database_cleaner'
 
+gem 'carrierwave-google-storage', require: false
+
 group :test do
   gem 'rspec',            '~> 3.7.0'
   gem 'rspec-its',        '~> 1.2.0'
