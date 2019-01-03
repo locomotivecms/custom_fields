@@ -41,10 +41,10 @@ module CarrierWave
         _before = ['_new_']
       end
 
-      # FIXME: not needed for now, wait for another occurence in production
-      # if before && before.first.is_a?(Hash)
-      #   _before = [before.first[locale]]
-      # end
+      # FIXME: can't reproduce this behavior locally but it happens in production
+      if before && before.first.is_a?(Hash)
+        _before = [before.first[locale]]
+      end
 
       if after && after.first.is_a?(Hash)
         _after = [after.first[locale]]
