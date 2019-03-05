@@ -2,7 +2,7 @@ env:
   - COVERAGE=true
 language: ruby
 rvm:
-  - 2.5.0
+  - 2.6.1
 services: mongodb
 notifications:
   email:
