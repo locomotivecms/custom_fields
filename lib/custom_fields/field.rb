@@ -6,7 +6,7 @@ module CustomFields
     include ::Mongoid::Timestamps
 
     AVAILABLE_TYPES = %w(default string text email date date_time boolean file select float integer
-       money tags color relationship_default belongs_to has_many many_to_many password json)
+       money tags color relationship_default belongs_to has_many many_to_many password json multiple_select)
 
     ## types ##
     AVAILABLE_TYPES.each do |type|
@@ -23,6 +23,7 @@ module CustomFields
     field :unique,    type: ::Boolean, default: false
     field :localized, type: ::Boolean, default: false
     field :default
+    field :appearance_type, type: ::String
 
     ## validations ##
     validates_presence_of   :label, :type
@@ -30,6 +31,7 @@ module CustomFields
     validates_inclusion_of  :type, in: AVAILABLE_TYPES, allow_blank: true
     validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/, multiline: true
     validate                :uniqueness_of_label_and_name
+    validate                :inclusion_of_appearance_type
 
     ## callbacks ##
     before_validation :set_name
@@ -102,6 +104,16 @@ module CustomFields
     def siblings
       # binding.pry
       self._parent.send(self.relation_metadata.name)
+    end
+
+    def inclusion_of_appearance_type
+      return true if appearance_type.blank?
+      return true if type.blank?
+      return true unless "CustomFields::Types::#{type.camelize}::Field".constantize.const_defined?('AVAILABLE_APPEARANCE_TYPES')
+      
+      unless "CustomFields::Types::#{type.camelize}::Field::AVAILABLE_APPEARANCE_TYPES".constantize.include?(appearance_type)
+        self.errors.add(:appearance_type, :inclusion)
+      end
     end
 
   end

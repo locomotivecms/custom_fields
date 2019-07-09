@@ -1,8 +1,11 @@
 require 'mongoid'
 
 Mongoid.configure do |config|
-  name = 'custom_fields_test'
-  config.connect_to name
+  name = ENV['MONGO_DBNAME'] || 'custom_fields_test'
+  config.clients.default = {
+    hosts: [ENV['MONGO_URL']] || ['localhost:27017'],
+    database: name,
+  }
 end
 
 # Mongoid.logger = Logger.new($stdout)

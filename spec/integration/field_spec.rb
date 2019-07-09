@@ -21,6 +21,33 @@ describe 'CustomFields::Field' do
 
   end
 
+  describe 'validation' do
+    let(:blog)  { build_blog }
+    let(:field) { blog.posts_custom_fields.first }
+
+    context '#inclusion_of_appearance_type' do
+      it "always passes when appearance_type is blank" do
+        field.appearance_type = nil
+        expect(blog.valid?).to eq true
+      end
+
+      it "should not accepts invalid appearance type" do
+        field.appearance_type = 'invalid'
+        expect(blog.valid?).to eq false
+      end
+
+      it "should accepts valid appearance type" do
+        field.appearance_type = CustomFields::Types::Select::Field::AVAILABLE_APPEARANCE_TYPES.first
+        expect(blog.valid?).to eq true
+      end
+
+      xit "always passes when type does not has AVAILABLE_APPEARANCE_TYPES" do
+        field.appearance_type = 'invalid'
+        expect(blog.valid?).to eq true
+      end
+    end
+  end
+
   protected
 
   def create_blog
@@ -29,6 +56,14 @@ describe 'CustomFields::Field' do
       blog.posts_custom_fields.build label: 'Location',    type: 'string'
 
       blog.save
+    end
+  end
+
+  def build_blog
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Main category', type: 'select', required: true, default: 'IT'
+      field.select_options.build name: 'Test'
+      field.valid?
     end
   end
 

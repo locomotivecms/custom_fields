@@ -2,7 +2,7 @@ module CustomFields
 
   module Types
 
-    module Select
+    module MultipleSelect
 
       class Option
 
@@ -11,7 +11,7 @@ module CustomFields
         field :name,      localize: true
         field :position,  type: ::Integer, default: 0
 
-        embedded_in :custom_field, inverse_of: :select_options
+        embedded_in :custom_field, inverse_of: :multiple_select_options
 
         validates_presence_of :name
 
@@ -25,30 +25,30 @@ module CustomFields
 
         extend ActiveSupport::Concern
 
+        AVAILABLE_APPEARANCE_TYPES = %w(checkbox select_multiple)
+
         included do
-          AVAILABLE_APPEARANCE_TYPES = %w(pulldown radiobutton)
+          embeds_many :multiple_select_options, class_name: 'CustomFields::Types::MultipleSelect::Option'
 
-          embeds_many :select_options, class_name: 'CustomFields::Types::Select::Option'
+          validates_associated :multiple_select_options
 
-          validates_associated :select_options
-
-          accepts_nested_attributes_for :select_options, allow_destroy: true
+          accepts_nested_attributes_for :multiple_select_options, allow_destroy: true
         end
 
-        def ordered_select_options
-          self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
+        def ordered_multiple_select_options
+          self.multiple_select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
         end
 
-        def select_to_recipe
+        def multiple_select_to_recipe
           {
-            'select_options' => self.ordered_select_options.map do |option|
+            'multiple_select_options' => self.ordered_multiple_select_options.map do |option|
               { '_id' => option._id, 'name' => option.name_translations }
             end
           }
         end
 
-        def select_as_json(options = {})
-          { 'select_options' => self.ordered_select_options.map(&:as_json) }
+        def multiple_select_as_json(options = {})
+          { 'multiple_select_options' => self.ordered_multiple_select_options.map(&:as_json) }
         end
 
       end
@@ -64,22 +64,21 @@ module CustomFields
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
-          def apply_select_custom_field(klass, rule)
+          def apply_multiple_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: ->{ _set_select_option(name, rule['default']) }
-
+            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: ->{ _set_multiple_select_option(name, rule['default']) }
             klass.cattr_accessor "_raw_#{base_collection_name}"
-            klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
+            klass.send :"_raw_#{base_collection_name}=", rule['multiple_select_options'].sort { |a, b| a['position'] <=> b['position'] }
 
             # other methods
-            klass.send(:define_method, name.to_sym) { _get_select_option(name) }
-            klass.send(:define_method, :"#{name}=") { |value| _set_select_option(name, value) }
+            klass.send(:define_method, name.to_sym) { _get_multiple_select_option(name) }
+            klass.send(:define_method, :"#{name}=") { |value| _set_multiple_select_option(name, value) }
 
             klass.class_eval <<-EOV
 
               def self.#{base_collection_name}
-                self._select_options('#{name}')
+                self._multiple_select_options('#{name}')
               end
 
             EOV
@@ -97,8 +96,9 @@ module CustomFields
           #
           # @return [ Hash ] fields: <name>: option name, <name>_id: id of the option
           #
-          def select_attribute_get(instance, name)
-            if value = instance.send(name.to_sym)
+          def multiple_select_attribute_get(instance, name)
+            value = instance.send(name.to_sym)
+            if value.present?
               {
                 name          => value,
                 "#{name}_id"  => instance.send(:"#{name}_id")
@@ -115,16 +115,16 @@ module CustomFields
           # @param [ String ] name The name of the select custom field
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
-          def select_attribute_set(instance, name, attributes)
-            id_or_name  = attributes[name] || attributes["#{name}_id"]
+          def multiple_select_attribute_set(instance, name, attributes)
+            ids_or_names  = attributes[name] || attributes["#{name}_id"]
 
-            return if id_or_name.nil?
+            return if ids_or_names.nil?
 
-            option = _select_options(name).detect do |option|
-              [option['_id'], option['name']].include?(id_or_name)
-            end
+            options = _multiple_select_options(name).select do |option|
+              ids_or_names.include?(option['name']) || ids_or_names.map(&:to_s).include?(option['_id'].to_s)
+            end.map{|opt| opt['_id']}
 
-            instance.send(:"#{name}_id=", option.try(:[], '_id'))
+            instance.send(:"#{name}_id=", options)
           end
 
           # Returns a list of documents groupes by select values defined in the custom fields recipe
@@ -132,32 +132,32 @@ module CustomFields
           # @param  [ Class ] klass The class to modify
           # @return [ Array ] An array of hashes (keys: select option and related documents)
           #
-          def group_by_select_option(name, order_by = nil)
+          def group_by_multiple_select_option(name, order_by = nil)
             name_id = "#{name}_id"
             groups = self.each.group_by { |x| x.send(name_id) }.map do |(k, v)|
               { name_id => k, 'group' => v }
             end
 
-            _select_options(name).map do |option|
+            _multiple_select_options(name).map do |option|
               group = groups.detect { |g| g[name_id].to_s == option['_id'].to_s }
               list  = group ? group['group'] : []
 
               groups.delete(group) if group
 
-              { name: option['name'], entries: self._order_select_entries(list, order_by) }.with_indifferent_access
+              { name: option['name'], entries: self._order_multiple_select_entries(list, order_by) }.with_indifferent_access
             end.tap do |array|
               if not groups.empty? # orphan entries ?
                 empty = { name: nil, entries: [] }.with_indifferent_access
                 groups.each do |group|
                   empty[:entries] += group['group']
                 end
-                empty[:entries] = self._order_select_entries(empty[:entries], order_by)
+                empty[:entries] = self._order_multiple_select_entries(empty[:entries], order_by)
                 array << empty
               end
             end
           end
 
-          def _select_options(name)
+          def _multiple_select_options(name)
             self.send(:"_raw_#{name}_options").map do |option|
 
               locale = Mongoid::Fields::I18n.locale.to_s
@@ -176,7 +176,7 @@ module CustomFields
             end
           end
 
-          def _order_select_entries(list, order_by = nil)
+          def _order_multiple_select_entries(list, order_by = nil)
             return list if order_by.nil?
 
             column, direction = order_by.flatten
@@ -190,24 +190,33 @@ module CustomFields
 
         end
 
-        def _select_option_id(name)
+        def _multiple_select_option_ids(name)
           self.send(:"#{name}_id")
         end
 
-        def _find_select_option(name, id_or_name)
-          self.class._select_options(name).detect do |option|
+        def _find_multiple_select_option(name, id_or_name)
+          self.class._multiple_select_options(name).detect do |option|
             option['name'] == id_or_name || option['_id'].to_s == id_or_name.to_s
           end
         end
 
-        def _get_select_option(name)
-          option = self._find_select_option(name, self._select_option_id(name))
-          option ? option['name'] : nil
+        def _find_multiple_select_options(name, ids_or_names)
+          self.class._multiple_select_options(name).select do |option|
+            ids_or_names.include?(option['name']) || ids_or_names.map(&:to_s).include?(option['_id'].to_s)
+          end
         end
 
-        def _set_select_option(name, value)
-          option = self._find_select_option(name, value)
-          self.send(:"#{name}_id=", option ? option['_id'] : nil)
+        def _get_multiple_select_option(name)
+          options = self._find_multiple_select_options(name, self._multiple_select_option_ids(name))
+          options.map {|option| option['name'] }
+        end
+
+        def _set_multiple_select_option(name, values)
+          raise ArgumentError, 'invalid values(accepts only array of string or BSON id' unless values.is_a?(Array)
+
+          option_ids = self._find_multiple_select_options(name, values).map{|opt| opt['_id']}
+
+          self.send(:"#{name}_id=", option_ids)
         end
 
       end

@@ -35,6 +35,16 @@ describe CustomFields::Types::Select do
       end
     end
 
+    it "should not accepts invalid appearance type" do
+      field.appearance_type = 'invalid'
+      expect(blog.valid?).to eq false
+    end
+
+    it "should accepts valid appearance type" do
+      field.appearance_type = CustomFields::Types::Select::Field::AVAILABLE_APPEARANCE_TYPES.first
+      expect(blog.valid?).to eq true
+    end
+
   end
 
   describe 'default value' do

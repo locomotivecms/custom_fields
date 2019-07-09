@@ -48,6 +48,7 @@ end
      types/boolean
      types/file
      types/select
+     types/multiple_select
      types/integer
      types/float
      types/money
