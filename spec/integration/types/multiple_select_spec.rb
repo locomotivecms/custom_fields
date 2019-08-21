@@ -13,13 +13,13 @@ describe CustomFields::Types::MultipleSelect do
     it 'sets the category from an existing name' do
       @post.main_category = ['Development']
 
-      expect(@post.attributes['main_category_id']).to eq [@development_cat._id]
+      expect(@post.attributes['main_category_ids']).to eq [@development_cat._id]
     end
 
     it 'sets the category from an id' do
       @post.main_category = [@development_cat._id]
 
-      expect(@post.attributes['main_category_id']).to eq [@development_cat._id]
+      expect(@post.attributes['main_category_ids']).to eq [@development_cat._id]
     end
 
     it 'returns the name of the category' do
@@ -61,7 +61,7 @@ describe CustomFields::Types::MultipleSelect do
 
       @post.main_category = ['Sales']
 
-      expect(@post.attributes['main_category_id']).to eq [category._id]
+      expect(@post.attributes['main_category_ids']).to eq [category._id]
 
       @post.save
 

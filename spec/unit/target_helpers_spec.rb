@@ -63,6 +63,10 @@ describe CustomFields::TargetHelpers do
       expect(@names.include?('formatted_posted_at')).to be true
     end
 
+    it 'includes setters for month' do
+      expect(@names.include?('formatted_posted_month')).to be true
+    end
+
     it 'includes setters for file' do
       expect(@names.include?('illustration')).to be true
       expect(@names.include?('remove_illustration')).to be true
@@ -94,6 +98,11 @@ describe CustomFields::TargetHelpers do
       expect(@names.include?('projects')).to be false
     end
 
+    it 'includes setters for multiple select' do
+      expect(@names.include?('categories_ids')).to be true
+      expect(@names.include?('categories')).to be false
+    end
+
   end
 
   context '#returning basic attributes' do
@@ -101,7 +110,8 @@ describe CustomFields::TargetHelpers do
     before(:each) do
       %w[
         category formatted_posted_at visible author_name illustration?
-        author_picture? int_count float_count formatted_donation
+        author_picture? int_count float_count formatted_donation categories
+        formatted_posted_month
       ].each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
@@ -137,6 +147,11 @@ describe CustomFields::TargetHelpers do
       @post.custom_fields_basic_attributes
     end
 
+    it 'calls the getter for month' do
+      @post.class.expects(:month_attribute_get).with(@post, 'posted_month').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
     it 'calls the getter for file' do
       @post.class.expects(:file_attribute_get).once.with(@post, 'illustration').returns({})
       @post.class.expects(:file_attribute_get).once.with(@post, 'author_picture').returns({})
@@ -155,6 +170,11 @@ describe CustomFields::TargetHelpers do
       @post.custom_fields_basic_attributes
     end
 
+    it 'calls the getter for multiple select' do
+      @post.class.expects(:multiple_select_attribute_get).with(@post, 'categories').returns({})
+      @post.custom_fields_basic_attributes
+    end
+
   end
 
   context '#setting basic attributes' do
@@ -163,6 +183,7 @@ describe CustomFields::TargetHelpers do
       %w[
         category= formatted_posted_at= visible=
         author_name= int_count= float_count= money=
+        formatted_posted_month=
       ].each do |meth|
         @post.stubs(meth.to_sym).returns(nil)
       end
@@ -198,6 +219,11 @@ describe CustomFields::TargetHelpers do
       @post.custom_fields_basic_attributes = {}
     end
 
+    it 'calls the setter for month' do
+      @post.class.expects(:month_attribute_set).with(@post, 'posted_month', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
     it 'calls the setter for file' do
       @post.class.expects(:file_attribute_set).once.with(@post, 'illustration', {}).returns({})
       @post.class.expects(:file_attribute_set).once.with(@post, 'author_picture', {}).returns({})
@@ -206,6 +232,11 @@ describe CustomFields::TargetHelpers do
 
     it 'calls the setter for select' do
       @post.class.expects(:select_attribute_set).with(@post, 'category', {}).returns({})
+      @post.custom_fields_basic_attributes = {}
+    end
+
+    it 'calls the setter for multiple select' do
+      @post.class.expects(:multiple_select_attribute_set).with(@post, 'categories', {}).returns({})
       @post.custom_fields_basic_attributes = {}
     end
 
@@ -227,7 +258,7 @@ describe CustomFields::TargetHelpers do
     it 'includes the default method name for string, select, boolean, integer, float, has_many and many_to_many fields' do
       %w[
         author_name category visible projects illustrations
-        contributors int_count float_count
+        contributors int_count float_count categories
       ].each do |name|
         expect(@methods.include?(name)).to be true
       end
@@ -247,6 +278,11 @@ describe CustomFields::TargetHelpers do
     it 'includes the method name for dates' do
       expect(@methods.include?('formatted_posted_at')).to be true
       expect(@methods.include?('posted_at')).to be false
+    end
+
+    it 'includes the method name for months' do
+      expect(@methods.include?('formatted_posted_month')).to be true
+      expect(@methods.include?('posted_month')).to be false
     end
 
     it 'includes the method name for money' do
@@ -294,6 +330,9 @@ describe CustomFields::TargetHelpers do
           { 'name' => 'int_count',      'type' => 'integer', 'required' => false, 'localized' => false },
           { 'name' => 'float_count',    'type' => 'float', 'required' => false, 'localized' => false },
           { 'name' => 'donation',       'type' => 'money', 'required' => false, 'localized' => false },
+          { 'name' => 'categories',     'type' => 'multiple_select', 'required' => false, 'localized' => false },
+          { 'name' => 'posted_month',      'type' => 'month', 'required' => false, 'localized' => false },
+
         ]
       })
     end

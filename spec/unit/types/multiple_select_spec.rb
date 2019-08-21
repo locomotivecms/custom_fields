@@ -107,7 +107,7 @@ describe CustomFields::Types::MultipleSelect do
 
       post.taxonomies = ['Item #2 in French']
 
-      expect(post.taxonomies_id_translations['fr']).to eq [@option_2._id]
+      expect(post.taxonomies_ids_translations['fr']).to eq [@option_2._id]
     end
 
   end
@@ -125,7 +125,7 @@ describe CustomFields::Types::MultipleSelect do
 
       expected = {
         'categories'     => ['Test'],
-        'categories_id'  => [field.multiple_select_options.first._id]
+        'categories_ids'  => [field.multiple_select_options.first._id]
       }
 
       expect(post.class.multiple_select_attribute_get(post, 'categories')).to eq expected
@@ -146,7 +146,7 @@ describe CustomFields::Types::MultipleSelect do
 
       expect(post.categories).to eq ['Test']
 
-      post.class.multiple_select_attribute_set(post, 'categories', { 'categories_id' => [field.multiple_select_options.first._id] })
+      post.class.multiple_select_attribute_set(post, 'categories', { 'categories_ids' => [field.multiple_select_options.first._id] })
 
       expect(post.categories).to eq ['Test']
     end

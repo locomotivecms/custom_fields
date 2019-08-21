@@ -67,7 +67,7 @@ module CustomFields
           def apply_multiple_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: Array, localize: rule['localized'] || false, default: ->{ _set_multiple_select_option(name, rule['default']) }
+            klass.field :"#{name}_ids", type: Array, localize: rule['localized'] || false, default: ->{ _set_multiple_select_option(name, rule['default']) }
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['multiple_select_options'].sort { |a, b| a['position'] <=> b['position'] }
 
@@ -101,7 +101,7 @@ module CustomFields
             if value.present?
               {
                 name          => value,
-                "#{name}_id"  => instance.send(:"#{name}_id")
+                "#{name}_ids"  => instance.send(:"#{name}_ids")
               }
             else
               {}
@@ -116,7 +116,7 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def multiple_select_attribute_set(instance, name, attributes)
-            ids_or_names  = attributes[name] || attributes["#{name}_id"]
+            ids_or_names  = attributes[name] || attributes["#{name}_ids"]
 
             return if ids_or_names.nil?
 
@@ -124,7 +124,7 @@ module CustomFields
               ids_or_names.include?(option['name']) || ids_or_names.map(&:to_s).include?(option['_id'].to_s)
             end.map{|opt| opt['_id']}
 
-            instance.send(:"#{name}_id=", options)
+            instance.send(:"#{name}_ids=", options)
           end
 
           def _multiple_select_options(name)
@@ -161,7 +161,7 @@ module CustomFields
         end
 
         def _multiple_select_option_ids(name)
-          self.send(:"#{name}_id")
+          self.send(:"#{name}_ids")
         end
 
         def _find_multiple_select_option(name, id_or_name)
@@ -187,7 +187,7 @@ module CustomFields
 
           option_ids = self._find_multiple_select_options(name, values).map{|opt| opt['_id']}
 
-          self.send(:"#{name}_id=", option_ids)
+          self.send(:"#{name}_ids=", option_ids)
         end
 
       end

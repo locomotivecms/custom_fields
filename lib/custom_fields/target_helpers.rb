@@ -36,9 +36,10 @@ module CustomFields
     def custom_fields_safe_setters
       self.custom_fields_recipe['rules'].map do |rule|
         case rule['type'].to_sym
-        when :date, :date_time, :money  then "formatted_#{rule['name']}"
+        when :date, :date_time, :money, :month  then "formatted_#{rule['name']}"
         when :file                      then [rule['name'], "remove_#{rule['name']}", "remote_#{rule['name']}_url"]
         when :select, :belongs_to       then ["#{rule['name']}_id", "position_in_#{rule['name']}"]
+        when :multiple_select           then ["#{rule['name']}_ids"]
         when :has_many, :many_to_many   then nil
         else
           rule['name']
@@ -165,7 +166,8 @@ module CustomFields
     def custom_fields_getters_for(name, type)
       case type.to_sym
       when :select                    then [name, "#{name}_id"]
-      when :date, :date_time, :money  then "formatted_#{name}"
+      when :multiple_select           then [name, "#{name}_ids"]
+      when :date, :date_time, :money, :month  then "formatted_#{name}"
       when :file                      then "#{name}_url"
       when :belongs_to                then "#{name}_id"
       else
