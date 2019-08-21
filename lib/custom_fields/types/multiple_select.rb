@@ -67,7 +67,7 @@ module CustomFields
           def apply_multiple_select_custom_field(klass, rule)
             name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: ->{ _set_multiple_select_option(name, rule['default']) }
+            klass.field :"#{name}_id", type: Array, localize: rule['localized'] || false, default: ->{ _set_multiple_select_option(name, rule['default']) }
             klass.cattr_accessor "_raw_#{base_collection_name}"
             klass.send :"_raw_#{base_collection_name}=", rule['multiple_select_options'].sort { |a, b| a['position'] <=> b['position'] }
 
@@ -127,36 +127,6 @@ module CustomFields
             instance.send(:"#{name}_id=", options)
           end
 
-          # Returns a list of documents groupes by select values defined in the custom fields recipe
-          #
-          # @param  [ Class ] klass The class to modify
-          # @return [ Array ] An array of hashes (keys: select option and related documents)
-          #
-          def group_by_multiple_select_option(name, order_by = nil)
-            name_id = "#{name}_id"
-            groups = self.each.group_by { |x| x.send(name_id) }.map do |(k, v)|
-              { name_id => k, 'group' => v }
-            end
-
-            _multiple_select_options(name).map do |option|
-              group = groups.detect { |g| g[name_id].to_s == option['_id'].to_s }
-              list  = group ? group['group'] : []
-
-              groups.delete(group) if group
-
-              { name: option['name'], entries: self._order_multiple_select_entries(list, order_by) }.with_indifferent_access
-            end.tap do |array|
-              if not groups.empty? # orphan entries ?
-                empty = { name: nil, entries: [] }.with_indifferent_access
-                groups.each do |group|
-                  empty[:entries] += group['group']
-                end
-                empty[:entries] = self._order_multiple_select_entries(empty[:entries], order_by)
-                array << empty
-              end
-            end
-          end
-
           def _multiple_select_options(name)
             self.send(:"_raw_#{name}_options").map do |option|
 
@@ -212,7 +182,8 @@ module CustomFields
         end
 
         def _set_multiple_select_option(name, values)
-          raise ArgumentError, 'invalid values(accepts only array of string or BSON id' unless values.is_a?(Array)
+          values = [] if values.nil?
+          raise ArgumentError, 'invalid values(accepts only array of string or BSON id)' unless values.is_a?(Array)
 
           option_ids = self._find_multiple_select_options(name, values).map{|opt| opt['_id']}
 

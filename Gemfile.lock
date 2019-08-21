@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     custom_fields (2.10.0.beta3)
-      activesupport (>= 5.1, < 6.0)
+      activesupport (>= 5.1, < 7.0)
       bcrypt (~> 3.1.11)
       carrierwave-mongoid (~> 1.1.0)
       monetize (~> 1.9.0)

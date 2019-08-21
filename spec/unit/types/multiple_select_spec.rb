@@ -32,7 +32,7 @@ describe CustomFields::Types::MultipleSelect do
   end
 
   describe 'validation' do
-    [nil, ''].each do |value|
+    [''].each do |value|
       it "raise error if the value is #{value.inspect}" do
         expect { post.categories = value }.to raise_error(ArgumentError)
       end      
