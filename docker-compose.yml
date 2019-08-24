@@ -1,0 +1,26 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3.6.9
+    volumes:
+      - mongo:/data/db
+    ports:
+      - "27017:27017"
+    command: --storageEngine=mmapv1
+  ruby:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/src
+      - bundle:/usr/local/bundle:z
+    environment:
+      - MONGO_URL=mongo:27017
+    depends_on:
+      - mongo
+    tty: true
+    stdin_open: true
+volumes:
+  bundle:
+  mongo:
+
