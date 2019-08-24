@@ -121,7 +121,7 @@ module CustomFields
     end
 
     def multiple_select_custom_fields
-      group_custom_fields 'multiple_select'
+      group_custom_fields('multiple_select') { |rule| [rule['name'], "#{rule['name'].singularize}_ids"] }
     end
 
     # Return the names of all the file custom_fields of this object

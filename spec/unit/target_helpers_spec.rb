@@ -21,7 +21,7 @@ describe CustomFields::TargetHelpers do
     end
 
     it 'groups multiple select fields' do
-      expect(@post.multiple_select_custom_fields).to eq %w[categories]
+      expect(@post.multiple_select_custom_fields).to eq [%w[categories category_ids]]
     end
 
     it 'groups file fields' do
