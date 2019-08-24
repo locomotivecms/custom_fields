@@ -10,6 +10,7 @@ describe CustomFields::TargetHelpers do
       @post.stubs(:custom_fields_recipe).returns({ 'rules' => [] })
 
       expect(@post.select_custom_fields).to be_empty
+      expect(@post.multiple_select_custom_fields).to be_empty
       expect(@post.file_custom_fields).to be_empty
       expect(@post.has_many_custom_fields).to be_empty
       expect(@post.many_to_many_custom_fields).to be_empty
@@ -17,6 +18,10 @@ describe CustomFields::TargetHelpers do
 
     it 'groups select fields' do
       expect(@post.select_custom_fields).to eq %w[category]
+    end
+
+    it 'groups multiple select fields' do
+      expect(@post.multiple_select_custom_fields).to eq %w[categories]
     end
 
     it 'groups file fields' do

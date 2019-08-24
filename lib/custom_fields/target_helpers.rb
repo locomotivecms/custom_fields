@@ -120,6 +120,10 @@ module CustomFields
       group_custom_fields 'select'
     end
 
+    def multiple_select_custom_fields
+      group_custom_fields 'multiple_select'
+    end
+
     # Return the names of all the file custom_fields of this object
     #
     # @return [ Array ] List of names
