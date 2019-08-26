@@ -74,6 +74,7 @@ module CustomFields
             # other methods
             klass.send(:define_method, name.to_sym) { _get_multiple_select_option(name) }
             klass.send(:define_method, :"#{name}=") { |value| _set_multiple_select_option(name, value) }
+            klass.send(:define_method, :"#{name}_ids=") { |value| _set_multiple_select_option(name, value) }
 
             klass.class_eval <<-EOV
 
@@ -187,9 +188,7 @@ module CustomFields
 
           option_ids = self._find_multiple_select_options(name, values).map{|opt| opt['_id']}
 
-          self.send(:"#{name}_ids=", option_ids)
-        end
-
+          self.send(:write_attribute, :"#{name}_ids", option_ids)
       end
 
     end

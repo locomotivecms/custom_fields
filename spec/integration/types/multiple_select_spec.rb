@@ -22,6 +22,11 @@ describe CustomFields::Types::MultipleSelect do
       expect(@post.attributes['main_category_ids']).to eq [@development_cat._id]
     end
 
+    it 'sets the category_ids from an string id' do
+      @post.main_category_ids = [@development_cat._id.to_s]
+      expect(@post.attributes['main_category_ids']).to eq [@development_cat._id]
+    end
+
     it 'returns the name of the category' do
       @post.main_category = [@design_cat._id]
 
