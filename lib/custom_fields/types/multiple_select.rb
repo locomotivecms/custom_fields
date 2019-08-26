@@ -189,6 +189,7 @@ module CustomFields
           option_ids = self._find_multiple_select_options(name, values).map{|opt| opt['_id']}
 
           self.send(:write_attribute, :"#{name}_ids", option_ids)
+        end
       end
 
     end
