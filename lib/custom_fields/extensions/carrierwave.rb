@@ -36,7 +36,7 @@ module CarrierWave
       # in the default locale. Now, we want to upload a file in another locale with
       # a different name.
       # We absolutely don't want to erase the file in the default locale
-      if  record.class.fields[column.to_s].localized? &&
+      if record.class.fields[column.to_s]&.localized? &&
           record.changes[column]&.first == '_new_'
         _before = [nil]
       end
