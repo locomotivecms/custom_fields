@@ -7,7 +7,7 @@ module CustomFields
         included do
 
           def has_many_to_recipe
-            { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of, 'order_by' => self.order_by }
+            { 'class_name' => self.class_name, 'inverse_of' => self.inverse_of, 'order_by' => self.order_by, 'as' => self.as }
           end
 
           def has_many_is_relationship?
@@ -31,8 +31,12 @@ module CustomFields
 
             _order_by   = rule['order_by'] || position_name.to_sym.asc
             _inverse_of = rule['inverse_of'].blank? ? nil : rule['inverse_of'] # an empty String can cause weird behaviours
+            _as = rule['as'].blank? ? nil : rule['as']
 
-            klass.has_many rule['name'], class_name: rule['class_name'], inverse_of: _inverse_of, order: _order_by, validate: false do
+            options = { class_name: rule['class_name'], order: _order_by, validate: false }
+            options.merge!(as: _as) if _as.present?
+            options.merge!(inverse_of: _inverse_of) if _inverse_of.present?
+            klass.has_many rule['name'], options do
 
               def filtered(conditions = {}, order_by = nil)
                 list = conditions.empty? ? self.unscoped : self.where(conditions)

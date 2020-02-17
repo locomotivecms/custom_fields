@@ -36,6 +36,15 @@ describe CustomFields::Types::HasMany do
       expect(@author.posts.map(&:title)).to eq ['High and Dry', 'Hello world']
     end
 
+    it 'accepts polymorphic relation' do
+      @author.save
+      @author.reload
+      @author.tags.new(name: 'Default Author')
+      @author.save
+      Tagging.create!(name: 'Super Author', taggable: @author)
+
+      expect(@author.tags.count).to eq(2)
+    end
   end
 
   context 'an existing author' do
@@ -121,6 +130,7 @@ describe CustomFields::Types::HasMany do
       blog.posts_custom_fields.build  label: 'Author',    type: 'belongs_to', class_name: 'Person'
       blog.posts_custom_fields.build  label: 'Published', type: 'boolean'
       blog.people_custom_fields.build label: 'Posts',     type: 'has_many', class_name: "Post#{blog._id}", inverse_of: 'author'
+      blog.people_custom_fields.build label: 'Tags', type: 'has_many', class_name: "Tagging", as: :taggable, inverse_of: :taggable
 
       blog.save & blog.reload
     end
@@ -130,6 +140,13 @@ describe CustomFields::Types::HasMany do
     posts.each { |post| post.author = author; post.save }
 
     author.save
+  end
+
+  class Tagging
+    include Mongoid::Document
+  
+    field :name
+    belongs_to :taggable, polymorphic: true, index: true, optional: true
   end
 
 end
