@@ -24,8 +24,14 @@ describe CustomFields::Types::Email do
 
     it 'validates the email' do
       @person.email = 'junk'
-
+    
       expect(@person).not_to be_valid
+    
+      @person.email = 'a‐n@s.ac.jp'
+      expect(@person).not_to be_valid
+    
+      @person.email = 'a-n@s.ac.jp'
+      expect(@person).to be_valid
     end
 
   end
