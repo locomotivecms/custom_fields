@@ -81,6 +81,14 @@ Development
 
 Run `rspec` or `rake`.
 
+```
+docker-compose run --rm ruby bundle exec rspec
+```
+You may need
+```
+docker-compose run mongo --repair
+```
+
 ### Test Coverage
 
 Run `COVERAGE=true rspec` or `COVERAGE=true rake`.
