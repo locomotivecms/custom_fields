@@ -16,12 +16,35 @@ describe CustomFields::Types::Email do
   end
 
   describe 'validation' do
+    context 'email not required' do
+      let(:blog)    { build_email_not_required_blog }
+      [nil, ''].each do |value|
+        it "should be valid if the value is #{value.inspect}" do
+          post.email = value
+          expect(post.valid?).to eq true
+        end
+      end
+    end
 
-    [nil, 'foo.fr', 'foo@foo', 'foo.@foo.com'].each do |value|
+    context 'email required' do
+      [nil, ''].each do |value|
+        it "should not valid if the value is #{value.inspect}" do
+          post.email = value
+          expect(post.valid?).to eq false
+          expect(post.errors[:email]).not_to be_blank
+          expect(post.errors[:email]).not_to be_blank
+          expect(post.errors.details[:email].first[:error]).to eq(:blank)
+        end
+      end
+    end
+
+    ['foo.fr', 'foo@foo', 'foo.@foo.com'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.email = value
         expect(post.valid?).to eq false
         expect(post.errors[:email]).not_to be_blank
+        expect(post.errors[:email]).not_to be_blank
+        expect(post.errors.details[:email].first[:error]).to eq(:invalid)
       end
     end
 
@@ -79,6 +102,13 @@ describe CustomFields::Types::Email do
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       field = blog.posts_custom_fields.build label: 'Email', type: 'email', required: true, default: default
+      field.valid?
+    end
+  end
+
+  def build_email_not_required_blog
+    Blog.new(name: 'My personal blog').tap do |blog|
+      field = blog.posts_custom_fields.build label: 'Email', type: 'email', required: false, default: default
       field.valid?
     end
   end

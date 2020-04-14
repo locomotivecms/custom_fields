@@ -18,15 +18,12 @@ module CustomFields
       end
 
       def validate_email(r,f)
-        return if r[f].nil?
+        return if r[f].blank?
         e = EmailAddress.new(r[f], host_validation: :syntax)
         unless e.valid?
-          r.errors[f] << (@opt[:message] ||
-                        EmailAddress::Config.error_messages[:invalid_address] ||
-                        "Invalid Email Address")
+          r.errors.add(f, :invalid)
         end
       end
-
     end
   end
 end
