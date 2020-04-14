@@ -32,4 +32,5 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.add_dependency 'activesupport',       '>= 5.1', '< 7.0'
   spec.add_dependency 'monetize',            '~> 1.9.0'
   spec.add_dependency 'bcrypt',              '~> 3.1.11'
+  spec.add_dependency 'email_address',       '>= 0.1.16', '< 1.0'
 end

@@ -17,7 +17,7 @@ describe CustomFields::Types::Email do
 
   describe 'validation' do
 
-    [nil, 'foo.fr', 'foo@foo'].each do |value|
+    [nil, 'foo.fr', 'foo@foo', 'foo.@foo.com'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.email = value
         expect(post.valid?).to eq false
@@ -25,6 +25,13 @@ describe CustomFields::Types::Email do
       end
     end
 
+    ['foo.fr@fr.com'].each do |value|
+      it "should be valid if the value is #{value.inspect}" do
+        post.email = value
+        expect(post.valid?).to eq true
+        expect(post.errors[:email]).to be_blank
+      end
+    end
   end
 
   describe 'default value' do

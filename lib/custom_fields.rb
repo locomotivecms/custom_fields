@@ -4,6 +4,7 @@ require 'active_support'
 require 'carrierwave/mongoid'
 require 'monetize'
 require 'bcrypt'
+require 'email_address'
 
 Money.locale_backend = :currency
 
@@ -39,6 +40,7 @@ end
      extensions/mongoid/validations/collection_size.rb
      extensions/mongoid/validations/macros.rb
      extensions/origin/smash.rb
+     validators/email_address_validator.rb
      types/default
      types/string
      types/text

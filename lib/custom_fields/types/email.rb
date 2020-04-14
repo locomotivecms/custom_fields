@@ -22,7 +22,7 @@ module CustomFields
 
             klass.field name, type: ::String, localize: rule['localized'] || false, default: rule['default']
             klass.validates_presence_of name if rule['required']
-            klass.validates_format_of name, with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i, allow_blank: !rule['required']
+            klass.validates_with Validators::EmailAddressValidator, field: name, allow_blank: !rule['required']
             klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
           end
 
