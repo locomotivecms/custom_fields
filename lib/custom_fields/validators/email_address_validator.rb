@@ -19,7 +19,7 @@ module CustomFields
 
       def validate_email(r,f)
         return if r[f].blank?
-        e = EmailAddress.new(r[f], host_validation: :syntax)
+        e = EmailAddress.new(r[f], host_validation: :syntax, local_format: :relaxed)
         unless e.valid?
           r.errors.add(f, :invalid)
         end

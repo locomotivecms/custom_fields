@@ -48,7 +48,7 @@ describe CustomFields::Types::Email do
       end
     end
 
-    ['foo.fr@fr.com'].each do |value|
+    ['foo.fr@fr.com', 'foo-.fr@fr.com'].each do |value|
       it "should be valid if the value is #{value.inspect}" do
         post.email = value
         expect(post.valid?).to eq true
