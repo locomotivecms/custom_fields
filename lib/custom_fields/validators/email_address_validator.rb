@@ -1,6 +1,7 @@
 module CustomFields
   module Validators
     class EmailAddressValidator < ActiveModel::Validator
+      EMAIL_REGEXP = /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
       def initialize(options={})
         @opt = options
       end
@@ -19,10 +20,12 @@ module CustomFields
 
       def validate_email(r,f)
         return if r[f].blank?
-        e = EmailAddress.new(r[f], host_validation: :syntax, local_format: :standard)
-        unless e.valid?
-          r.errors.add(f, :invalid)
-        end
+        input_email = r[f]
+        e = EmailAddress.new(input_email, host_validation: :syntax, local_format: :standard)
+        return r.errors.add(f, :invalid) unless e.valid?
+        
+        # double check for trailing spaces and unicodes
+        return r.errors.add(f, :invalid) unless input_email.match(EMAIL_REGEXP)
       end
     end
   end
