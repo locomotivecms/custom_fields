@@ -39,7 +39,7 @@ describe CustomFields::Field do
       end
     end
 
-    %w[id _id save destroy send class].each do |name|
+    %w[id _id save destroy send class system].each do |name|
       it "does not accept reserved name like `#{name}`" do
         @field.name = name
 

@@ -25,7 +25,7 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
     'README.md'
   ]
 
-  spec.required_ruby_version = '~> 2.5'
+  spec.required_ruby_version = '~> 2.6'
 
   spec.add_dependency 'mongoid',             '>= 6.2', '< 7.0'
   spec.add_dependency 'carrierwave-mongoid', '~> 1.1.0'

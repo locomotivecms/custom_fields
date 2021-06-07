@@ -10,7 +10,7 @@ Money.locale_backend = :currency
 module CustomFields
 
   @@options = {
-    reserved_names:     Mongoid.destructive_fields + %w(id _id send class destroy),
+    reserved_names:     Mongoid.destructive_fields + %w(id _id send class destroy system),
     default_currency:   'EUR'
   }
 

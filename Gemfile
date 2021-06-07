@@ -7,7 +7,7 @@ gemspec # Include gemspec dependencies
 gem 'rake',         '~> 12.3.0'
 gem 'pry-byebug',   '~> 3.6.0'
 
-gem 'database_cleaner'
+gem 'database_cleaner', '~> 1.7.0'
 
 gem 'carrierwave-google-storage', require: false
 
@@ -21,5 +21,5 @@ group :test do
 end
 
 platform :ruby do
-  ruby '2.6.1'
+  ruby '2.7.2'
 end
