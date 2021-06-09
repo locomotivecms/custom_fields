@@ -1,25 +1,25 @@
 describe 'CustomFields::Performance' do
 
-  occurences = 1000
+  occurrences = 1000
 
   context 'with custom fields' do
 
     before(:each) do
       @blog = create_blog
 
-      create_posts @blog, occurences
+      create_posts @blog, occurrences
 
       @blog = Blog.find @blog._id
     end
 
-    it "retrieves #{occurences} posts" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+    it "retrieves #{occurrences} posts" do
+      MyBenchmark.measure("retrieving #{occurrences} posts") do
         @blog.posts.all.collect(&:title)
       end
     end
 
-    it "retrieves #{occurences} posts and trigger methods" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+    it "retrieves #{occurrences} posts and trigger methods" do
+      MyBenchmark.measure("retrieving #{occurrences} posts") do
         @blog.posts.all.each do |entry|
           entry.main_author = 'john'
           entry.location = 'chicago'
@@ -34,19 +34,19 @@ describe 'CustomFields::Performance' do
     before(:each) do
       @blog = create_blog false
 
-      create_posts @blog, occurences
+      create_posts @blog, occurrences
 
       @blog = Blog.find @blog._id
     end
 
-    it "retrieves #{occurences} posts" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+    it "retrieves #{occurrences} posts" do
+      MyBenchmark.measure("retrieving #{occurrences} posts") do
         @blog.posts.all.collect(&:title)
       end
     end
 
-    it "retrieves #{occurences} posts and trigger methods" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+    it "retrieves #{occurrences} posts and trigger methods" do
+      MyBenchmark.measure("retrieving #{occurrences} posts") do
         @blog.posts.all.each do |entry|
           entry.title = 'yeaah'
           entry.body = 'a test'
