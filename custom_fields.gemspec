@@ -28,7 +28,7 @@ Gem::Specification.new 'custom_fields', CustomFields::VERSION do |spec|
   spec.required_ruby_version = '~> 2.6'
 
   spec.add_dependency 'mongoid',             '>= 6.2', '< 7.0'
-  spec.add_dependency 'carrierwave-mongoid', '~> 1.1.0'
+  spec.add_dependency 'carrierwave-mongoid', '~> 1.2.0'
   spec.add_dependency 'activesupport',       '>= 5.1', '< 6.0'
   spec.add_dependency 'monetize',            '~> 1.9.0'
   spec.add_dependency 'bcrypt',              '~> 3.1.11'
