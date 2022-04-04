@@ -50,7 +50,10 @@ module CustomFields
             klass.field rule['name'], localize: rule['localized'] || false, default: rule['default']
 
             klass.validates_presence_of rule['name'] if rule['required']
-            klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
+
+            klass.validates_uniqueness_of rule['name'],
+              scope: :_type,
+              allow_blank: !rule['required'] if rule['unique']
           end
 
           # Build a hash storing the formatted (or not) values
