@@ -59,7 +59,7 @@ module CustomFields
 
         def decode_json(name, json)
           begin
-            value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.unescape(json)) : json
+            value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.decode_www_form_component(json)) : json
             value = nil if json.blank?
 
             # Only hashes are accepted
@@ -69,7 +69,7 @@ module CustomFields
 
             instance_variable_set(:"@#{name}_json_parsing_error", nil)
             value
-          rescue ActiveSupport::JSON.parse_error
+          rescue ActiveSupport::JSON.parse_error            
             instance_variable_set(:"@#{name}_json_parsing_error", $!.message)
             nil
           end

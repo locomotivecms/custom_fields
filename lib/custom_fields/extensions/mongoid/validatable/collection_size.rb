@@ -23,14 +23,17 @@ module Mongoid
       private
 
       def collection_to_size(record, attribute)
-        relation = record.relations[attribute.to_s]
+        # TODO: find an example with a has_and_belongs_to_many relationship...
+        # relation = record.relations[attribute.to_s]
 
-        source = case relation.macro
-        when :embeds_many, :has_many
-          record.send(attribute)
-        when :has_and_belongs_to_many
-          record.send(relation.key.to_sym)
-        end
+        # source = case relation.macro
+        # when :embeds_many, :has_many
+        #   record.send(attribute)
+        # when :has_and_belongs_to_many
+        #   record.send(relation.key.to_sym)
+        # end
+
+        source = record.send(attribute)
 
         OpenStruct.new(length: source.try(:size) || 0)
       end

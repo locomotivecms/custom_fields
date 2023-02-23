@@ -40,7 +40,7 @@ module CustomFields
                 if order_by
                   list.order_by(order_by)
                 else
-                  list.order_by(relation_metadata.order)
+                  list.order_by(association.options[:order])
                 end
               end
               alias :ordered :filtered # backward compatibility + semantic purpose
