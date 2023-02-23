@@ -19,7 +19,7 @@ describe 'CustomFields::Performance' do
     end
 
     it "retrieves #{occurences} posts and trigger methods" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+      MyBenchmark.measure("retrieving #{occurences} and trigger methods") do
         @blog.posts.all.each do |entry|
           entry.main_author = 'john'
           entry.location = 'chicago'
@@ -46,7 +46,7 @@ describe 'CustomFields::Performance' do
     end
 
     it "retrieves #{occurences} posts and trigger methods" do
-      MyBenchmark.measure("retrieving #{occurences} posts") do
+      MyBenchmark.measure("retrieving #{occurences} posts and trigger methods") do
         @blog.posts.all.each do |entry|
           entry.title = 'yeaah'
           entry.body = 'a test'

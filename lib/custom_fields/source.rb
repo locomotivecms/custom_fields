@@ -36,8 +36,8 @@ module CustomFields
     def klass_with_custom_fields(name)
       # Rails.logger.debug "[CustomFields] klass_with_custom_fields #{self.send(name).metadata.klass} / #{self.send(name).metadata[:old_klass]}" if defined?(Rails) # DEBUG
       recipe    = self.custom_fields_recipe_for(name)
-      _metadata = self.send(name).relation_metadata
-      target    = _metadata[:original_klass] || _metadata.klass # avoid to use an already enhanced klass
+      _metadata = self.send(name)._association
+      target    = _metadata.options[:original_klass] || _metadata.klass # avoid to use an already enhanced klass
       target.klass_with_custom_fields(recipe)
     end
 
@@ -98,17 +98,18 @@ module CustomFields
     def refresh_metadata_with_custom_fields(name)
       return if !self.persisted? || self.send(:"#{name}_custom_fields").blank? # do not generate a klass without all the information
 
-      old_metadata = self.send(name).relation_metadata
+      old_metadata = self.send(name)._association
 
       # puts "old_metadata = #{old_metadata.klass.inspect} / #{old_metadata.object_id.inspect}" # DEBUG
 
       # puts "[CustomFields] refresh_metadata_with_custom_fields, #{name.inspect}, self = #{self.inspect}"
 
-      self.send(name).__metadata = old_metadata.clone.tap do |metadata|
+      self.send(name)._association = old_metadata.clone.tap do |metadata|
         # Rails.logger.debug "[CustomFields] refresh_metadata_with_custom_fields #{metadata.klass}" if defined?(Rails) # DEBUG
 
         # backup the current klass
-        metadata[:original_klass] ||= metadata.klass
+        metadata.instance_variable_set(:@options, metadata.options.dup)
+        metadata.options[:original_klass] ||= metadata.klass
 
         metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
       end
@@ -201,11 +202,11 @@ module CustomFields
         # puts "[apply_custom_fields_localize_diff] processing: record #{record._id} / #{self._custom_field_localize_diff[name].inspect}" # DEBUG
         self._custom_field_localize_diff[name].each do |changes|
           if changes[:localized]
-            value = record.read_attribute(changes[:field].to_sym)
+            value = record.attributes[changes[:field]]
             updates[changes[:field]] = { Mongoid::Fields::I18n.locale.to_s => value }
           else
             # the other way around
-            value = record.read_attribute(changes[:field].to_sym)
+            value = record.attributes[changes[:field]]
             next if value.nil?
             updates[changes[:field]] = value[Mongoid::Fields::I18n.locale.to_s]
           end

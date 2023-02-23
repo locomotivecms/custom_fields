@@ -31,7 +31,7 @@ describe 'CustomFields::Validations' do
     post = @blog.posts.create(post_attributes)
 
     expect(post).to_not be_valid
-    expect(post.errors[:codename].first).to eq 'is already taken'
+    expect(post.errors[:codename].first).to eq 'has already been taken'
   end
 
   it 'validates uniqueness (and allows blank)' do
