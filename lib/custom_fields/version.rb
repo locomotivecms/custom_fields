@@ -1,5 +1,5 @@
 module CustomFields #:nodoc
 
-  VERSION = '2.12.1'
+  VERSION = '3.0.0'
 
 end

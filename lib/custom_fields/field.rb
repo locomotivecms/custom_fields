@@ -19,9 +19,9 @@ module CustomFields
     field :type
     field :hint
     field :position,  type: ::Integer, default: 0
-    field :required,  type: ::Boolean, default: false
-    field :unique,    type: ::Boolean, default: false
-    field :localized, type: ::Boolean, default: false
+    field :required,  type: 'Boolean', default: false
+    field :unique,    type: 'Boolean', default: false
+    field :localized, type: 'Boolean', default: false
     field :default
 
     ## validations ##
@@ -95,13 +95,12 @@ module CustomFields
       return if self.label.blank? && self.name.blank?
 
       if self.name.blank?
-        self.name = self.label.parameterize(separator: '_').gsub('-', '_').downcase
+        self.name = ActiveSupport::Inflector.parameterize(self.label, separator: '_').gsub('-', '_').downcase
       end
     end
 
     def siblings
-      # binding.pry
-      self._parent.send(self.relation_metadata.name)
+      self._parent.send(self.association_name)
     end
 
   end

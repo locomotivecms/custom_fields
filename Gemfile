@@ -4,22 +4,21 @@ source 'https://rubygems.org'
 
 gemspec # Include gemspec dependencies
 
-gem 'rake',         '~> 12.3.0'
-gem 'pry-byebug',   '~> 3.6.0'
+gem 'rake',         '~> 13.0.6'
+gem 'pry-byebug',   '~> 3.10.1'
 
-gem 'database_cleaner', '~> 1.7.0'
+gem 'database_cleaner-mongoid', '~> 2.0.1'
 
 gem 'carrierwave-google-storage', require: false
 
 group :test do
-  gem 'rspec',            '~> 3.7.0'
-  gem 'rspec-its',        '~> 1.2.0'
-  gem 'mocha',            '~> 1.3.0'
-
-  gem 'codeclimate-test-reporter',  '~> 1.0.7',  require: false
-  gem 'coveralls',                  '~> 0.8.19', require: false
+  gem 'rspec',            '~> 3.12.0'
+  gem 'rspec-its',        '~> 1.3.0'
+  gem 'mocha',            '~> 2.0.2'
+  
+  gem 'coveralls',                  '~> 0.8.23', require: false
 end
 
 platform :ruby do
-  ruby '2.7.4'
+  ruby File.read('.ruby-version').strip
 end

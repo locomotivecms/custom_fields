@@ -30,14 +30,14 @@ end
      extensions/mongoid/document
      extensions/mongoid/factory
      extensions/mongoid/criteria/queryable/smash
-     extensions/mongoid/relations/options
-     extensions/mongoid/relations/referenced/many
-     extensions/mongoid/relations/referenced/in
+     extensions/mongoid/association/options
+     extensions/mongoid/association/referenced/has_many
+     extensions/mongoid/association/referenced/has_one
      extensions/mongoid/fields.rb
      extensions/mongoid/fields/i18n.rb
      extensions/mongoid/fields/localized.rb
-     extensions/mongoid/validations/collection_size.rb
-     extensions/mongoid/validations/macros.rb
+     extensions/mongoid/validatable/collection_size.rb
+     extensions/mongoid/validatable/macros.rb
      extensions/origin/smash.rb
      types/default
      types/string

@@ -336,7 +336,7 @@ module CustomFields
       def declare_embedded_in_definition_in_custom_field(name)
         klass_name = self.dynamic_custom_field_class_name(name).split('::').last # Use only the class, ignore the modules
 
-        source = self.parents.size > 1 ? self.parents.first : Object
+        source = self.module_parents.size > 1 ? self.module_parents.first : Object
 
         unless source.const_defined?(klass_name)
           (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF

@@ -16,9 +16,9 @@ The main goals:
 Requirements
 ------------
 
-* MongoDB 3.x
-* Mongoid 6.x
-* ActiveSupport 5.2.x
+* MongoDB 6+
+* Mongoid 8+
+* ActiveSupport 6+
 
 Examples
 --------
@@ -93,7 +93,7 @@ Feel free to contact me at did at locomotivecms dot com.
 License
 -------
 
-Copyright (c) 2018 NoCoffee, released under the [MIT License (MIT)], see [MIT-LICENSE].
+Copyright (c) 2023 NoCoffee, released under the [MIT License (MIT)], see [MIT-LICENSE].
 
 [CustomFields]: https://github.com/locomotivecms/custom_fields "Custom fields extension for Mongoid."
 [Gemnasium]: https://gemnasium.com/locomotivecms/custom_fields "CustomFields at Gemnasium"

@@ -10,7 +10,7 @@ module CustomFields
           # to provide another currency instead of the the default
           # e.g. default is 'EUR' and User sets '100.11 USD'
           field :default_currency
-          field :allow_currency_from_symbol, type: ::Boolean, default: false
+          field :allow_currency_from_symbol, type: 'Boolean', default: false
 
           before_validation :set_default
 
