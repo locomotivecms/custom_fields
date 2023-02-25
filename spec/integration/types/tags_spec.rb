@@ -1,11 +1,11 @@
-describe CustomFields::Types::Tags do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Tags do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -31,11 +31,9 @@ describe CustomFields::Types::Tags do
 
       expect(@post.tags).to eq %w[one two three four five]
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', tags: %w[one two]
 
@@ -61,11 +59,9 @@ describe CustomFields::Types::Tags do
 
       expect(post.respond_to?(:tags)).to eq false
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -95,7 +91,6 @@ describe CustomFields::Types::Tags do
 
       expect(@post.localized_tags).to eq %w[hello world]
     end
-
   end
 
   protected
@@ -103,10 +98,9 @@ describe CustomFields::Types::Tags do
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build label: 'Tags', type: 'tags'
-      blog.posts_custom_fields.build label: 'Localized tags',  type: 'tags', localized: true
+      blog.posts_custom_fields.build label: 'Localized tags', type: 'tags', localized: true
 
       blog.save & blog.reload
     end
   end
-
 end

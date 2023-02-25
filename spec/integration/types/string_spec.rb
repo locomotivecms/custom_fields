@@ -1,9 +1,9 @@
-describe CustomFields::Types::String do
+# frozen_string_literal: true
 
+describe CustomFields::Types::String do
   let(:blog) { create_blog }
 
   context 'a new post' do
-
     let(:post) { blog.posts.build(title: 'Hello world', body: 'Lorem ipsum...') }
 
     it 'sets the author' do
@@ -17,11 +17,9 @@ describe CustomFields::Types::String do
 
       expect(post.author).to eq 'John Doe'
     end
-
   end
 
   context 'an existing post' do
-
     let(:post) { create_post(title: 'Hello world', body: 'Lorem ipsum...', author: 'John Doe') }
 
     it 'returns the author' do
@@ -42,7 +40,6 @@ describe CustomFields::Types::String do
     end
 
     describe 'default value is present' do
-
       let(:blog) { create_blog('Jane Doe') }
       let(:post) { create_post(title: 'Hello world', body: 'Lorem ipsum...') }
 
@@ -51,7 +48,6 @@ describe CustomFields::Types::String do
       end
 
       describe 'unsetting value' do
-
         let(:post) { create_post(title: 'Hello world', body: 'Lorem ipsum...', author: 'John Doe') }
 
         it "doesn't set the default author after unsetting it" do
@@ -60,11 +56,8 @@ describe CustomFields::Types::String do
           _post = Post.find post._id
           expect(_post.author).to eq nil
         end
-
       end
-
     end
-
   end
 
   protected
@@ -80,5 +73,4 @@ describe CustomFields::Types::String do
     post = blog.posts.create!(attributes)
     Post.find(post._id)
   end
-
 end

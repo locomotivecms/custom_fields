@@ -1,5 +1,6 @@
-describe CustomFields::Types::Integer do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Integer do
   let(:default) { nil }
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
@@ -16,7 +17,6 @@ describe CustomFields::Types::Integer do
   end
 
   describe 'validation' do
-
     # https://github.com/rails/rails/issues/33651
     [nil, '', true, 'John Doe', 1.42].each do |value|
       it "should not valid if the value is #{value.inspect}" do
@@ -26,21 +26,17 @@ describe CustomFields::Types::Integer do
         expect(post.errors[:count]).not_to be_blank
       end
     end
-
   end
 
   describe 'default value' do
-
     let(:default) { 1 }
 
     subject { post.count }
 
     it { is_expected.to eq 1 }
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expected = {}
 
@@ -64,7 +60,6 @@ describe CustomFields::Types::Integer do
 
       expect(post.count).to eq 42
     end
-
   end
 
   protected
@@ -75,5 +70,4 @@ describe CustomFields::Types::Integer do
       field.valid?
     end
   end
-
 end

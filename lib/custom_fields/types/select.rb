@@ -1,11 +1,9 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module Select
-
       class Option
-
         include Mongoid::Document
 
         field :name,      localize: true
@@ -15,68 +13,66 @@ module CustomFields
 
         validates_presence_of :name
 
-        def as_json(options = nil)
-          super methods: %w(_id name position)
+        def as_json(_options = nil)
+          super methods: %w[_id name position]
         end
-
       end
 
       module Field
-
         extend ActiveSupport::Concern
 
         included do
-
           embeds_many :select_options, class_name: 'CustomFields::Types::Select::Option'
 
           validates_associated :select_options
 
           accepts_nested_attributes_for :select_options, allow_destroy: true
-
         end
 
         def ordered_select_options
-          self.select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
+          select_options.sort { |a, b| (a.position || 0) <=> (b.position || 0) }.to_a
         end
 
         def select_to_recipe
           {
-            'select_options' => self.ordered_select_options.map do |option|
+            'select_options' => ordered_select_options.map do |option|
               { '_id' => option._id, 'name' => option.name_translations }
             end
           }
         end
 
-        def select_as_json(options = {})
-          { 'select_options' => self.ordered_select_options.map(&:as_json) }
+        def select_as_json(_options = {})
+          { 'select_options' => ordered_select_options.map(&:as_json) }
         end
-
       end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a select field
           #
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_select_custom_field(klass, rule)
-            name, base_collection_name = rule['name'], "#{rule['name']}_options".to_sym
+            name = rule['name']
+            base_collection_name = "#{rule['name']}_options".to_sym
 
-            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: ->{ _set_select_option(name, rule['default']) }
+            klass.field :"#{name}_id", type: BSON::ObjectId, localize: rule['localized'] || false, default: lambda {
+                                                                                                              _set_select_option(name, rule['default'])
+                                                                                                            }
 
             klass.cattr_accessor "_raw_#{base_collection_name}"
-            klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b| a['position'] <=> b['position'] }
+            klass.send :"_raw_#{base_collection_name}=", rule['select_options'].sort { |a, b|
+                                                           a['position'] <=> b['position']
+                                                         }
 
             # other methods
             klass.send(:define_method, name.to_sym) { _get_select_option(name) }
             klass.send(:define_method, :"#{name}=") { |value| _set_select_option(name, value) }
 
-            klass.class_eval <<-EOV
+            klass.class_eval <<-EOV, __FILE__, __LINE__ + 1
 
               def self.#{base_collection_name}
                 self._select_options('#{name}')
@@ -84,9 +80,9 @@ module CustomFields
 
             EOV
 
-            if rule['required']
-              klass.validates_presence_of name
-            end
+            return unless rule['required']
+
+            klass.validates_presence_of name
           end
 
           # Build a hash storing the values (id and option name) for
@@ -100,8 +96,8 @@ module CustomFields
           def select_attribute_get(instance, name)
             if value = instance.send(name.to_sym)
               {
-                name          => value,
-                "#{name}_id"  => instance.send(:"#{name}_id")
+                name => value,
+                "#{name}_id" => instance.send(:"#{name}_id")
               }
             else
               {}
@@ -116,7 +112,7 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def select_attribute_set(instance, name, attributes)
-            id_or_name  = attributes[name] || attributes["#{name}_id"]
+            id_or_name = attributes[name] || attributes["#{name}_id"]
 
             return if id_or_name.nil?
 
@@ -134,7 +130,7 @@ module CustomFields
           #
           def group_by_select_option(name, order_by = nil)
             name_id = "#{name}_id"
-            groups = self.each.group_by { |x| x.send(name_id) }.map do |(k, v)|
+            groups = each.group_by { |x| x.send(name_id) }.map do |(k, v)|
               { name_id => k, 'group' => v }
             end
 
@@ -144,33 +140,32 @@ module CustomFields
 
               groups.delete(group) if group
 
-              { name: option['name'], entries: self._order_select_entries(list, order_by) }.with_indifferent_access
+              { name: option['name'], entries: _order_select_entries(list, order_by) }.with_indifferent_access
             end.tap do |array|
-              if not groups.empty? # orphan entries ?
+              unless groups.empty? # orphan entries ?
                 empty = { name: nil, entries: [] }.with_indifferent_access
                 groups.each do |group|
                   empty[:entries] += group['group']
                 end
-                empty[:entries] = self._order_select_entries(empty[:entries], order_by)
+                empty[:entries] = _order_select_entries(empty[:entries], order_by)
                 array << empty
               end
             end
           end
 
           def _select_options(name)
-            self.send(:"_raw_#{name}_options").map do |option|
-
+            send(:"_raw_#{name}_options").map do |option|
               locale = Mongoid::Fields::I18n.locale.to_s
 
               name = if !option['name'].respond_to?(:merge)
-                option['name']
-              elsif option['name'].has_key?(locale)
-                option['name'][locale.to_s]
-              elsif Mongoid::Fields::I18n.fallbacks?
-                option['name'][Mongoid::Fields::I18n.fallbacks[locale.to_sym].map(&:to_s).find { |loc| !option['name'][loc].nil? }]
-              else
-                nil
-              end
+                       option['name']
+                     elsif option['name'].key?(locale)
+                       option['name'][locale.to_s]
+                     elsif Mongoid::Fields::I18n.fallbacks?
+                       option['name'][Mongoid::Fields::I18n.fallbacks[locale.to_sym].map(&:to_s).find do |loc|
+                                        !option['name'][loc].nil?
+                                      end]
+                     end
 
               { '_id' => option['_id'], 'name' => name }
             end
@@ -181,17 +176,18 @@ module CustomFields
 
             column, direction = order_by.flatten
 
-            list = list.sort { |a, b| (a.send(column) && b.send(column)) ? (a.send(column) || 0) <=> (b.send(column) || 0) : 0 }
+            list = list.sort do |a, b|
+              a.send(column) && b.send(column) ? (a.send(column) || 0) <=> (b.send(column) || 0) : 0
+            end
 
             direction == 'asc' ? list : list.reverse
 
             list
           end
-
         end
 
         def _select_option_id(name)
-          self.send(:"#{name}_id")
+          send(:"#{name}_id")
         end
 
         def _find_select_option(name, id_or_name)
@@ -201,19 +197,15 @@ module CustomFields
         end
 
         def _get_select_option(name)
-          option = self._find_select_option(name, self._select_option_id(name))
+          option = _find_select_option(name, _select_option_id(name))
           option ? option['name'] : nil
         end
 
         def _set_select_option(name, value)
-          option = self._find_select_option(name, value)
-          self.send(:"#{name}_id=", option ? option['_id'] : nil)
+          option = _find_select_option(name, value)
+          send(:"#{name}_id=", option ? option['_id'] : nil)
         end
-
       end
-
     end
-
   end
-
 end

@@ -1,17 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module String
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Add a string field
           #
           # @param [ Class ] klass The class to modify
@@ -30,7 +27,7 @@ module CustomFields
           # @return [ Hash ] field name => raw value
           #
           def string_attribute_get(instance, name)
-            self.default_attribute_get(instance, name)
+            default_attribute_get(instance, name)
           end
 
           # Set the value for the instance and the string field specified by
@@ -41,15 +38,10 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def string_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
         end
-
       end
-
     end
-
   end
-
 end

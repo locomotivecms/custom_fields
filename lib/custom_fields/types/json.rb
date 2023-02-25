@@ -1,17 +1,15 @@
+# frozen_string_literal: true
+
+require 'English'
 module CustomFields
-
   module Types
-
     module Json
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a json field
           #
           # @param [ Class ] klass The class to modify
@@ -39,7 +37,7 @@ module CustomFields
           # @return [ Hash ] field name => JSON
           #
           def json_attribute_get(instance, name)
-            self.default_attribute_get(instance, name)
+            default_attribute_get(instance, name)
           end
 
           # Set the value for the instance and the date field specified by
@@ -50,44 +48,35 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def json_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
         end
 
         protected
 
         def decode_json(name, json)
-          begin
-            value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.decode_www_form_component(json)) : json
-            value = nil if json.blank?
+          value = json.respond_to?(:to_str) && !json.blank? ? ActiveSupport::JSON.decode(URI.decode_www_form_component(json)) : json
+          value = nil if json.blank?
 
-            # Only hashes are accepted
-            if value && !value.is_a?(Hash)
-              raise ActiveSupport::JSON.parse_error.new('Only a Hash object is accepted')
-            end
+          # Only hashes are accepted
+          raise ActiveSupport::JSON.parse_error, 'Only a Hash object is accepted' if value && !value.is_a?(Hash)
 
-            instance_variable_set(:"@#{name}_json_parsing_error", nil)
-            value
-          rescue ActiveSupport::JSON.parse_error            
-            instance_variable_set(:"@#{name}_json_parsing_error", $!.message)
-            nil
-          end
+          instance_variable_set(:"@#{name}_json_parsing_error", nil)
+          value
+        rescue ActiveSupport::JSON.parse_error
+          instance_variable_set(:"@#{name}_json_parsing_error", $ERROR_INFO.message)
+          nil
         end
 
         def add_json_parsing_error(name)
           error = instance_variable_get(:"@#{name}_json_parsing_error")
 
-          if error
-            msg = "Invalid #{name}: \"#{error}\". Check it out on http://jsonlint.com"
-            self.errors.add(name, msg)
-          end
+          return unless error
+
+          msg = "Invalid #{name}: \"#{error}\". Check it out on http://jsonlint.com"
+          errors.add(name, msg)
         end
-
       end
-
     end
-
   end
-
 end

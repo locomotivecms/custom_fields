@@ -1,11 +1,11 @@
-describe CustomFields::Types::Integer do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Integer do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -21,11 +21,9 @@ describe CustomFields::Types::Integer do
 
       expect(@post.age).to eq 11
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', age: 12
 
@@ -53,7 +51,6 @@ describe CustomFields::Types::Integer do
 
       expect(@post.age).to eq 13
     end
-
   end
 
   protected
@@ -65,5 +62,4 @@ describe CustomFields::Types::Integer do
       blog.save & blog.reload
     end
   end
-
 end

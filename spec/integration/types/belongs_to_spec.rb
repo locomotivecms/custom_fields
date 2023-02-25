@@ -1,5 +1,6 @@
-describe CustomFields::Types::BelongsTo do
+# frozen_string_literal: true
 
+describe CustomFields::Types::BelongsTo do
   before(:each) do
     @blog           = create_blog
     @author         = @blog.people.create name: 'John Doe'
@@ -7,7 +8,6 @@ describe CustomFields::Types::BelongsTo do
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -23,11 +23,9 @@ describe CustomFields::Types::BelongsTo do
 
       expect(@post.position_in_author).to eq 1
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', author: @author
       @post = Post.find @post._id
@@ -44,7 +42,6 @@ describe CustomFields::Types::BelongsTo do
 
       expect(@post.author.name).to eq 'Jane Doe'
     end
-
   end
 
   protected
@@ -62,5 +59,4 @@ describe CustomFields::Types::BelongsTo do
 
     post.save
   end
-
 end

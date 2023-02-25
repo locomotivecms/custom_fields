@@ -1,11 +1,11 @@
-describe CustomFields::Types::Money do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Money do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -21,11 +21,9 @@ describe CustomFields::Types::Money do
 
       expect(@post.formatted_donation).to eq '$5.95'
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', donation: '5,95'
 
@@ -51,7 +49,6 @@ describe CustomFields::Types::Money do
 
       expect(post.respond_to?(:donation)).to eq false
     end
-
   end
 
   protected
@@ -65,5 +62,4 @@ describe CustomFields::Types::Money do
       blog.save & blog.reload
     end
   end
-
 end

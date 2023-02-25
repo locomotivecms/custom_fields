@@ -1,5 +1,6 @@
-describe CustomFields::Types::Email do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Email do
   let(:default) { nil }
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
@@ -16,7 +17,6 @@ describe CustomFields::Types::Email do
   end
 
   describe 'validation' do
-
     [nil, 'foo.fr', 'foo@foo'].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.email = value
@@ -24,11 +24,9 @@ describe CustomFields::Types::Email do
         expect(post.errors[:email]).not_to be_blank
       end
     end
-
   end
 
   describe 'default value' do
-
     let(:default) { 'john@doe.net' }
 
     subject { post.email }
@@ -36,17 +34,16 @@ describe CustomFields::Types::Email do
     it { is_expected.to eq 'john@doe.net' }
 
     context 'when unsetting a value' do
-
-      before { post.email = 'jane@doe.net'; post.email = nil }
+      before do
+        post.email = 'jane@doe.net'
+        post.email = nil
+      end
 
       it { is_expected.to eq nil }
-
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expect(post.class.string_attribute_get(post, 'email')).to eq({})
     end
@@ -64,7 +61,6 @@ describe CustomFields::Types::Email do
       post.class.string_attribute_set(post, 'email', { 'email' => 'john@doe.net' })
       expect(post.email).to eq 'john@doe.net'
     end
-
   end
 
   protected
@@ -75,5 +71,4 @@ describe CustomFields::Types::Email do
       field.valid?
     end
   end
-
 end

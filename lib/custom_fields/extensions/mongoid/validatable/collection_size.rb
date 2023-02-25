@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Mongoid
   module Validatable
-
     # Validates that the specified collections do or do not match a certain
     # size.
     #
@@ -13,7 +14,6 @@ module Mongoid
     #     validates_collection_size_of :addresses, in: 1..10
     #   end
     class CollectionSizeValidator < Mongoid::Validatable::LengthValidator
-
       def validate_each(record, attribute, value)
         value = collection_to_size(record, attribute)
 
@@ -37,7 +37,6 @@ module Mongoid
 
         OpenStruct.new(length: source.try(:size) || 0)
       end
-
     end
   end
 end

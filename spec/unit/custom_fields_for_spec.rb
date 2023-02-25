@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 describe 'CustomFieldsFor' do
-
   describe 'helpers' do
-
     before(:each) do
       @blog = Blog.new
     end
@@ -13,7 +13,5 @@ describe 'CustomFieldsFor' do
     it 'tells if an association is enhanced by the custom fields' do
       expect(@blog.custom_fields_for?(:posts)).to be true
     end
-
   end
-
 end

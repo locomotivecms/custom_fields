@@ -1,5 +1,6 @@
-describe CustomFields::Types::ManyToMany do
+# frozen_string_literal: true
 
+describe CustomFields::Types::ManyToMany do
   before(:each) do
     @blog     = build_blog
     @post     = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -22,7 +23,6 @@ describe CustomFields::Types::ManyToMany do
   end
 
   describe 'validation' do
-
     [nil, []].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.authors = value
@@ -31,17 +31,16 @@ describe CustomFields::Types::ManyToMany do
         expect(@post.errors[:authors]).to eq ['must have at least one element']
       end
     end
-
   end
 
   protected
 
   def build_blog
     Blog.new(name: 'My personal blog').tap do |blog|
-      field = blog.posts_custom_fields.build  label: 'Authors', type: 'many_to_many', class_name: 'Person', required: true
+      field = blog.posts_custom_fields.build  label: 'Authors', type: 'many_to_many', class_name: 'Person',
+                                              required: true
 
       field.valid?
     end
   end
-
 end

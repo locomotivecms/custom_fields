@@ -1,17 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module Email
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Add a string field
           #
           # @param [ Class ] klass The class to modify
@@ -22,7 +19,8 @@ module CustomFields
 
             klass.field name, type: ::String, localize: rule['localized'] || false, default: rule['default']
             klass.validates_presence_of name if rule['required']
-            klass.validates_format_of name, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/, allow_blank: !rule['required']
+            klass.validates_format_of name, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/,
+                                            allow_blank: !rule['required']
             klass.validates_uniqueness_of rule['name'], scope: :_type if rule['unique']
           end
 
@@ -35,7 +33,7 @@ module CustomFields
           # @return [ Hash ] field name => raw value
           #
           def email_attribute_get(instance, name)
-            self.default_attribute_get(instance, name)
+            default_attribute_get(instance, name)
           end
 
           # Set the value for the instance and the string field specified by
@@ -46,15 +44,10 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def email_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
         end
-
       end
-
     end
-
   end
-
 end

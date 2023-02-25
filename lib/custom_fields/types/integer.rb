@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
   module Types
     module Integer
-
       module Field; end
 
       module Target
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Add a integer field
           #
           # @param [ Class ] klass The class to modify
@@ -19,7 +19,7 @@ module CustomFields
 
             klass.field name, type: ::Integer, localize: rule['localized'] || false, default: rule['default']
             klass.validates_presence_of name if rule['required']
-            klass.validates name, numericality: { only_integer: true }, if: ->(x){ rule['required'] }
+            klass.validates name, numericality: { only_integer: true }, if: ->(_x) { rule['required'] }
           end
 
           # Build a hash storing the raw value for
@@ -31,7 +31,7 @@ module CustomFields
           # @return [ Hash ] field name => raw value
           #
           def integer_attribute_get(instance, name)
-            self.default_attribute_get(instance, name)
+            default_attribute_get(instance, name)
           end
 
           # Set the value for the instance and the string field specified by
@@ -42,13 +42,10 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def integer_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
-        end # ClassMethods
-
-      end # Target
-
-    end # Integer
-  end # Types
-end # CustomFields
+        end
+      end
+    end
+  end
+end

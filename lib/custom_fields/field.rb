@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   class Field
-
     include ::Mongoid::Document
     include ::Mongoid::Timestamps
 
-    AVAILABLE_TYPES = %w(default string text email date date_time boolean file select float integer
-       money tags color relationship_default belongs_to has_many many_to_many password json)
+    AVAILABLE_TYPES = %w[default string text email date date_time boolean file select float integer
+                         money tags color relationship_default belongs_to has_many many_to_many password json].freeze
 
     ## types ##
     AVAILABLE_TYPES.each do |type|
@@ -26,7 +26,7 @@ module CustomFields
 
     ## validations ##
     validates_presence_of   :label, :type
-    validates_exclusion_of  :name, in: lambda { |f| CustomFields.options[:reserved_names].map(&:to_s) }
+    validates_exclusion_of  :name, in: ->(_f) { CustomFields.options[:reserved_names].map(&:to_s) }
     validates_inclusion_of  :type, in: AVAILABLE_TYPES, allow_blank: true
     validates_format_of     :name, with: /^[a-z]([A-Za-z0-9_]+)?$/, multiline: true
     validate                :uniqueness_of_label_and_name
@@ -45,10 +45,10 @@ module CustomFields
     # @return [ Hash ] The memo object upgraded
     #
     def collect_diff(memo)
-      method_name = :"collect_#{self.type}_diff"
+      method_name = :"collect_#{type}_diff"
 
-      if self.respond_to?(method_name)
-        self.send(method_name, memo)
+      if respond_to?(method_name)
+        send(method_name, memo)
       else
         collect_default_diff(memo)
       end
@@ -61,20 +61,28 @@ module CustomFields
     # @return [ Hash ] The hash
     #
     def to_recipe
-      method_name       = :"#{self.type}_to_recipe"
-      custom_to_recipe  = self.send(method_name) rescue {}
+      method_name       = :"#{type}_to_recipe"
+      custom_to_recipe  = begin
+        send(method_name)
+      rescue StandardError
+        {}
+      end
 
-      { 'name'      => self.name,
-        'type'      => self.type,
-        'required'  => self.required?,
-        'unique'    => self.unique?,
-        'localized' => self.localized?,
-        'default'   => self.default }.merge(custom_to_recipe)
+      { 'name' => name,
+        'type' => type,
+        'required' => required?,
+        'unique' => unique?,
+        'localized' => localized?,
+        'default' => default }.merge(custom_to_recipe)
     end
 
     def as_json(options = {})
-      method_name     = :"#{self.type}_as_json"
-      custom_as_json  = self.send(method_name) rescue {}
+      method_name     = :"#{type}_as_json"
+      custom_as_json  = begin
+        send(method_name)
+      rescue StandardError
+        {}
+      end
 
       super(options).merge(custom_as_json)
     end
@@ -82,27 +90,23 @@ module CustomFields
     protected
 
     def uniqueness_of_label_and_name
-      if self.siblings.any? { |f| f.label == self.label && f._id != self._id }
-        self.errors.add(:label, :taken)
-      end
+      errors.add(:label, :taken) if siblings.any? { |f| f.label == label && f._id != _id }
 
-      if self.siblings.any? { |f| f.name == self.name && f._id != self._id }
-        self.errors.add(:name, :taken)
-      end
+      return unless siblings.any? { |f| f.name == name && f._id != _id }
+
+      errors.add(:name, :taken)
     end
 
     def set_name
-      return if self.label.blank? && self.name.blank?
+      return if label.blank? && name.blank?
 
-      if self.name.blank?
-        self.name = ActiveSupport::Inflector.parameterize(self.label, separator: '_').gsub('-', '_').downcase
-      end
+      return unless name.blank?
+
+      self.name = ActiveSupport::Inflector.parameterize(label, separator: '_').gsub('-', '_').downcase
     end
 
     def siblings
-      self._parent.send(self.association_name)
+      _parent.send(association_name)
     end
-
   end
-
 end

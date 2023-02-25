@@ -1,5 +1,6 @@
-describe 'CustomFields::Localize' do
+# frozen_string_literal: true
 
+describe 'CustomFields::Localize' do
   before(:each) do
     @blog = create_blog
     @blog = Blog.find @blog._id
@@ -15,7 +16,7 @@ describe 'CustomFields::Localize' do
 
   it 'handles fallbacks' do
     expect(Mongoid::Fields::I18n.fallbacks[:en]).to eq [:en]
-    expect(Mongoid::Fields::I18n.fallbacks[:fr]).to eq [:fr, :en]
+    expect(Mongoid::Fields::I18n.fallbacks[:fr]).to eq %i[fr en]
   end
 
   it 'translate a field from the origin I18n class' do
@@ -74,7 +75,6 @@ describe 'CustomFields::Localize' do
   end
 
   describe 'previously not translated' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Yeaaaah', main_author: 'Mister Foo'
 
@@ -111,21 +111,17 @@ describe 'CustomFields::Localize' do
       expect(post.main_author).to eq 'Mister Foo'
       expect(post.respond_to?(:main_author_translations)).to eq false
     end
-
   end
 
   describe 'localize mongoid custom field' do
-
     it 'set I18n key appropriate to field label' do
       post = @blog.posts.build(title: 'Hello world', body: 'Yeaaaah', main_author: 'Bruce Lee')
 
       expect(post.class.human_attribute_name(:main_author)).to eq 'Main Author'
     end
-
   end
 
   describe 'retrieve a post' do
-
     before(:each) do
       Mongoid::Fields::I18n.with_locale('fr') do
         @post = @blog.posts.create title: 'Hello world', body: 'Yeaaaah', url: '/bonjour-le-monde'
@@ -135,21 +131,16 @@ describe 'CustomFields::Localize' do
     subject { @blog.posts.where(url: '/bonjour-le-monde').first }
 
     context 'in the locale of the content' do
-
       before(:each) { Mongoid::Fields::I18n.locale = 'fr' }
 
       it { should_not be_nil }
 
       its(:url) { should == '/bonjour-le-monde' }
-
     end
 
     context 'in another locale' do
-
       it { should be_nil }
-
     end
-
   end
 
   def create_blog
@@ -160,5 +151,4 @@ describe 'CustomFields::Localize' do
       blog.save
     end
   end
-
 end

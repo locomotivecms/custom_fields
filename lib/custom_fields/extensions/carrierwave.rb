@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 require 'carrierwave/mongoid'
 
 module CarrierWave
-
   class Mounter
-
     def remove_previous_with_localization(before = nil, after = nil)
-      _before, _after = before, after
+      _before = before
+      _after = after
       locale = ::Mongoid::Fields::I18n.locale.to_s
 
       # custom case:
@@ -14,24 +15,19 @@ module CarrierWave
       # a different name.
       # We absolutely don't want to erase the file in the default locale
       if record.class.fields[column.to_s]&.localized? &&
-          record.changes[column]&.first == '_new_'
+         record.changes[column]&.first == '_new_'
         _before = [nil]
       end
 
       # FIXME: can't reproduce this behavior locally but it happens in production
-      if before && before.first.is_a?(Hash)
-        _before = [before.first[locale]]
-      end
+      _before = [before.first[locale]] if before && before.first.is_a?(Hash)
 
-      if after && after.first.is_a?(Hash)
-        _after = [after.first[locale]]
-      end
+      _after = [after.first[locale]] if after && after.first.is_a?(Hash)
 
       remove_previous_without_localization(_before, _after)
     end
 
-    alias_method :remove_previous_without_localization, :remove_previous
-    alias_method :remove_previous, :remove_previous_with_localization
+    alias remove_previous_without_localization remove_previous
+    alias remove_previous remove_previous_with_localization
   end
-
 end

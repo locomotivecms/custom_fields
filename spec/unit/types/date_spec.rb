@@ -1,5 +1,6 @@
-describe CustomFields::Types::Date do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Date do
   before(:each) do
     @blog = build_blog
     @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -64,7 +65,6 @@ describe CustomFields::Types::Date do
   end
 
   context '#localize' do
-
     before(:each) do
       field = @blog.posts_custom_fields.build label: 'Visible at', type: 'date', localized: true
 
@@ -88,11 +88,9 @@ describe CustomFields::Types::Date do
 
       expect(post.visible_at_translations['fr']).to eq Date.parse '2010/09/16'
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expected = {}
 
@@ -103,7 +101,7 @@ describe CustomFields::Types::Date do
       @post.posted_at = Date.parse '2010-06-29'
 
       expected = {
-        'posted_at'           => '2010-06-29',
+        'posted_at' => '2010-06-29',
         'formatted_posted_at' => '2010-06-29'
       }
 
@@ -123,7 +121,6 @@ describe CustomFields::Types::Date do
 
       expect(@post.posted_at).to eq Date.parse '2010-06-29'
     end
-
   end
 
   protected
@@ -135,5 +132,4 @@ describe CustomFields::Types::Date do
       field.valid?
     end
   end
-
 end

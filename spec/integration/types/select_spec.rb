@@ -1,11 +1,11 @@
-describe CustomFields::Types::Select do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Select do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -27,11 +27,9 @@ describe CustomFields::Types::Select do
 
       expect(@post.main_category).to eq 'Design'
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', main_category: @marketing_cat._id
 
@@ -69,16 +67,17 @@ describe CustomFields::Types::Select do
 
       expect(@post.main_category).to eq 'Sales'
     end
-
   end
 
   describe 'group_by' do
-
     before(:each) do
-      @blog.posts.create title: 'Hello world 1(Development)',  body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world 1(Development)',  body: 'Lorem ipsum...',
+                         main_category: @development_cat._id
       @blog.posts.create title: 'Hello world (Design)',        body: 'Lorem ipsum...', main_category: @design_cat._id
-      @blog.posts.create title: 'Hello world 2 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
-      @blog.posts.create title: 'Hello world 3 (Development)', body: 'Lorem ipsum...', main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world 2 (Development)', body: 'Lorem ipsum...',
+                         main_category: @development_cat._id
+      @blog.posts.create title: 'Hello world 3 (Development)', body: 'Lorem ipsum...',
+                         main_category: @development_cat._id
       @blog.posts.create title: 'Hello world (Unknow)',        body: 'Lorem ipsum...', main_category: BSON::ObjectId.new
       @blog.posts.create title: 'Hello world (Unknow) 2',      body: 'Lorem ipsum...', main_category: BSON::ObjectId.new
 
@@ -108,11 +107,9 @@ describe CustomFields::Types::Select do
 
       expect(blog.posts.group_by_select_option(:main_category).class).to be Array
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -162,7 +159,6 @@ describe CustomFields::Types::Select do
         expect(@post.class.author_options.first['name']).to eq 'Mister Foo'
       end
     end
-
   end
 
   protected
@@ -198,5 +194,4 @@ describe CustomFields::Types::Select do
       blog.save & blog.reload
     end
   end
-
 end

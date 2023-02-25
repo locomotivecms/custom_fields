@@ -1,11 +1,11 @@
-describe CustomFields::Types::Text do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Text do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -21,11 +21,9 @@ describe CustomFields::Types::Text do
 
       expect(@post.excerpt).to eq 'Well, hello world'
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', excerpt: 'Well, hello world'
 
@@ -44,11 +42,9 @@ describe CustomFields::Types::Text do
 
       expect(@post.excerpt).to eq 'A new one'
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -78,7 +74,6 @@ describe CustomFields::Types::Text do
 
       expect(@post.localized_excerpt).to eq 'Well, hello world'
     end
-
   end
 
   protected
@@ -91,5 +86,4 @@ describe CustomFields::Types::Text do
       blog.save & blog.reload
     end
   end
-
 end

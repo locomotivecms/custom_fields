@@ -1,12 +1,12 @@
-describe CustomFields::Types::Date do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Date do
   before(:each) do
     @blog = create_blog
     @date = Date.parse '2007-06-29'
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -22,11 +22,9 @@ describe CustomFields::Types::Date do
 
       expect(@post.posted_at).to eq @date
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', posted_at: @date
       @post = Post.find @post._id
@@ -51,11 +49,9 @@ describe CustomFields::Types::Date do
 
       expect(@post.posted_at).to eq Date.parse '2009-09-10'
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -85,7 +81,6 @@ describe CustomFields::Types::Date do
 
       expect(@post.visible_at).to eq @date
     end
-
   end
 
   protected
@@ -98,5 +93,4 @@ describe CustomFields::Types::Date do
       blog.save & blog.reload
     end
   end
-
 end

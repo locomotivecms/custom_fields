@@ -1,17 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module DateTime
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a date_time field
           #
           # @param [ Class ] klass The class to modify
@@ -26,9 +23,9 @@ module CustomFields
             klass.send(:define_method, :"formatted_#{name}") { _get_formatted_date_time(name) }
             klass.send(:define_method, :"formatted_#{name}=") { |value| _set_formatted_date_time(name, value) }
 
-            if rule['required']
-              klass.validates_presence_of name, :"formatted_#{name}"
-            end
+            return unless rule['required']
+
+            klass.validates_presence_of name, :"formatted_#{name}"
           end
 
           # Build a hash storing the formatted value for
@@ -61,37 +58,38 @@ module CustomFields
 
             instance.send(:"formatted_#{name}=", value)
           end
-
         end
 
         protected
 
         def _set_formatted_date_time(name, value)
           if value.is_a?(::String) && !value.blank?
-            date_time = ::DateTime._strptime(value, self._formatted_date_time_format)
+            date_time = ::DateTime._strptime(value, _formatted_date_time_format)
 
             if date_time
-              value = ::Time.zone.local(date_time[:year], date_time[:mon], date_time[:mday], date_time[:hour], date_time[:min], date_time[:sec] || 0)#, date_time[:zone] || "")
+              value = ::Time.zone.local(date_time[:year], date_time[:mon], date_time[:mday], date_time[:hour], date_time[:min], date_time[:sec] || 0) # , date_time[:zone] || "")
             else
-              value = ::Time.zone.parse(value) rescue nil
+              value = begin
+                ::Time.zone.parse(value)
+              rescue StandardError
+                nil
+              end
             end
           end
 
-          self.send(:"#{name}=", value)
+          send(:"#{name}=", value)
         end
 
         def _get_formatted_date_time(name)
-          self.send(name.to_sym).strftime(self._formatted_date_time_format) rescue nil
+          send(name.to_sym).strftime(_formatted_date_time_format)
+        rescue StandardError
+          nil
         end
 
         def _formatted_date_time_format
           I18n.t('time.formats.default')
         end
-
       end
-
     end
-
   end
-
 end

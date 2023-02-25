@@ -1,9 +1,8 @@
-module Mongoid #:nodoc:
+# frozen_string_literal: true
 
-  module Document #:nodoc:
-
-    module ClassMethods #:nodoc:
-
+module Mongoid # :nodoc:
+  module Document # :nodoc:
+    module ClassMethods # :nodoc:
       # The mongoid default document returns always false.
       # The documents with custom fields return true.
       #
@@ -12,9 +11,6 @@ module Mongoid #:nodoc:
       def with_custom_fields?
         false
       end
-
     end
-
   end
-
 end

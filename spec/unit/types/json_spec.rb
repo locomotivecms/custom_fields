@@ -1,5 +1,6 @@
-describe CustomFields::Types::Json do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Json do
   before(:each) do
     @blog = build_blog
     @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -15,7 +16,6 @@ describe CustomFields::Types::Json do
     expect(@post.metadata).to eq({ 'author' => 'John Doe', 'visitors' => 43 })
   end
 
-
   it 'sets value from a hash' do
     @post.metadata = { 'author' => 'John Doe', 'visitors' => 43 }
 
@@ -23,7 +23,7 @@ describe CustomFields::Types::Json do
   end
 
   it 'sets nil from an invalid string' do
-    @post.metadata = "{a:2"
+    @post.metadata = '{a:2'
     expect(@post.metadata).to be_nil
   end
 
@@ -40,29 +40,26 @@ describe CustomFields::Types::Json do
   end
 
   describe 'validation' do
-
-    it "should not valid if the value is not a valid JSON hash" do
-      @post.metadata = "{a:2"
+    it 'should not valid if the value is not a valid JSON hash' do
+      @post.metadata = '{a:2'
       expect(@post.valid?).to eq false
       expect(@post.errors[:metadata]).not_to be_blank
     end
 
-    it "should not valid if the value is a string (which is a valid JSON)" do
-      @post.metadata = "2"
+    it 'should not valid if the value is a string (which is a valid JSON)' do
+      @post.metadata = '2'
       expect(@post.valid?).to eq false
       expect(@post.errors[:metadata]).not_to be_blank
     end
 
-    it "should be valid if the value is an empty string" do
+    it 'should be valid if the value is an empty string' do
       @post.metadata = ''
       expect(@post.metadata).to eq nil
       expect(@post.valid?).to eq true
     end
-
   end
 
   context '#localize' do
-
     let(:metadata) { '{"author":"John Doe","visitors":43}' }
     let(:metadata_fr) { '{"author":"Jean Personne","visitors":43}' }
 
@@ -89,11 +86,9 @@ describe CustomFields::Types::Json do
 
       expect(post.metadata_translations['fr']).to eq({ 'author' => 'Jean Personne', 'visitors' => 43 })
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expect(@post.class.json_attribute_get(@post, 'metadata')).to eq({})
     end
@@ -116,7 +111,6 @@ describe CustomFields::Types::Json do
       @post.class.json_attribute_set(@post, 'metadata', { 'metadata' => { 'author' => 'John Doe', 'visitors' => 43 } })
       expect(@post.metadata).to eq({ 'author' => 'John Doe', 'visitors' => 43 })
     end
-
   end
 
   protected
@@ -128,5 +122,4 @@ describe CustomFields::Types::Json do
       field.valid?
     end
   end
-
 end

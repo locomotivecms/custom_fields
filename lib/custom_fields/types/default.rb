@@ -1,11 +1,9 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module Default
-
       module Field
-
         # Build the mongodb updates based on
         # the new state of the field
         #
@@ -15,30 +13,27 @@ module CustomFields
         #
         def collect_default_diff(memo)
           # puts "collect_default_diff #{self.name}: #{self.persisted?} / #{self.destroyed?}" # DEBUG
-          if self.persisted?
-            if self.destroyed?
-              memo['$unset'][self.name] = 1
-            elsif self.changed?
-              if self.changes.key?('name')
-                old_name, new_name = self.changes['name']
+          if persisted?
+            if destroyed?
+              memo['$unset'][name] = 1
+            elsif changed?
+              if changes.key?('name')
+                old_name, new_name = changes['name']
                 memo['$rename'][old_name] = new_name
               end
             end
           end
 
-          (memo['$set']['custom_fields_recipe.rules'] ||= []) << self.to_recipe
+          (memo['$set']['custom_fields_recipe.rules'] ||= []) << to_recipe
 
           memo
         end
-
       end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Modify the target class according to the rule.
           # By default, it declares the field and a validator
           # if specified by the rule
@@ -51,9 +46,11 @@ module CustomFields
 
             klass.validates_presence_of rule['name'] if rule['required']
 
+            return unless rule['unique']
+
             klass.validates_uniqueness_of rule['name'],
-              scope: :_type,
-              allow_blank: !rule['required'] if rule['unique']
+                                          scope: :_type,
+                                          allow_blank: !rule['required']
           end
 
           # Build a hash storing the formatted (or not) values
@@ -70,10 +67,10 @@ module CustomFields
           # @return [ Hash ] field name => formatted value or empty hash if no value
           #
           def default_attribute_get(instance, name)
-            unless (value = instance.send(name.to_sym)).nil?
-              { name => instance.send(name.to_sym) }
-            else
+            if (value = instance.send(name.to_sym)).nil?
               {}
+            else
+              { name => instance.send(name.to_sym) }
             end
           end
 
@@ -94,13 +91,8 @@ module CustomFields
             # simple assign
             instance.send(:"#{name}=", attributes[name])
           end
-
         end
-
       end
-
     end
-
   end
-
 end

@@ -1,5 +1,6 @@
-describe 'CustomFields::CustomFieldsFor' do
+# frozen_string_literal: true
 
+describe 'CustomFields::CustomFieldsFor' do
   before(:each) do
     @blog = create_blog
   end
@@ -31,13 +32,10 @@ describe 'CustomFields::CustomFieldsFor' do
 
       expect(post.model_name).to be_kind_of(ActiveModel::Name)
     end
-
   end
 
   context 'no posts' do
-
     describe 'recipe' do
-
       before(:each) do
         @blog.valid?
 
@@ -48,13 +46,10 @@ describe 'CustomFields::CustomFieldsFor' do
         expect(@post.title).to eq 'Hello world'
         expect(@post.custom_fields_recipe).not_to be false
       end
-
     end
-
   end
 
   context 'with a bunch of existing posts' do
-
     before(:each) do
       @blog = Blog.create name: 'My personal blog'
       @blog.posts.create title: 'Hello world',  body: 'Lorem ipsum...'
@@ -84,7 +79,7 @@ describe 'CustomFields::CustomFieldsFor' do
     end
 
     it 'destroys a field' do
-      @blog.posts_custom_fields.delete_all(name: 'main_author' )
+      @blog.posts_custom_fields.delete_all(name: 'main_author')
       @blog.save & @blog.reload
 
       post = @blog.posts.first
@@ -92,7 +87,6 @@ describe 'CustomFields::CustomFieldsFor' do
       expect(post.respond_to?(:main_author)).to be false
       expect(post.respond_to?(:location)).to be true
     end
-
   end
 
   protected
@@ -103,5 +97,4 @@ describe 'CustomFields::CustomFieldsFor' do
       blog.posts_custom_fields.build label: 'Location',    type: 'string'
     end
   end
-
 end

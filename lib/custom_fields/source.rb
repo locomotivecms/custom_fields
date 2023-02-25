@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Source
-
     extend ActiveSupport::Concern
 
     included do
@@ -35,8 +35,8 @@ module CustomFields
     #
     def klass_with_custom_fields(name)
       # Rails.logger.debug "[CustomFields] klass_with_custom_fields #{self.send(name).metadata.klass} / #{self.send(name).metadata[:old_klass]}" if defined?(Rails) # DEBUG
-      recipe    = self.custom_fields_recipe_for(name)
-      _metadata = self.send(name)._association
+      recipe    = custom_fields_recipe_for(name)
+      _metadata = send(name)._association
       target    = _metadata.options[:original_klass] || _metadata.klass # avoid to use an already enhanced klass
       target.klass_with_custom_fields(recipe)
     end
@@ -51,7 +51,7 @@ module CustomFields
     # @return [ Collection ] The ordered list.
     #
     def ordered_custom_fields(name)
-      self.send(:"#{name}_custom_fields").sort { |a, b| (a.position || 0) <=> (b.position || 0) }
+      send(:"#{name}_custom_fields").sort { |a, b| (a.position || 0) <=> (b.position || 0) }
     end
 
     # Returns the recipe (meaning all the rules) needed to
@@ -63,10 +63,10 @@ module CustomFields
     #
     def custom_fields_recipe_for(name)
       {
-        'name'     => "#{self.relations[name.to_s].class_name.demodulize}#{self._id}",
-        'rules'    => self.ordered_custom_fields(name).map(&:to_recipe),
-        'version'  => self.custom_fields_version(name),
-        'model_name' => self.relations[name.to_s].class_name.constantize.model_name.to_s
+        'name' => "#{relations[name.to_s].class_name.demodulize}#{_id}",
+        'rules' => ordered_custom_fields(name).map(&:to_recipe),
+        'version' => custom_fields_version(name),
+        'model_name' => relations[name.to_s].class_name.constantize.model_name.to_s
       }
     end
 
@@ -77,7 +77,7 @@ module CustomFields
     # @return [ Integer ] The version number
     #
     def custom_fields_version(name)
-      self.send(:"#{name}_custom_fields_version") || 0
+      send(:"#{name}_custom_fields_version") || 0
     end
 
     # When the fields have been modified and before the object is saved,
@@ -86,8 +86,8 @@ module CustomFields
     # @param [ String, Symbol ] name The name of the relation.
     #
     def bump_custom_fields_version(name)
-      version = self.custom_fields_version(name) + 1
-      self.send(:"#{name}_custom_fields_version=", version)
+      version = custom_fields_version(name) + 1
+      send(:"#{name}_custom_fields_version=", version)
     end
 
     # Change the metadata of a relation enhanced by the custom fields.
@@ -96,22 +96,22 @@ module CustomFields
     # @param [ String, Symbol ] name The name of the relation.
     #
     def refresh_metadata_with_custom_fields(name)
-      return if !self.persisted? || self.send(:"#{name}_custom_fields").blank? # do not generate a klass without all the information
+      return if !persisted? || send(:"#{name}_custom_fields").blank?
 
-      old_metadata = self.send(name)._association
+      old_metadata = send(name)._association
 
       # puts "old_metadata = #{old_metadata.klass.inspect} / #{old_metadata.object_id.inspect}" # DEBUG
 
       # puts "[CustomFields] refresh_metadata_with_custom_fields, #{name.inspect}, self = #{self.inspect}"
 
-      self.send(name)._association = old_metadata.clone.tap do |metadata|
+      send(name)._association = old_metadata.clone.tap do |metadata|
         # Rails.logger.debug "[CustomFields] refresh_metadata_with_custom_fields #{metadata.klass}" if defined?(Rails) # DEBUG
 
         # backup the current klass
         metadata.instance_variable_set(:@options, metadata.options.dup)
         metadata.options[:original_klass] ||= metadata.klass
 
-        metadata.instance_variable_set(:@klass, self.klass_with_custom_fields(name))
+        metadata.instance_variable_set(:@klass, klass_with_custom_fields(name))
       end
       set_attribute_localization(name)
       # puts "new_metadata = #{self.send(name).metadata.klass.inspect} / #{self.send(name).metadata.object_id.inspect}" # DEBUG
@@ -119,9 +119,9 @@ module CustomFields
 
     def set_attribute_localization(name)
       klass_name = name.singularize.to_sym
-      self.send(:"#{name}_custom_fields").each do |cf|
+      send(:"#{name}_custom_fields").each do |cf|
         I18n.backend.store_translations ::I18n.locale,
-                          {mongoid: { attributes: {klass_name => {cf.name.to_sym => cf.label}}}}
+                                        { mongoid: { attributes: { klass_name => { cf.name.to_sym => cf.label } } } }
       end
     end
 
@@ -146,7 +146,7 @@ module CustomFields
     def collect_custom_fields_diff(name, fields)
       # puts "==> collect_custom_fields_diff for #{name}, #{fields.size}" # DEBUG
 
-      memo = self.initialize_custom_fields_diff(name)
+      memo = initialize_custom_fields_diff(name)
 
       fields.map do |field|
         field.collect_diff(memo)
@@ -170,12 +170,13 @@ module CustomFields
       # puts "==> apply_custom_fields_recipes for #{name}, #{self._custom_fields_diff[name].inspect}" # DEBUG
 
       operations = self._custom_fields_diff[name]
-      operations['$set'].merge!({ 'custom_fields_recipe.version' => self.custom_fields_version(name) })
-      collection, selector = self.send(name).collection, self.send(name).criteria.selector
+      operations['$set'].merge!({ 'custom_fields_recipe.version' => custom_fields_version(name) })
+      collection = send(name).collection
+      selector = send(name).criteria.selector
 
       # http://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
       # The <update> document must contain only update operator expressions.
-      %w(set unset rename).each do |operation_name|
+      %w[set unset rename].each do |operation_name|
         _fields = operations.delete("$#{operation_name}")
 
         next if _fields.empty?
@@ -196,31 +197,30 @@ module CustomFields
     def apply_custom_fields_localize_diff(name)
       return if self._custom_field_localize_diff[name].empty?
 
-      self.send(name).all.each do |record|
+      send(name).all.each do |record|
         updates = {}
 
         # puts "[apply_custom_fields_localize_diff] processing: record #{record._id} / #{self._custom_field_localize_diff[name].inspect}" # DEBUG
         self._custom_field_localize_diff[name].each do |changes|
+          value = record.attributes[changes[:field]]
           if changes[:localized]
-            value = record.attributes[changes[:field]]
             updates[changes[:field]] = { Mongoid::Fields::I18n.locale.to_s => value }
           else
             # the other way around
-            value = record.attributes[changes[:field]]
             next if value.nil?
+
             updates[changes[:field]] = value[Mongoid::Fields::I18n.locale.to_s]
           end
         end
 
         next if updates.empty?
 
-        collection = self.send(name).collection
+        collection = send(name).collection
         collection.find(record.atomic_selector).update_one({ '$set' => updates })
       end
     end
 
     module ClassMethods
-
       # Determines if the relation is enhanced by the custom fields
       #
       # @example the Person class has somewhere in its code this: "custom_fields_for :addresses"
@@ -231,7 +231,7 @@ module CustomFields
       # @return [ true, false ] True if enhanced, false if not.
       #
       def custom_fields_for?(name)
-        self._custom_fields_for.include?(name.to_s)
+        _custom_fields_for.include?(name.to_s)
       end
 
       # Enhance a referenced collection OR the instance itself (by passing self) by providing methods to manage custom fields.
@@ -254,12 +254,12 @@ module CustomFields
       #   company.employees.build name: 'Michael Scott', position: 'Regional manager'
       #
       def custom_fields_for(name)
-        self.declare_embedded_in_definition_in_custom_field(name)
+        declare_embedded_in_definition_in_custom_field(name)
 
         # stores the relation name
-        self._custom_fields_for << name.to_s
+        _custom_fields_for << name.to_s
 
-        self.extend_for_custom_fields(name)
+        extend_for_custom_fields(name)
       end
 
       protected
@@ -273,12 +273,12 @@ module CustomFields
         class_eval do
           field :"#{name}_custom_fields_version", type: ::Integer, default: 0
 
-          embeds_many :"#{name}_custom_fields", class_name: self.dynamic_custom_field_class_name(name) #, cascade_callbacks: true # FIXME ?????
+          embeds_many :"#{name}_custom_fields", class_name: dynamic_custom_field_class_name(name) # , cascade_callbacks: true # FIXME ?????
 
           accepts_nested_attributes_for :"#{name}_custom_fields", allow_destroy: true
         end
 
-        class_eval <<-EOV
+        class_eval <<-EOV, __FILE__, __LINE__ + 1
           after_initialize  :refresh_#{name}_metadata
           before_update     :bump_#{name}_custom_fields_version
           before_update     :collect_#{name}_custom_fields_diff
@@ -335,21 +335,18 @@ module CustomFields
       # @return [ Field ] The new field class.
       #
       def declare_embedded_in_definition_in_custom_field(name)
-        klass_name = self.dynamic_custom_field_class_name(name).split('::').last # Use only the class, ignore the modules
+        klass_name = dynamic_custom_field_class_name(name).split('::').last # Use only the class, ignore the modules
 
-        source = self.module_parents.size > 1 ? self.module_parents.first : Object
+        source = module_parents.size > 1 ? module_parents.first : Object
 
-        unless source.const_defined?(klass_name)
-          (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF
+        return if source.const_defined?(klass_name)
+
+        (klass = Class.new(::CustomFields::Field)).class_eval <<-EOF, __FILE__, __LINE__ + 1
             embedded_in :#{self.name.demodulize.underscore}, inverse_of: :#{name}_custom_fields, class_name: '#{self.name}'
-          EOF
+        EOF
 
-          source.const_set(klass_name, klass)
-        end
+        source.const_set(klass_name, klass)
       end
-
     end
-
   end
-
 end

@@ -1,5 +1,6 @@
-describe CustomFields::Types::DateTime do
+# frozen_string_literal: true
 
+describe CustomFields::Types::DateTime do
   before(:each) do
     Time.zone = 'Paris'
 
@@ -13,7 +14,6 @@ describe CustomFields::Types::DateTime do
   end
 
   context 'Custom format' do
-
     before(:each) do
       I18n.stubs(:t).returns('%d/%m/%Y %H:%M:%S')
     end
@@ -30,7 +30,6 @@ describe CustomFields::Types::DateTime do
 
       expect(@post.posted_at).to eq @datetime
     end
-
   end
 
   it 'sets value from the standard format (YYYY/MM/DD)' do
@@ -70,7 +69,6 @@ describe CustomFields::Types::DateTime do
   end
 
   context '#localize' do
-
     before(:each) do
       field = @blog.posts_custom_fields.build label: 'Visible at', type: 'date_time', localized: true
 
@@ -94,11 +92,9 @@ describe CustomFields::Types::DateTime do
 
       expect(post.visible_at_translations['fr']).to eq @datetime
     end
-
   end
 
   describe 'getter and setter' do
-
     before(:each) do
       I18n.stubs(:t).returns('%d/%m/%Y %H:%M:%S')
     end
@@ -113,8 +109,8 @@ describe CustomFields::Types::DateTime do
       @post.posted_at = @datetime
 
       expected = {
-        'posted_at'             => '29/06/2010 11:30:40',
-        'formatted_posted_at'   => '29/06/2010 11:30:40'
+        'posted_at' => '29/06/2010 11:30:40',
+        'formatted_posted_at' => '29/06/2010 11:30:40'
       }
 
       expect(@post.class.date_time_attribute_get(@post, 'posted_at')).to eq expected
@@ -133,7 +129,6 @@ describe CustomFields::Types::DateTime do
 
       expect(@post.posted_at).to eq Time.zone.parse '2010-06-29 11:30:40'
     end
-
   end
 
   protected
@@ -145,5 +140,4 @@ describe CustomFields::Types::DateTime do
       field.valid?
     end
   end
-
 end

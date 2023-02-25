@@ -1,11 +1,11 @@
-describe CustomFields::TargetHelpers do
+# frozen_string_literal: true
 
+describe CustomFields::TargetHelpers do
   before(:each) do
     @post = build_post_with_rules
   end
 
   context '#grouping fields' do
-
     it 'returns empty arrays if no rules' do
       @post.stubs(:custom_fields_recipe).returns({ 'rules' => [] })
 
@@ -30,11 +30,9 @@ describe CustomFields::TargetHelpers do
     it 'groups many_to_many fields including the field name to get the target ids' do
       expect(@post.many_to_many_custom_fields).to eq [%w[contributors contributor_ids]]
     end
-
   end
 
   context '#returning safe setters' do
-
     before(:each) do
       @names = @post.custom_fields_safe_setters
     end
@@ -93,11 +91,9 @@ describe CustomFields::TargetHelpers do
       expect(@names.include?('contributors')).to be false
       expect(@names.include?('projects')).to be false
     end
-
   end
 
   context '#returning basic attributes' do
-
     before(:each) do
       %w[
         category formatted_posted_at visible author_name illustration?
@@ -154,11 +150,9 @@ describe CustomFields::TargetHelpers do
       @post.class.expects(:many_to_many_attribute_get).never
       @post.custom_fields_basic_attributes
     end
-
   end
 
   context '#setting basic attributes' do
-
     before(:each) do
       %w[
         category= formatted_posted_at= visible=
@@ -215,11 +209,9 @@ describe CustomFields::TargetHelpers do
       @post.class.expects(:many_to_many_attribute_set).never
       @post.custom_fields_basic_attributes = {}
     end
-
   end
 
   context '#returning methods' do
-
     before(:each) do
       @methods = @post.custom_fields_methods
     end
@@ -272,7 +264,6 @@ describe CustomFields::TargetHelpers do
 
       expect(block).to eq %w[visible author_name int_count float_count]
     end
-
   end
 
   protected
@@ -280,23 +271,35 @@ describe CustomFields::TargetHelpers do
   def build_post_with_rules
     Post.new(title: 'Hello world').tap do |post|
       post.stubs(:custom_fields_recipe).returns({
-        'rules' => [
-          { 'name' => 'category',       'type' => 'select', 'required' => false, 'localized' => false },
-          { 'name' => 'posted_at',      'type' => 'date', 'required' => false, 'localized' => false },
-          { 'name' => 'visible',        'type' => 'boolean', 'required' => false, 'localized' => false },
-          { 'name' => 'ghost_writer',   'type' => 'belongs_to', class_name: 'Person', 'required' => false, 'localized' => false },
-          { 'name' => 'illustration',   'type' => 'file', 'required' => false, 'localized' => false },
-          { 'name' => 'author_name',    'type' => 'string', 'required' => false, 'localized' => false },
-          { 'name' => 'author_picture', 'type' => 'file', 'required' => false, 'localized' => false },
-          { 'name' => 'contributors',   'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts', 'required' => false, 'localized' => false },
-          { 'name' => 'projects',       'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
-          { 'name' => 'illustrations',  'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project', 'required' => false, 'localized' => false },
-          { 'name' => 'int_count',      'type' => 'integer', 'required' => false, 'localized' => false },
-          { 'name' => 'float_count',    'type' => 'float', 'required' => false, 'localized' => false },
-          { 'name' => 'donation',       'type' => 'money', 'required' => false, 'localized' => false },
-        ]
-      })
+                                                  'rules' => [
+                                                    { 'name' => 'category',       'type' => 'select',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'posted_at',      'type' => 'date',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'visible',        'type' => 'boolean',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'ghost_writer',   'type' => 'belongs_to', class_name: 'Person', 'required' => false,
+                                                      'localized' => false },
+                                                    { 'name' => 'illustration',   'type' => 'file',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'author_name',    'type' => 'string',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'author_picture', 'type' => 'file',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'contributors',   'type' => 'many_to_many', 'class_name' => 'Person', 'inverse_of' => 'posts',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'projects',       'type' => 'has_many', 'class_name' => 'Project', 'inverse_of' => 'project',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'illustrations',  'type' => 'has_many', 'class_name' => 'PostImage', 'inverse_of' => 'project',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'int_count',      'type' => 'integer',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'float_count',    'type' => 'float',
+                                                      'required' => false, 'localized' => false },
+                                                    { 'name' => 'donation',       'type' => 'money',
+                                                      'required' => false, 'localized' => false }
+                                                  ]
+                                                })
     end
   end
-
 end

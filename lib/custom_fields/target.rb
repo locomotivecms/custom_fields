@@ -1,15 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Target
-
     extend ActiveSupport::Concern
 
     included do
-
       ## types ##
-      %w(default string text email date date_time boolean file select
-        float integer money color belongs_to has_many many_to_many
-        tags password json).each do |type|
+      %w[default string text email date date_time boolean file select
+         float integer money color belongs_to has_many many_to_many
+         tags password json].each do |type|
         include "CustomFields::Types::#{type.camelize}::Target".constantize
       end
 
@@ -20,7 +19,6 @@ module CustomFields
     end
 
     module ClassMethods
-
       # A document with custom fields always returns true.
       #
       # @return [ Boolean ] True
@@ -49,10 +47,10 @@ module CustomFields
           # klass.write_inheritable_attribute(:scopes, self.scopes)
 
           recipe['rules'].each do |rule|
-            self.send(:"apply_#{rule['type']}_custom_field", klass, rule)
+            send(:"apply_#{rule['type']}_custom_field", klass, rule)
           end
           recipe_model_name = recipe['model_name']
-          model_name = Proc.new do
+          model_name = proc do
             if recipe_model_name.is_a?(ActiveModel::Name)
               recipe_model_name
             else
@@ -92,9 +90,6 @@ module CustomFields
 
         klass
       end
-
     end
-
   end
-
 end

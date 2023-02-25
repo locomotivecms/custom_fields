@@ -1,5 +1,6 @@
-describe CustomFields::Types::File do
+# frozen_string_literal: true
 
+describe CustomFields::Types::File do
   before(:each) do
     @blog = build_blog
     @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -10,18 +11,15 @@ describe CustomFields::Types::File do
   end
 
   describe 'validation' do
-
     it 'should not valid if the value is nil' do
       @post.picture = nil
 
       expect(@post.valid?).to eq false
       expect(@post.errors[:picture]).not_to be_blank
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'has a field to store the size of the file' do
       expect(@post).to respond_to(:picture_size)
     end
@@ -64,7 +62,6 @@ describe CustomFields::Types::File do
 
       @post.class.file_attribute_set(@post, 'picture', { 'remote_picture_url' => 'http://somewhere.org' })
     end
-
   end
 
   protected
@@ -76,5 +73,4 @@ describe CustomFields::Types::File do
       field.valid?
     end
   end
-
 end

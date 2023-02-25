@@ -1,25 +1,24 @@
+# frozen_string_literal: true
+
 module CustomFields
   module Types
     module Password
-
       module Field
-
         MIN_PASSWORD_LENGTH = 6
-
       end
 
       module Target
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Add a password field
           #
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field and if it is required or not
           #
           def apply_password_custom_field(klass, rule)
-            label, name = rule['label'], rule['name']
+            label = rule['label']
+            name = rule['name']
 
             klass.field :"#{name}_hash"
 
@@ -39,7 +38,7 @@ module CustomFields
           #
           # @return [ Hash ] field name => raw value
           #
-          def password_attribute_get(instance, name)
+          def password_attribute_get(_instance, _name)
             {}
           end
 
@@ -53,38 +52,35 @@ module CustomFields
           def password_attribute_set(instance, name, attributes)
             instance._encrypt_password(name, attributes[name])
           end
-
-        end # ClassMethods
+        end
 
         def _set_confirmation_password(name, confirmation)
-          self.instance_variable_set(:"@#{name}_confirmation", confirmation)
+          instance_variable_set(:"@#{name}_confirmation", confirmation)
         end
 
         def _encrypt_password(name, new_password)
           return if new_password.blank?
 
-          self.instance_variable_set(:"@#{name}", new_password)
+          instance_variable_set(:"@#{name}", new_password)
 
-          self.send(:"#{name}_hash=", BCrypt::Password.create(new_password))
+          send(:"#{name}_hash=", BCrypt::Password.create(new_password))
         end
 
         def _check_password(label, name)
-          new_password = self.instance_variable_get(:"@#{name}")
-          confirmation = self.instance_variable_get(:"@#{name}_confirmation")
+          new_password = instance_variable_get(:"@#{name}")
+          confirmation = instance_variable_get(:"@#{name}_confirmation")
 
           return if new_password.blank?
 
           if new_password.size < CustomFields::Types::Password::Field::MIN_PASSWORD_LENGTH
-            self.errors.add(name, :too_short, count: CustomFields::Types::Password::Field::MIN_PASSWORD_LENGTH)
+            errors.add(name, :too_short, count: CustomFields::Types::Password::Field::MIN_PASSWORD_LENGTH)
           end
 
-          if confirmation && confirmation != new_password
-            self.errors.add("#{name}_confirmation", :confirmation, attribute: label || name)
-          end
+          return unless confirmation && confirmation != new_password
+
+          errors.add("#{name}_confirmation", :confirmation, attribute: label || name)
         end
-
-      end # Target
-
-    end # Password
-  end # Types
-end # CustomFields
+      end
+    end
+  end
+end

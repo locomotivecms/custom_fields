@@ -1,15 +1,12 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module RelationshipDefault
-
       module Field
-
         extend ActiveSupport::Concern
 
         included do
-
           field :class_name
           field :inverse_of
           field :order_by
@@ -18,8 +15,8 @@ module CustomFields
           validate              :ensure_class_name_security,  if: :is_relationship?
 
           def is_relationship?
-            method_name = :"#{self.type}_is_relationship?"
-            self.respond_to?(method_name) && self.send(method_name)
+            method_name = :"#{type}_is_relationship?"
+            respond_to?(method_name) && send(method_name)
           end
 
           protected
@@ -28,17 +25,8 @@ module CustomFields
             true
             # FIXME: to be overridden in the target application
           end
-
         end
-
       end
-
     end
-
   end
-
 end
-
-
-
-

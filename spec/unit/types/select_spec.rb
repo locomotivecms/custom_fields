@@ -1,5 +1,6 @@
-describe CustomFields::Types::Select do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Select do
   let(:blog)  { build_blog }
   let(:field) { blog.posts_custom_fields.first }
   let(:post)  { blog.posts.build title: 'Hello world', body: 'Lorem ipsum...' }
@@ -26,7 +27,6 @@ describe CustomFields::Types::Select do
   end
 
   describe 'validation' do
-
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.main_category = value
@@ -34,11 +34,9 @@ describe CustomFields::Types::Select do
         expect(post.errors[:main_category]).not_to be_blank
       end
     end
-
   end
 
   describe 'default value' do
-
     before do
       field.select_options.build name: 'Marketing'
       field.select_options.build name: 'IT'
@@ -47,11 +45,9 @@ describe CustomFields::Types::Select do
     subject { post.main_category }
 
     it { is_expected.to eq 'IT' }
-
   end
 
   context '#localize' do
-
     before(:each) do
       field = blog.posts_custom_fields.build label: 'Taxonomy', type: 'select', localized: true
 
@@ -89,11 +85,9 @@ describe CustomFields::Types::Select do
 
       expect(post.taxonomy_id_translations['fr']).to eq @option_2._id
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expected = {}
 
@@ -104,8 +98,8 @@ describe CustomFields::Types::Select do
       post.main_category = 'Test'
 
       expected = {
-        'main_category'     => 'Test',
-        'main_category_id'  => field.select_options.first._id
+        'main_category' => 'Test',
+        'main_category_id' => field.select_options.first._id
       }
 
       expect(post.class.select_attribute_get(post, 'main_category')).to eq expected
@@ -130,7 +124,6 @@ describe CustomFields::Types::Select do
 
       expect(post.main_category).to eq 'Test'
     end
-
   end
 
   protected
@@ -142,5 +135,4 @@ describe CustomFields::Types::Select do
       field.valid?
     end
   end
-
 end

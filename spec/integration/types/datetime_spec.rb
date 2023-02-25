@@ -1,5 +1,6 @@
-describe CustomFields::Types::DateTime do
+# frozen_string_literal: true
 
+describe CustomFields::Types::DateTime do
   before(:each) do
     Time.zone = 'Paris'
 
@@ -11,7 +12,6 @@ describe CustomFields::Types::DateTime do
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -27,11 +27,9 @@ describe CustomFields::Types::DateTime do
 
       expect(@post.posted_at).to eq @datetime
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', posted_at: @datetime
       @post = Post.find @post._id
@@ -56,11 +54,9 @@ describe CustomFields::Types::DateTime do
 
       expect(@post.posted_at).to eq Time.zone.parse '2009-09-10 11:30:40'
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -90,7 +86,6 @@ describe CustomFields::Types::DateTime do
 
       expect(@post.visible_at).to eq @datetime
     end
-
   end
 
   protected
@@ -103,5 +98,4 @@ describe CustomFields::Types::DateTime do
       blog.save! & blog.reload
     end
   end
-
 end

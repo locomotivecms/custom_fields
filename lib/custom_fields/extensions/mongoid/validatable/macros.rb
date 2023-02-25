@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Mongoid
   module Validatable
     module Macros
@@ -19,7 +21,6 @@ module Mongoid
       def validates_collection_size_of(*args)
         validates_with(Mongoid::Validatable::CollectionSizeValidator, _merge_attributes(args))
       end
-
     end
   end
 end

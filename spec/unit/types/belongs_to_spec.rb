@@ -1,5 +1,6 @@
-describe CustomFields::Types::BelongsTo do
+# frozen_string_literal: true
 
+describe CustomFields::Types::BelongsTo do
   before(:each) do
     @blog = build_blog
     @blog.posts_custom_fields
@@ -23,7 +24,6 @@ describe CustomFields::Types::BelongsTo do
   end
 
   describe 'validation' do
-
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         @post.author = value
@@ -32,7 +32,6 @@ describe CustomFields::Types::BelongsTo do
         expect(@post.errors[:author]).to_not be_blank
       end
     end
-
   end
 
   protected
@@ -44,5 +43,4 @@ describe CustomFields::Types::BelongsTo do
       field.valid?
     end
   end
-
 end

@@ -1,11 +1,11 @@
-describe CustomFields::Types::Boolean do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Boolean do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new post' do
-
     before(:each) do
       @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
     end
@@ -21,11 +21,9 @@ describe CustomFields::Types::Boolean do
 
       expect(@post.visible).to eq true
     end
-
   end
 
   context 'an existing post' do
-
     before(:each) do
       @post = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', visible: true
       @post = Post.find @post._id
@@ -42,11 +40,9 @@ describe CustomFields::Types::Boolean do
 
       expect(@post.visible).to eq false
     end
-
   end
 
   describe '#localize' do
-
     before(:each) do
       Mongoid::Fields::I18n.locale = :en
 
@@ -73,7 +69,6 @@ describe CustomFields::Types::Boolean do
 
       expect(@post.published).to be true
     end
-
   end
 
   protected
@@ -86,5 +81,4 @@ describe CustomFields::Types::Boolean do
       blog.save & blog.reload
     end
   end
-
 end

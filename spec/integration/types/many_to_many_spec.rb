@@ -1,5 +1,6 @@
-describe CustomFields::Types::ManyToMany do
+# frozen_string_literal: true
 
+describe CustomFields::Types::ManyToMany do
   before(:each) do
     @blog     = create_blog
     @post_1   = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', published: true
@@ -55,7 +56,9 @@ describe CustomFields::Types::ManyToMany do
     author = Person.find @author_1._id
 
     expect(author.posts.pluck_with_natural_order(:title)).to eq ['Nude', 'High and Dry', 'Hello world']
-    expect(author.posts.pluck_with_natural_order(:title, :published)).to eq [['Nude', true], ['High and Dry', false], ['Hello world', true]]
+    expect(author.posts.pluck_with_natural_order(:title,
+                                                 :published)).to eq [['Nude', true], ['High and Dry', false],
+                                                                     ['Hello world', true]]
   end
 
   it 'filters and orders the posts' do
@@ -78,8 +81,10 @@ describe CustomFields::Types::ManyToMany do
 
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
-      blog.people_custom_fields.build label: 'Posts',     type: 'many_to_many', class_name: "Post#{blog._id}", inverse_of: :authors, order_by: ['title', 'desc']
-      blog.posts_custom_fields.build  label: 'Authors',   type: 'many_to_many', class_name: "Person#{blog._id}", inverse_of: :posts
+      blog.people_custom_fields.build label: 'Posts',     type: 'many_to_many', class_name: "Post#{blog._id}",
+                                      inverse_of: :authors, order_by: %w[title desc]
+      blog.posts_custom_fields.build  label: 'Authors',   type: 'many_to_many', class_name: "Person#{blog._id}",
+                                      inverse_of: :posts
       blog.posts_custom_fields.build  label: 'Published', type: 'boolean'
 
       blog.save & blog.reload
@@ -93,5 +98,4 @@ describe CustomFields::Types::ManyToMany do
 
     Person.find author._id
   end
-
 end

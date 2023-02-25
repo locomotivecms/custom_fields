@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 begin
   require 'pry-byebug'
-rescue
+rescue StandardError
   # Not installed
 end

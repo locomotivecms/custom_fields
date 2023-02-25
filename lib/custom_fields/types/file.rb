@@ -1,17 +1,14 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module File
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a file field (using carrierwave)
           #
           # @param [ Class ] klass The class to modify
@@ -23,16 +20,14 @@ module CustomFields
             klass.mount_uploader name, FileUploader
             klass.field :"#{name}_size", type: ::Hash, default: {}
 
-            if rule['localized'] == true
-              klass.replace_field name, ::String, true
-            end
+            klass.replace_field name, ::String, true if rule['localized'] == true
 
-            if rule['required']
-              # FIXME: previously, we called "klass.validates_presence_of name"
-              # but it didn't work well with localized fields.
-              klass.validate do |object|
-                UploaderPresenceValidator.new(object, name).validate
-              end
+            return unless rule['required']
+
+            # FIXME: previously, we called "klass.validates_presence_of name"
+            # but it didn't work well with localized fields.
+            klass.validate do |object|
+              UploaderPresenceValidator.new(object, name).validate
             end
           end
 
@@ -44,7 +39,7 @@ module CustomFields
           # @return [ Hash ] field name => url or empty hash if no file
           #
           def file_attribute_get(instance, name)
-            if instance.send(:"#{name}?") #"
+            if instance.send(:"#{name}?") # "
               value = instance.send(name.to_sym).url
               { name => value, "#{name}_url" => value }
             else
@@ -61,30 +56,26 @@ module CustomFields
           #
           def file_attribute_set(instance, name, attributes)
             [name, "remote_#{name}_url", "remove_#{name}"].each do |_name|
-              self.default_attribute_set(instance, _name, attributes)
+              default_attribute_set(instance, _name, attributes)
             end.compact
           end
-
         end
-
       end
 
       class UploaderPresenceValidator
-
         def initialize(document, name)
-          @document, @name = document, name
+          @document = document
+          @name = name
         end
 
         def validate
-          if @document.send(@name).blank?
-            @document.errors.add(@name, :blank)
-          end
-        end
+          return unless @document.send(@name).blank?
 
+          @document.errors.add(@name, :blank)
+        end
       end
 
       class FileUploader < ::CarrierWave::Uploader::Base
-
         process :set_size_in_model
 
         def present?
@@ -103,19 +94,15 @@ module CustomFields
         def set_size_in_model
           size_field_name = :"#{mounted_as}_size"
 
-          if model.respond_to?(size_field_name)
-            is_localized  = model.fields[mounted_as.to_s].options[:localize]
-            key           = is_localized ? ::Mongoid::Fields::I18n.locale.to_s : 'default'
-            values        = model.send(size_field_name)
+          return unless model.respond_to?(size_field_name)
 
-            values[key] = file.size
-          end
+          is_localized  = model.fields[mounted_as.to_s].options[:localize]
+          key           = is_localized ? ::Mongoid::Fields::I18n.locale.to_s : 'default'
+          values        = model.send(size_field_name)
+
+          values[key] = file.size
         end
-
       end
-
     end
-
   end
-
 end

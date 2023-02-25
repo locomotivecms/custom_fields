@@ -1,5 +1,6 @@
-describe CustomFields::Types::Color do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Color do
   let(:default) { nil }
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
@@ -16,7 +17,6 @@ describe CustomFields::Types::Color do
   end
 
   describe 'validation' do
-
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.text_color = value
@@ -25,21 +25,17 @@ describe CustomFields::Types::Color do
         expect(post.errors[:text_color]).not_to be_blank
       end
     end
-
   end
 
   describe 'default value' do
-
     let(:default) { '#ccc' }
 
     subject { post.text_color }
 
     it { is_expected.to eq '#ccc' }
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expected = {}
 
@@ -63,7 +59,6 @@ describe CustomFields::Types::Color do
 
       expect(post.text_color).to eq '#f00'
     end
-
   end
 
   protected
@@ -75,5 +70,4 @@ describe CustomFields::Types::Color do
       field.valid?
     end
   end
-
 end

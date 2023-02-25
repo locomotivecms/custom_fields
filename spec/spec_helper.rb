@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'bundler/setup'
 require 'simplecov'
 
-root = File.expand_path '../../', __FILE__
+root = File.expand_path '..', __dir__
 
 lib = File.expand_path 'lib', root
-$:.unshift lib unless $:.include? lib
+$LOAD_PATH.unshift lib unless $LOAD_PATH.include? lib
 
 require 'custom_fields'
 
@@ -62,11 +64,11 @@ RSpec.configure do |config|
   end
 
   config.backtrace_exclusion_patterns = [
-    /\/lib\d*\/ruby\//,
-    /bin\//,
+    %r{/lib\d*/ruby/},
+    %r{bin/},
     /gems/,
-    /spec\/spec_helper\.rb/,
-    /lib\/rspec\/(core|expectations|matchers|mocks)/
+    %r{spec/spec_helper\.rb},
+    %r{lib/rspec/(core|expectations|matchers|mocks)}
   ]
 
   config.before(:each) do

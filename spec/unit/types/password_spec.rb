@@ -1,5 +1,6 @@
-describe CustomFields::Types::Password do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Password do
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
   let(:post)    { blog.posts.build title: 'Hello world', body: 'Lorem ipsum...' }
@@ -22,13 +23,12 @@ describe CustomFields::Types::Password do
   end
 
   describe 'validation' do
-
-    it "should be valid" do
+    it 'should be valid' do
       post.password = 'superlongpassword'
       expect(post.valid?).to eq true
     end
 
-    it "should be valid if the confirmation matches the password" do
+    it 'should be valid if the confirmation matches the password' do
       post.password = 'superlongpassword'
       post.password_confirmation = 'superlongpassword'
       expect(post.valid?).to eq true
@@ -53,7 +53,6 @@ describe CustomFields::Types::Password do
       expect(post.valid?).to eq false
       expect(post.errors[:password_confirmation]).to eq(["doesn't match password"])
     end
-
   end
 
   protected
@@ -64,5 +63,4 @@ describe CustomFields::Types::Password do
       field.valid?
     end
   end
-
 end

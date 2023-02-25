@@ -1,5 +1,6 @@
-class Blog
+# frozen_string_literal: true
 
+class Blog
   include Mongoid::Document
   include CustomFields::Source
 
@@ -10,5 +11,4 @@ class Blog
 
   custom_fields_for :people
   custom_fields_for :posts
-
 end

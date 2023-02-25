@@ -1,8 +1,8 @@
-module Origin
+# frozen_string_literal: true
 
+module Origin
   # This is a smart hash for use with options and selectors.
   class Smash < Hash
-
     private
 
     # Get the normalized value for the key. If localization is in play the
@@ -25,8 +25,7 @@ module Origin
     # @since 1.0.0
     def normalized_key(name, serializer)
       # serializer && serializer.localized? ? "#{name}.#{::I18n.locale}" : name
-      serializer && serializer.localized? ? "#{name}.#{::Mongoid::Fields::I18n.locale}" : name
+      serializer&.localized? ? "#{name}.#{::Mongoid::Fields::I18n.locale}" : name
     end
-
   end
 end

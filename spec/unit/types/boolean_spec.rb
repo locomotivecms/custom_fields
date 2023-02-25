@@ -1,5 +1,6 @@
-describe CustomFields::Types::Boolean do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Boolean do
   let(:default) { nil }
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
@@ -10,9 +11,7 @@ describe CustomFields::Types::Boolean do
   end
 
   describe 'setting a value' do
-
     context 'true' do
-
       it 'sets value from an integer' do
         expect(post.visible).to eq false
         post.visible = 1
@@ -28,11 +27,9 @@ describe CustomFields::Types::Boolean do
 
         expect(post.visible).to be true
       end
-
     end
 
     context 'false' do
-
       it 'is false by default' do
         expect(post.visible).to be false
         expect(post.visible?).to be false
@@ -53,23 +50,18 @@ describe CustomFields::Types::Boolean do
 
         expect(post.visible).to be false
       end
-
     end
-
   end
 
   describe 'default value' do
-
     let(:default) { true }
 
     subject { post.visible }
 
     it { is_expected.to eq true }
-
   end
 
   describe 'localization' do
-
     before(:each) do
       field = blog.posts_custom_fields.build label: 'Published', type: 'boolean', localized: true
 
@@ -93,11 +85,9 @@ describe CustomFields::Types::Boolean do
 
       expect(post.published_translations['fr']).to be false
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns the value' do
       post.visible = true
 
@@ -113,7 +103,6 @@ describe CustomFields::Types::Boolean do
 
       expect(post.visible).to be true
     end
-
   end
 
   protected
@@ -124,5 +113,4 @@ describe CustomFields::Types::Boolean do
       field.valid?
     end
   end
-
 end

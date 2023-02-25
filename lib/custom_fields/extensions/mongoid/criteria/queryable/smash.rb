@@ -1,11 +1,10 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 module Mongoid
   class Criteria
     module Queryable
-
       # This is a smart hash for use with options and selectors.
       class Smash < Hash
-
         private
 
         # Get the localized value for the key if needed. If the field uses
@@ -24,11 +23,9 @@ module Mongoid
         #
         # @since 1.0.0
         def localized_key(name, serializer)
-          serializer && serializer.localized? ? "#{name}.#{::Mongoid::Fields::I18n.locale}" : name
+          serializer&.localized? ? "#{name}.#{::Mongoid::Fields::I18n.locale}" : name
         end
-
       end
-
     end
   end
 end

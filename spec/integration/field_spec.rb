@@ -1,12 +1,12 @@
-describe 'CustomFields::Field' do
+# frozen_string_literal: true
 
+describe 'CustomFields::Field' do
   before(:each) do
     @blog = create_blog
     @blog = Blog.find @blog._id
   end
 
   describe 'nested attributes' do
-
     it 'renames a field' do
       @blog.posts_custom_fields_attributes = {
         '0' => { '_id' => @blog.posts_custom_fields.last._id.to_s, 'label' => 'My location' },
@@ -18,7 +18,6 @@ describe 'CustomFields::Field' do
       expect(@blog.posts_custom_fields.first.label).to eq 'Author'
       expect(@blog.posts_custom_fields.last.label).to eq 'My location'
     end
-
   end
 
   protected
@@ -31,5 +30,4 @@ describe 'CustomFields::Field' do
       blog.save
     end
   end
-
 end

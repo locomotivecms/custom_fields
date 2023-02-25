@@ -1,5 +1,6 @@
-describe CustomFields::Types::String do
+# frozen_string_literal: true
 
+describe CustomFields::Types::String do
   let(:default) { nil }
   let(:blog)    { build_blog }
   let(:field)   { blog.posts_custom_fields.first }
@@ -16,7 +17,6 @@ describe CustomFields::Types::String do
   end
 
   describe 'validation' do
-
     [nil, ''].each do |value|
       it "should not valid if the value is #{value.inspect}" do
         post.author = value
@@ -24,11 +24,9 @@ describe CustomFields::Types::String do
         expect(post.errors[:author]).not_to be_blank
       end
     end
-
   end
 
   describe 'default value' do
-
     let(:default) { 'Ricky G.' }
 
     subject { post.author }
@@ -36,17 +34,16 @@ describe CustomFields::Types::String do
     it { is_expected.to eq 'Ricky G.' }
 
     context 'when unsetting a value' do
-
-      before { post.author = 'Stephen M.'; post.author = nil }
+      before do
+        post.author = 'Stephen M.'
+        post.author = nil
+      end
 
       it { is_expected.to eq nil }
-
     end
-
   end
 
   describe 'getter and setter' do
-
     it 'returns an empty hash if no value has been set' do
       expect(post.class.string_attribute_get(post, 'author')).to eq({})
     end
@@ -64,7 +61,6 @@ describe CustomFields::Types::String do
       post.class.string_attribute_set(post, 'author', { 'author' => 'John' })
       expect(post.author).to eq 'John'
     end
-
   end
 
   protected
@@ -75,5 +71,4 @@ describe CustomFields::Types::String do
       field.valid?
     end
   end
-
 end

@@ -1,27 +1,20 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module Text
-
       module Field
-
         extend ActiveSupport::Concern
 
         included do
-
           field :text_formatting, default: 'html'
-
         end
-
       end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a text field (simply a string field)
           #
           # @param [ Class ] klass The class to modify
@@ -51,15 +44,10 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def text_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
         end
-
       end
-
     end
-
   end
-
 end

@@ -1,10 +1,11 @@
-module Mongoid #:nodoc
+# frozen_string_literal: true
 
+# :nodoc
+
+module Mongoid
   # This module defines behaviour for fields.
   module Fields
-
     module ClassMethods
-
       # Replace a field with a new type.
       #
       # @example Replace the field.
@@ -20,11 +21,8 @@ module Mongoid #:nodoc
       def replace_field(name, type, localize = false)
         # puts "fields[#{name}] = #{fields[name.to_s].inspect} / #{fields.keys.inspect}" # DEBUG
         remove_defaults(name)
-        add_field(name, fields[name.to_s].options.merge(type: type, localize: localize))
+        add_field(name, fields[name.to_s].options.merge(type:, localize:))
       end
-
     end
-
   end
-
 end

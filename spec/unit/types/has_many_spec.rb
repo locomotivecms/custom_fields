@@ -1,5 +1,6 @@
-describe CustomFields::Types::HasMany do
+# frozen_string_literal: true
 
+describe CustomFields::Types::HasMany do
   before(:each) do
     @blog   = build_blog
     @post_1 = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -26,9 +27,7 @@ describe CustomFields::Types::HasMany do
   end
 
   describe 'validation' do
-
     context 'when not persisted' do
-
       it 'is valid if nil' do
         expect(@author.valid?).to eq true
       end
@@ -38,11 +37,9 @@ describe CustomFields::Types::HasMany do
 
         expect(@author.valid?).to eq true
       end
-
     end
 
     context 'persisted' do
-
       before(:each) { @author.stubs(:new_record?).returns(false) }
 
       [nil, []].each do |value|
@@ -53,13 +50,10 @@ describe CustomFields::Types::HasMany do
           expect(@author.errors[:posts]).to eq ['must have at least one element']
         end
       end
-
     end
-
   end
 
   context 'multi-thread environment' do
-
     it 're-builds the class even if it has not been loaded' do
       Object.send(:remove_const, "Post#{@blog._id}".to_sym)
 
@@ -67,7 +61,6 @@ describe CustomFields::Types::HasMany do
 
       expect(@author.posts).to eq []
     end
-
   end
 
   protected
@@ -78,10 +71,10 @@ describe CustomFields::Types::HasMany do
 
       field.valid?
 
-      field = blog.people_custom_fields.build label: 'Posts', type: 'has_many', class_name: "Post#{blog._id}", inverse_of: 'author', required: true
+      field = blog.people_custom_fields.build label: 'Posts', type: 'has_many', class_name: "Post#{blog._id}",
+                                              inverse_of: 'author', required: true
 
       field.valid?
     end
   end
-
 end

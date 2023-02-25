@@ -1,24 +1,22 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module Types
-
     module Boolean
-
       module Field; end
 
       module Target
-
         extend ActiveSupport::Concern
 
         module ClassMethods
-
           # Adds a boolean field. It can not be required.
           #
           # @param [ Class ] klass The class to modify
           # @param [ Hash ] rule It contains the name of the field.
           #
           def apply_boolean_custom_field(klass, rule)
-            klass.field rule['name'], type: 'Boolean', localize: rule['localized'] || false, default: rule['default'].nil? ? false : rule['default']
+            klass.field rule['name'], type: 'Boolean', localize: rule['localized'] || false,
+                                      default: rule['default'].nil? ? false : rule['default']
           end
 
           # Build a hash storing the boolean value (true / false) for
@@ -41,15 +39,10 @@ module CustomFields
           # @param [ Hash ] attributes The attributes used to fetch the values
           #
           def boolean_attribute_set(instance, name, attributes)
-            self.default_attribute_set(instance, name, attributes)
+            default_attribute_set(instance, name, attributes)
           end
-
         end
-
       end
-
     end
-
   end
-
 end

@@ -1,5 +1,6 @@
-describe CustomFields::Field do
+# frozen_string_literal: true
 
+describe CustomFields::Field do
   it 'is initialized' do
     expect { CustomFields::Field.new }.to_not raise_error
   end
@@ -12,7 +13,6 @@ describe CustomFields::Field do
   end
 
   context '#validating' do
-
     before(:each) do
       @field = CustomFields::Field.new
 
@@ -56,7 +56,6 @@ describe CustomFields::Field do
         expect(@field.errors[:type]).not_to be_empty
       end
     end
-
   end
 
   protected
@@ -64,5 +63,4 @@ describe CustomFields::Field do
   def stub_field_for_validation(field)
     field.stubs(:uniqueness_of_label_and_name).returns true
   end
-
 end

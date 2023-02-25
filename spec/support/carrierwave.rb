@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'carrierwave/test/matchers'
 
 CarrierWave.configure do |config|
@@ -27,7 +29,9 @@ CarrierWave.configure do |config|
       module Storage
         class Gcloud < Abstract
           def identifier
-            uploader&.filename rescue nil
+            uploader&.filename
+          rescue StandardError
+            nil
           end
         end
       end
@@ -43,7 +47,7 @@ end
 
 module FixturedFile
   def self.open(filename)
-    File.new(self.path(filename))
+    File.new(path(filename))
   end
 
   def self.path(filename)
@@ -52,7 +56,7 @@ module FixturedFile
 
   def self.duplicate(filename)
     dst = File.join(File.dirname(__FILE__), '..', 'tmp', filename)
-    FileUtils.cp self.path(filename), dst
+    FileUtils.cp path(filename), dst
     dst
   end
 

@@ -1,11 +1,11 @@
-describe CustomFields::Types::Email do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Email do
   before(:each) do
     @blog = create_blog
   end
 
   context 'a new Person' do
-
     before(:each) do
       @person = @blog.people.build name: 'John Doe'
     end
@@ -27,11 +27,9 @@ describe CustomFields::Types::Email do
 
       expect(@person).not_to be_valid
     end
-
   end
 
   context 'an existing person' do
-
     before(:each) do
       @person = @blog.people.create name: 'John Doe', email: 'john@doe.com'
 
@@ -59,7 +57,6 @@ describe CustomFields::Types::Email do
 
       expect(@person.email).to eq 'jane@doe.com'
     end
-
   end
 
   protected

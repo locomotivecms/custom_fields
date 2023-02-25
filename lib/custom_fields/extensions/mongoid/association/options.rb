@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 module CustomFieldsOptionsExtension
   def validate!
@@ -9,6 +9,4 @@ module CustomFieldsOptionsExtension
   end
 end
 
-::Mongoid::Association::Relatable.send(:prepend, CustomFieldsOptionsExtension)
-
-
+::Mongoid::Association::Relatable.prepend CustomFieldsOptionsExtension

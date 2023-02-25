@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-SimpleCov.start do
-  add_filter '/spec/'
-end if ENV['COVERAGE']
+if ENV['COVERAGE']
+  SimpleCov.start do
+    add_filter '/spec/'
+  end
+end

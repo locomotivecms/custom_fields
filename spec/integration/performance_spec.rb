@@ -1,9 +1,9 @@
-describe 'CustomFields::Performance' do
+# frozen_string_literal: true
 
+describe 'CustomFields::Performance' do
   occurences = 1000
 
   context 'with custom fields' do
-
     before(:each) do
       @blog = create_blog
 
@@ -26,11 +26,9 @@ describe 'CustomFields::Performance' do
         end
       end
     end
-
   end
 
   context 'without custom fields' do
-
     before(:each) do
       @blog = create_blog false
 
@@ -53,7 +51,6 @@ describe 'CustomFields::Performance' do
         end
       end
     end
-
   end
 
   protected
@@ -75,5 +72,4 @@ describe 'CustomFields::Performance' do
       blog.posts.create title: "Hello world #{i}", body: 'Lorem ipsum...'
     end
   end
-
 end

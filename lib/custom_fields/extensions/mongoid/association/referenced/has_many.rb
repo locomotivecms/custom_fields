@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # module Mongoid #:nodoc:
 #   module Relations #:nodoc:
 #     module Referenced #:nodoc:
@@ -31,7 +33,7 @@
 
 module CustomFieldsManyExtension
   def build(attributes = {}, type = nil)
-    if _base.respond_to?(:custom_fields_for?) && _base.custom_fields_for?(association.name) 
+    if _base.respond_to?(:custom_fields_for?) && _base.custom_fields_for?(association.name)
       # all the information about how to build the custom class are stored here
       recipe = _base.custom_fields_recipe_for(association.name)
       attributes ||= {}
@@ -40,8 +42,8 @@ module CustomFieldsManyExtension
       type = association.klass.klass_with_custom_fields(recipe)
     end
     super(attributes, type)
-   end
-   alias :new :build
- end
+  end
+  alias new build
+end
 
- ::Mongoid::Association::Referenced::HasMany::Proxy.send(:prepend, CustomFieldsManyExtension)
+::Mongoid::Association::Referenced::HasMany::Proxy.prepend CustomFieldsManyExtension

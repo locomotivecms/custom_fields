@@ -1,5 +1,6 @@
-describe CustomFields::Types::Money do
+# frozen_string_literal: true
 
+describe CustomFields::Types::Money do
   before(:each) do
     @blog = build_blog
     @post = @blog.posts.build title: 'Hello world', body: 'Lorem ipsum...'
@@ -10,7 +11,6 @@ describe CustomFields::Types::Money do
   end
 
   context 'allow_currency_from_symbol' do
-
     it 'returns the formatted donation' do
       @post.donation = '10'
 
@@ -22,24 +22,19 @@ describe CustomFields::Types::Money do
 
       expect(@post.formatted_donation).to eq '$5.95'
     end
-
   end
 
   context 'no allow_currency_from_symbol' do
-
     it 'returns no currency symbol' do
       @post.donation2 = '10'
 
       expect(@post.formatted_donation2).to eq '10'
     end
-
   end
 
   describe 'validation' do
-
     context 'when field required' do
-
-      [nil,''].each do |value|
+      [nil, ''].each do |value|
         it "should not be valid if the value is #{value.inspect}" do
           @post.donation = value
 
@@ -47,9 +42,7 @@ describe CustomFields::Types::Money do
           expect(@post.errors[:donation]).not_to be_blank
         end
       end
-
     end
-
   end
 
   protected
@@ -65,5 +58,4 @@ describe CustomFields::Types::Money do
       field2.allow_currency_from_symbol = false
     end
   end
-
 end

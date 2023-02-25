@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module CustomFields
-
   module TargetHelpers
-
     # Return the list of the getters dynamically based on the
     # custom_fields recipe in order to get the formatted values
     # of the custom fields.
@@ -18,8 +18,8 @@ module CustomFields
     # @return [ List ] a list of method names (string)
     #
     def custom_fields_methods(&filter)
-      self.custom_fields_recipe['rules'].map do |rule|
-        method = self.custom_fields_getters_for rule['name'], rule['type']
+      custom_fields_recipe['rules'].map do |rule|
+        method = custom_fields_getters_for rule['name'], rule['type']
         if block_given?
           filter.call(rule) ? method : nil
         else
@@ -34,7 +34,7 @@ module CustomFields
     # @return [ List ] a list of method names (string)
     #
     def custom_fields_safe_setters
-      self.custom_fields_recipe['rules'].map do |rule|
+      custom_fields_recipe['rules'].map do |rule|
         case rule['type'].to_sym
         when :date, :date_time, :money  then "formatted_#{rule['name']}"
         when :file                      then [rule['name'], "remove_#{rule['name']}", "remote_#{rule['name']}_url"]
@@ -54,8 +54,9 @@ module CustomFields
     #
     def custom_fields_basic_attributes
       {}.tap do |hash|
-        self.non_relationship_custom_fields.each do |rule|
-          name, type = rule['name'], rule['type'].to_sym
+        non_relationship_custom_fields.each do |rule|
+          name = rule['name']
+          type = rule['type'].to_sym
 
           # method of the custom getter
           method_name = "#{type}_attribute_get"
@@ -71,8 +72,9 @@ module CustomFields
     # @param [ Hash ] The attributes for the custom fields and their related fields.
     #
     def custom_fields_basic_attributes=(attributes)
-      self.non_relationship_custom_fields.each do |rule|
-        name, type = rule['name'], rule['type'].to_sym
+      non_relationship_custom_fields.each do |rule|
+        name = rule['name']
+        type = rule['type'].to_sym
 
         # method of the custom getter
         method_name = "#{type}_attribute_set"
@@ -89,7 +91,7 @@ module CustomFields
     # @return [ Boolean ] True if the rule is a "many" relationship kind.
     #
     def is_a_custom_field_many_relationship?(name)
-      rule = self.custom_fields_recipe['rules'].detect do |rule|
+      rule = custom_fields_recipe['rules'].detect do |rule|
         rule['name'] == name && _custom_field_many_relationship?(rule['type'])
       end
     end
@@ -99,8 +101,8 @@ module CustomFields
     # @return [ Array ] List of rules (Hash)
     #
     def non_relationship_custom_fields
-      self.custom_fields_recipe['rules'].find_all do |rule|
-        !%w(belongs_to has_many many_to_many).include?(rule['type'])
+      custom_fields_recipe['rules'].find_all do |rule|
+        !%w[belongs_to has_many many_to_many].include?(rule['type'])
       end
     end
 
@@ -109,8 +111,8 @@ module CustomFields
     # @return [ Array ] List of rules (Hash)
     #
     def relationship_custom_fields
-      self.custom_fields_recipe['rules'].find_all do |rule|
-        %w(belongs_to has_many many_to_many).include?(rule['type'])
+      custom_fields_recipe['rules'].find_all do |rule|
+        %w[belongs_to has_many many_to_many].include?(rule['type'])
       end
     end
 
@@ -173,20 +175,16 @@ module CustomFields
       end
     end
 
-    #:nodoc:
+    # :nodoc:
     def _custom_field_many_relationship?(type)
-      %w(has_many many_to_many).include?(type)
+      %w[has_many many_to_many].include?(type)
     end
 
-    #:nodoc:
+    # :nodoc:
     def group_custom_fields(type, &block)
-      unless block_given?
-        block = lambda { |rule| rule['name'] }
-      end
+      block = ->(rule) { rule['name'] } unless block_given?
 
-      self.custom_fields_recipe['rules'].find_all { |rule| rule['type'] == type }.map(&block)
+      custom_fields_recipe['rules'].find_all { |rule| rule['type'] == type }.map(&block)
     end
-
   end
-
 end

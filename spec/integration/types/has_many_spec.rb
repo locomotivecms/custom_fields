@@ -1,5 +1,6 @@
-describe CustomFields::Types::HasMany do
+# frozen_string_literal: true
 
+describe CustomFields::Types::HasMany do
   before(:each) do
     @blog   = create_blog
     @post_1 = @blog.posts.create title: 'Hello world', body: 'Lorem ipsum...', published: true
@@ -8,7 +9,6 @@ describe CustomFields::Types::HasMany do
   end
 
   context 'a new author' do
-
     before(:each) do
       @author = @blog.people.build name: 'John Doe'
     end
@@ -35,11 +35,9 @@ describe CustomFields::Types::HasMany do
 
       expect(@author.posts.map(&:title)).to eq ['High and Dry', 'Hello world']
     end
-
   end
 
   context 'an existing author' do
-
     before(:each) do
       @author = @blog.people.create name: 'John Doe'
 
@@ -61,11 +59,9 @@ describe CustomFields::Types::HasMany do
 
       expect(@author.posts.map(&:title)).to eq ['Nude']
     end
-
   end
 
   describe 'filtering/ordering posts' do
-
     before(:each) do
       @author = @blog.people.create name: 'John Doe'
 
@@ -84,7 +80,7 @@ describe CustomFields::Types::HasMany do
     end
 
     it 'returns the list based on the title' do
-      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.people_custom_fields.first.order_by = %w[title desc]
 
       @blog.save
 
@@ -95,7 +91,7 @@ describe CustomFields::Types::HasMany do
     end
 
     it 'filters the list' do
-      @blog.people_custom_fields.first.order_by = ['title', 'desc']
+      @blog.people_custom_fields.first.order_by = %w[title desc]
 
       @blog.save
 
@@ -111,7 +107,6 @@ describe CustomFields::Types::HasMany do
 
       expect(@author.posts.filtered({ published: true }, %w[title desc]).map(&:title)).to include('Nude', 'Hello world')
     end
-
   end
 
   protected
@@ -120,16 +115,19 @@ describe CustomFields::Types::HasMany do
     Blog.new(name: 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build  label: 'Author',    type: 'belongs_to', class_name: 'Person'
       blog.posts_custom_fields.build  label: 'Published', type: 'boolean'
-      blog.people_custom_fields.build label: 'Posts',     type: 'has_many', class_name: "Post#{blog._id}", inverse_of: 'author'
+      blog.people_custom_fields.build label: 'Posts',     type: 'has_many', class_name: "Post#{blog._id}",
+                                      inverse_of: 'author'
 
       blog.save & blog.reload
     end
   end
 
   def save_author(author, posts)
-    posts.each { |post| post.author = author; post.save }
+    posts.each do |post|
+      post.author = author
+      post.save
+    end
 
     author.save
   end
-
 end

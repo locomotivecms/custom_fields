@@ -1,5 +1,6 @@
-describe 'CustomFields::Validations' do
+# frozen_string_literal: true
 
+describe 'CustomFields::Validations' do
   before(:each) do
     @blog = create_blog
   end
@@ -55,5 +56,4 @@ describe 'CustomFields::Validations' do
   def post_attributes
     { title: 'My fancy post', body: 'Lipsum', codename: 'blog', main_author: 'Me', location: 'Somewhere' }
   end
-
 end
