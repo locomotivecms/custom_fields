@@ -37,7 +37,7 @@ describe CustomFields::Types::ManyToMany do
 
     author = Person.find @author_1._id
 
-    expect(author.posts.filtered.map(&:title)).to eq ['Hello world', 'Nude', 'High and Dry']
+    expect(author.posts.filtered.map(&:title)).to eq ['Nude', 'High and Dry', 'Hello world']
     expect(author.posts.map(&:title)).to eq ['Nude', 'High and Dry', 'Hello world']
   end
 
@@ -46,7 +46,7 @@ describe CustomFields::Types::ManyToMany do
 
     author = Person.find @author_1._id
 
-    expect(author.posts.filtered({ published: true }).map(&:title)).to eq ['Hello world', 'Nude']
+    expect(author.posts.filtered({ published: true }).map(&:title)).to eq ['Nude', 'Hello world']
   end
 
   it 'orders the posts but not load all the attributes' do
@@ -54,8 +54,8 @@ describe CustomFields::Types::ManyToMany do
 
     author = Person.find @author_1._id
 
-    expect(author.posts.pluck_with_natural_order(:title)).to eq ['Hello world', 'Nude', 'High and Dry']
-    expect(author.posts.pluck_with_natural_order(:title, :published)).to eq [['Hello world', true], ['Nude', true], ['High and Dry', false]]
+    expect(author.posts.pluck_with_natural_order(:title)).to eq ['Nude', 'High and Dry', 'Hello world']
+    expect(author.posts.pluck_with_natural_order(:title, :published)).to eq [['Nude', true], ['High and Dry', false], ['Hello world', true]]
   end
 
   it 'filters and orders the posts' do

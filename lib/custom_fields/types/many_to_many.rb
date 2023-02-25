@@ -45,7 +45,7 @@ module CustomFields
               def _naturally_ordered(criteria, order_by = nil)
                 # use the natural order given by the initial array (ex: project_ids).
                 # Warning: it returns an array and not a criteria object meaning it breaks the chain
-                ids = base.send(relation_metadata.key.to_sym)
+                ids = _base.send(_association.name.to_sym)
                 criteria.entries.sort { |a, b| ids.index(a.id) <=> ids.index(b.id) }
               end
 
