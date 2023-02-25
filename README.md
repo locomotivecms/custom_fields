@@ -2,7 +2,6 @@
 ==============
 
 [![Travis CI Status][Travis CI Status]][Travis CI]
-[![Gemnasium Status][Gemnasium Status]][Gemnasium]
 
 Manage custom fields to a Mongoid document or a collection. This module is one of the core features we implemented in
 our custom CMS, named LocomotiveCMS. Basically, its aim is to provide to editors a way to manage extra fields to a
