@@ -87,6 +87,10 @@ module CustomFields
 
         process :set_size_in_model
 
+        def present?
+          serializable_hash.present?
+        end
+
         def filename
           if original_filename && model.fields[mounted_as.to_s].localized?
             _original_filename, extension = original_filename.split('.')

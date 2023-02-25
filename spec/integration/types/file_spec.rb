@@ -37,13 +37,14 @@ describe CustomFields::Types::File do
       @post = Post.find @post._id
     end
 
-    it 'returns the url to the file' do
+    it 'returns the url to the file' do      
       expect(@post.image.url).to match(/\/uploads\/doc\.txt$/)
+      expect(@post.banner.url).to match(/\/uploads\/doc_en\.txt$/)
     end
 
     it 'attaches a new file' do
       @post.image = FixturedFile.open 'another_doc.txt'
-      @post.save
+      @post.save!
       @post = Post.find @post._id
       expect(@post.image.url).to match(/\/uploads\/another_doc\.txt$/)
       expect(@post.image_size).to eq('default' => 14)
