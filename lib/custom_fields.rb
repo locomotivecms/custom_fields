@@ -9,6 +9,9 @@ Money.locale_backend = :currency
 
 module CustomFields
 
+  # Regexp to check if a Ruby class has been built by the CustomFields gem
+  KLASS_REGEXP = /(.*)([0-9a-fA-F]{24})$/o.freeze
+
   @@options = {
     reserved_names:     Mongoid.destructive_fields + %w(id _id send class destroy system),
     default_currency:   'EUR'
@@ -31,6 +34,7 @@ end
      extensions/mongoid/factory
      extensions/mongoid/criteria/queryable/smash
      extensions/mongoid/association/options
+     extensions/mongoid/association/relatable
      extensions/mongoid/association/referenced/has_many
      extensions/mongoid/association/referenced/has_one
      extensions/mongoid/fields.rb
