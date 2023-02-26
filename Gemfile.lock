@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (3.0.0)
+    custom_fields (2.13.0)
       activesupport (>= 6, < 8.0)
       bcrypt (~> 3.1.18)
       carrierwave-mongoid (~> 1.4.0)
