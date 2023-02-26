@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+pp "building a post!"
+
 class Post
   include Mongoid::Document
   include CustomFields::Target

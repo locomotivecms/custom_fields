@@ -21,7 +21,7 @@ module Mongoid
       def replace_field(name, type, localize = false)
         # puts "fields[#{name}] = #{fields[name.to_s].inspect} / #{fields.keys.inspect}" # DEBUG
         remove_defaults(name)
-        add_field(name, fields[name.to_s].options.merge(type:, localize:))
+        add_field(name, fields[name.to_s].options.merge(type: type, localize: localize))
       end
     end
   end

@@ -33,7 +33,6 @@ end
      extensions/mongoid/document
      extensions/mongoid/factory
      extensions/mongoid/criteria/queryable/smash
-     extensions/mongoid/association/options
      extensions/mongoid/association/relatable
      extensions/mongoid/association/referenced/has_many
      extensions/mongoid/association/referenced/has_one
