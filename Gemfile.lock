@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     custom_fields (2.13.0)
-      activesupport (>= 6, < 8.0)
+      activesupport (>= 5, < 8.0)
       bcrypt (~> 3.1.18)
       carrierwave-mongoid (~> 1.4.0)
       monetize (~> 1.12.0)
@@ -200,6 +200,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-darwin-22
 
 DEPENDENCIES
   carrierwave-google-storage
@@ -214,7 +215,7 @@ DEPENDENCIES
   rubocop
 
 RUBY VERSION
-   ruby 2.7.4p191
+   ruby 3.0.3p157
 
 BUNDLED WITH
-   2.1.4
+   2.3.10

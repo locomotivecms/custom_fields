@@ -37,7 +37,7 @@ module CustomFields
       def build_klass_with_custom_fields(recipe)
         name = recipe['name']
         # puts "CREATING #{name}, #{recipe.inspect}" # DEBUG
-        module_parent.const_set(name, Class.new(self)).tap do |klass|
+        safe_module_parent.const_set(name, Class.new(self)).tap do |klass|
           klass.cattr_accessor :version
 
           klass.version = recipe['version']
@@ -89,6 +89,10 @@ module CustomFields
         end
 
         klass
+      end
+
+      def safe_module_parent
+        respond_to?(:module_parent) ? module_parent : parent
       end
     end
   end

@@ -32,28 +32,9 @@ module Mongoid # :nodoc:
         object[fallback_key.to_s] || object[fallback_key]
       end
 
-      # def lookup(object)
-      #   if !object.respond_to?(:keys) # if no translation hash is given, we return the object itself
-      #     object
-      #   elsif object.has_key?(locale.to_s)
-      #     object[locale.to_s]
-      #   elsif I18n.fallbacks?
-      #     lookup_with_fallback(object)
-      #   else
-      #     nil
-      #   end
-      # end
-
-      # def lookup_with_fallback(object)
-      #   fallback_locales = I18n.fallbacks[locale].try(:map, &:to_s)
-
-      #   if fallback_locales
-      #     _locale = fallback_locales.find { |loc| !object[loc].nil? }
-      #     object[_locale]
-      #   else
-      #     nil
-      #   end
-      # end
+      def fallbacks?
+        i18n.fallbacks?
+      end
 
       def locale
         # be careful, it does not return ::I18n.locale
