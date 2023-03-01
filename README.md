@@ -15,8 +15,9 @@ The main goals:
 Requirements
 ------------
 
+* Ruby 2.7 and Ruby 3.0.x
 * MongoDB 6+
-* Mongoid 8+
+* Mongoid 7+
 * ActiveSupport 6+
 
 Examples
