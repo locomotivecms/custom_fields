@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    custom_fields (2.13.0)
+    custom_fields (2.13.1)
       activesupport (>= 5, < 8.0)
       bcrypt (~> 3.1.18)
       carrierwave-mongoid (~> 1.4.0)
@@ -215,7 +215,7 @@ DEPENDENCIES
   rubocop
 
 RUBY VERSION
-   ruby 3.0.3p157
+   ruby 3.1.0p0
 
 BUNDLED WITH
    2.3.10
