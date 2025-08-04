@@ -2,10 +2,7 @@
 
 require 'mongoid'
 
-Mongoid.configure do |config|
-  name = 'custom_fields_test'
-  config.connect_to name
-end
+Mongoid.load!(File.join(File.dirname(__FILE__), '..', '..', 'config', 'mongoid.yml'), 'test')
 
 # Mongoid.logger = Logger.new($stdout)
 # Mongoid.logger.level = Logger::DEBUG

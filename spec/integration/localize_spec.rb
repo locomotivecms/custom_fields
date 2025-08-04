@@ -143,6 +143,23 @@ describe 'CustomFields::Localize' do
     end
   end
 
+  context 'without a fallback locale' do
+    before(:each) do
+      Mongoid::Fields::I18n.with_locale('fr') do
+        @post = @blog.posts.create title: 'Hello world', body: 'Yeaaaah', url: '/bonjour-le-monde'
+      end
+    end
+
+    describe 'accessing a localized field in a different locale' do
+      it 'should not raise an error' do
+        Mongoid::Fields::I18n.expects(:fallbacks).returns({ :fr => [:fr] })
+        Mongoid::Fields::I18n.with_locale('en') do
+          expect { @post.url }.not_to raise_error
+        end
+      end
+    end
+  end
+
   def create_blog
     Blog.new(name: 'My personal blog').tap do |blog|
       blog.posts_custom_fields.build label: 'Main Author', type: 'string'

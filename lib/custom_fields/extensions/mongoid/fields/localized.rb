@@ -26,9 +26,12 @@ module Mongoid # :nodoc:
 
         return unless fallbacks? && i18n.respond_to?(:fallbacks)
 
-        fallback_key = i18n.fallbacks[locale].find do |loc|
+        fallback_key = i18n.fallbacks[locale]&.find do |loc|
           object.key?(loc.to_s) || object.key?(loc)
         end
+
+        return unless fallback_key
+
         object[fallback_key.to_s] || object[fallback_key]
       end
 

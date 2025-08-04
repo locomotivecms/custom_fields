@@ -11,6 +11,10 @@ gem 'pry-byebug', '~> 3.10.1'
 gem 'rake', '~> 13.0.6'
 gem 'rubocop', require: false
 
+gem 'bigdecimal'
+gem 'mutex_m'
+gem 'base64'
+
 group :test do
   gem 'coveralls', '~> 0.8.23', require: false
   gem 'mocha', '~> 2.0.2'
